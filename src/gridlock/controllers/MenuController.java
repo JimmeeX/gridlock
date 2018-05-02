@@ -17,7 +17,7 @@ public class MenuController {
 
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
-        Parent menuParent = FXMLLoader.load(getClass().getResource("templates/Menu.fxml"));
+        Parent menuParent = FXMLLoader.load(getClass().getResource("../templates/Menu.fxml"));
         Scene menuScene = new Scene(menuParent);
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(menuScene);
@@ -25,7 +25,9 @@ public class MenuController {
 
     @FXML
     private void navToPlaySettings(ActionEvent event) throws Exception {
-        Parent playSettingsParent = FXMLLoader.load(getClass().getResource("templates/PlaySettings.fxml"));
+        System.out.print("HIEIHEIH");
+        Parent playSettingsParent = FXMLLoader.load(getClass().getResource("../templates/PlaySettings.fxml"));
+        System.out.print("asdsadsads");
         Scene playSettingsScene = new Scene(playSettingsParent);
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(playSettingsScene);
@@ -33,7 +35,7 @@ public class MenuController {
 
     @FXML
     private void navToSettings(ActionEvent event) throws Exception {
-        Parent settingsParent = FXMLLoader.load(getClass().getResource("templates/Settings.fxml"));
+        Parent settingsParent = FXMLLoader.load(getClass().getResource("../templates/Settings.fxml"));
         Scene settingsScene = new Scene(settingsParent);
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(settingsScene);
@@ -41,7 +43,7 @@ public class MenuController {
 
     @FXML
     private void navToHelp(ActionEvent event) throws Exception {
-        Parent helpParent = FXMLLoader.load(getClass().getResource("templates/Help.fxml"));
+        Parent helpParent = FXMLLoader.load(getClass().getResource("../templates/Help.fxml"));
         Scene helpScene = new Scene(helpParent);
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(helpScene);
@@ -49,7 +51,7 @@ public class MenuController {
 
     @FXML
     private void navToAbout(ActionEvent event) throws Exception {
-        Parent aboutParent = FXMLLoader.load(getClass().getResource("templates/About.fxml"));
+        Parent aboutParent = FXMLLoader.load(getClass().getResource("../templates/About.fxml"));
         Scene aboutScene = new Scene(aboutParent);
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(aboutScene);
