@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.controllers.MenuController">
+    <children>
+        <Button id="button_controls" layoutX="279.0" layoutY="293.0" mnemonicParsing="false" onAction="#navToMenu" text="Back" />
+        <Label layoutX="243.0" layoutY="46.0" text="Step 1. Play the game" />
+        <Label layoutX="241.0" layoutY="87.0" text="Step 2. Beat the Game" />
+        <Label layoutX="272.0" layoutY="122.0" text="Step 3. ???" />
+        <Label layoutX="271.0" layoutY="157.0" text="Step 4. Profit" />
+    </children>
+</AnchorPane>

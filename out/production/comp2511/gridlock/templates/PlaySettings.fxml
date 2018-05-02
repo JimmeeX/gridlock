@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.controllers.MenuController">
+    <children>
+        <VBox alignment="CENTER" layoutX="264.0" layoutY="163.0" />
+        <Button id="button_controls" layoutX="266.0" layoutY="232.0" mnemonicParsing="false" onAction="#navToMenu" text="Back" />
+        <HBox layoutX="210.0" layoutY="78.0">
+            <children>
+                <RadioButton layoutX="146.0" layoutY="205.0" mnemonicParsing="false" selected="true" text="Campaign">
+                    <toggleGroup>
+                        <ToggleGroup fx:id="gameMode" />
+                    </toggleGroup>
+                </RadioButton>
+                <RadioButton layoutX="340.0" layoutY="214.0" mnemonicParsing="false" text="Sandbox" toggleGroup="$gameMode" />
+            </children>
+        </HBox>
+        <HBox layoutX="202.0" layoutY="138.0">
+            <children>
+                <RadioButton layoutX="55.0" layoutY="287.0" mnemonicParsing="false" selected="true" text="Easy">
+                    <toggleGroup>
+                        <ToggleGroup fx:id="difficulty" />
+                    </toggleGroup>
+                </RadioButton>
+                <RadioButton layoutX="152.0" layoutY="296.0" mnemonicParsing="false" text="Medium" toggleGroup="$difficulty" />
+                <RadioButton layoutX="276.0" layoutY="287.0" mnemonicParsing="false" text="Hard" toggleGroup="$difficulty" />
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>

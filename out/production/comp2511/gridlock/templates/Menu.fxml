@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.controllers.MenuController">
+    <children>
+        <Label id="title" alignment="CENTER" contentDisplay="CENTER" layoutX="378.0" layoutY="89.0" text="Gridlock" />
+        <VBox alignment="CENTER" layoutX="350.0" layoutY="163.0" prefHeight="200.0" prefWidth="100.0">
+            <children>
+                <Button id="button_controls" mnemonicParsing="false" onAction="#navToPlaySettings" text="Play" />
+                <Button id="button_controls" mnemonicParsing="false" onAction="#navToSettings" text="Settings" />
+                <Button id="button_controls" mnemonicParsing="false" onAction="#navToHelp" text="Help" />
+                <Button id="button_controls" mnemonicParsing="false" onAction="#navToAbout" text="About" />
+                <Button id="button_controls" mnemonicParsing="false" onAction="#quitGame" text="Quit" />
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
