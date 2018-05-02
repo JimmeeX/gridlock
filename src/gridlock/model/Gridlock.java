@@ -1,3 +1,5 @@
+package gridlock.model;
+
 public class Gridlock {
 
     private Board board;

@@ -1,5 +1,5 @@
+package gridlock.model;
 //do we really need an id for a block?
-
 import java.util.ArrayList;
 
 public class Board {
