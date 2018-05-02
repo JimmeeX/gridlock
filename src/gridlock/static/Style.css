@@ -1,0 +1,34 @@
+/** {*/
+/*payne-s-grey: #3E3D4F;*/
+/*submarine: #849396;*/
+/*light-sea-green: #2ACAB9;*/
+/*white: #FEFEFE;*/
+/*swans-down: #DBECDF;*/
+/*medium-turquoise: #49D2C5;*/
+/*}*/
+
+.root {
+    -fx-font-family: Monospaced;
+    -fx-background-color: #3E3D4F;
+    -fx-text-fill: #FEFEFE;
+}
+
+#title {
+    -fx-text-fill: #FEFEFE;
+}
+
+#button_controls {
+    -fx-font-weight: bold;
+    -fx-text-fill: #FEFEFE;
+    -fx-background-color: #2ACAB9 ;
+}
+/*.titleFont {*/
+/*-fx-font-size: 34;*/
+/*-fx-text-fill: #c4b9a8;*/
+/*}*/
+
+/*.button {*/
+/*-fx-background-color: transparent;*/
+/*-fx-pref-width: 150;*/
+/*-fx-pref-height: 40;*/
+/*}*/
