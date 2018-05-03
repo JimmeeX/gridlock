@@ -46,22 +46,19 @@ public class MenuController {
     }
 
     @FXML
-    private void playControl(ActionEvent event) throws Exception {
+    private void playSettingsControl(ActionEvent event) throws Exception {
         // TODO: Modify ToggleButton so that something is always selected. (So try/catch is not needed)
         try {
-            ToggleButton selectedDifficulty = (ToggleButton) difficulty.getSelectedToggle();
-            String selectedDifficultyValue = selectedDifficulty.getText();
+            String selectedDifficulty = getDifficulty();
+            String selectedGameMode = getGameMode();
 
-            ToggleButton selectedGameMode = (ToggleButton) gameMode.getSelectedToggle();
-            String selectedGameModeValue = selectedGameMode.getText();
-
-            if (selectedGameModeValue.equals("Campaign")) {
+            if (selectedGameMode.equals("Campaign")) {
                 // Load Game Menu
-                navToLevelSelect(event, selectedDifficultyValue);
+                navToLevelSelect(event, selectedDifficulty);
             }
             else {
-                assert selectedGameModeValue.equals("Sandbox");
-                navToGame(event, selectedDifficultyValue);
+                assert selectedGameMode.equals("Sandbox");
+                navToGame(event, selectedDifficulty);
             }
         }
         catch (NullPointerException e) {
@@ -83,6 +80,20 @@ public class MenuController {
         Scene gameScene = new Scene(gameParent);
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
+    }
+
+    private void levelSelectControls(ActionEvent event) {
+        try {
+            String selectedLevel = getLevel();
+            String selectedDifficulty = getDifficulty();
+            System.out.println(selectedLevel);
+
+            navToGame(event, selectedDifficulty);
+        }
+        catch (NullPointerException e) {
+            System.out.println("Please select a level");
+        }
+
     }
 
     @FXML
@@ -114,5 +125,21 @@ public class MenuController {
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.close();
         System.out.println("You pressed Quit");
+    }
+
+    // Helpers
+    private String getDifficulty() {
+        ToggleButton selectedDifficulty = (ToggleButton) difficulty.getSelectedToggle();
+        return selectedDifficulty.getText();
+    }
+
+    private String getGameMode() {
+        ToggleButton selectedGameMode = (ToggleButton) gameMode.getSelectedToggle();
+        return selectedGameMode.getText();
+    }
+
+    private String getLevel() {
+        ToggleButton selectedLevel = (ToggleButton) level.getSelectedToggle();
+        return selectedLevel.getText();
     }
 }

@@ -31,6 +31,6 @@
             <ToggleButton mnemonicParsing="false" text="Hard" toggleGroup="$difficulty" />
          </children>
         </HBox>
-      <Button id="button_controls" layoutX="277.0" layoutY="222.0" mnemonicParsing="false" onAction="#playControl" text="Play" />
+      <Button id="button_controls" layoutX="277.0" layoutY="222.0" mnemonicParsing="false" onAction="#playSettingsControl" text="Play" />
     </children>
 </AnchorPane>
