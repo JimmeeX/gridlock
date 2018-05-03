@@ -22,6 +22,23 @@
     -fx-text-fill: #FEFEFE;
     -fx-background-color: #2ACAB9 ;
 }
+
+/*.radio-button {*/
+    /*RadioButton: ; buttonAccept = new Button("Accept");*/
+    /*buttonAccept.getStyleClass().add("button1");*/
+/*}*/
+
+/*#toggle_controls {*/
+
+/*}*/
+
+.radio-button > .radio {
+    -fx-background-color: transparent;
+}
+.radio-button:selected > .radio > .dot {
+    -fx-background-color: transparent;
+}
+
 /*.titleFont {*/
 /*-fx-font-size: 34;*/
 /*-fx-text-fill: #c4b9a8;*/
