@@ -14,20 +14,15 @@ import javafx.stage.Stage;
 import javax.swing.*;
 
 public class MenuController {
+    private String difficulty;
+    private String gameMode;
+    private String level;
     @FXML
-    private ToggleGroup difficulty;
+    private ToggleGroup toggleDifficulty;
     @FXML
-    private ToggleGroup gameMode;
+    private ToggleGroup toggleGameMode;
     @FXML
-    private ToggleGroup level;
-
-//    private void getDifficulty() {
-//        System.out.println(difficulty.getSelectedToggle());
-//    }
-//
-//    private void getGameMode() {
-//        System.out.println(gameMode.getSelectedToggle());
-//    }
+    private ToggleGroup toggleLevel;
 
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
@@ -49,16 +44,16 @@ public class MenuController {
     private void playSettingsControl(ActionEvent event) throws Exception {
         // TODO: Modify ToggleButton so that something is always selected. (So try/catch is not needed)
         try {
-            String selectedDifficulty = getDifficulty();
-            String selectedGameMode = getGameMode();
+//            String selectedDifficulty = getDifficulty();
+//            String selectedGameMode = getGameMode();
 
-            if (selectedGameMode.equals("Campaign")) {
+            if (this.gameMode.equals("Campaign")) {
                 // Load Game Menu
-                navToLevelSelect(event, selectedDifficulty);
+                navToLevelSelect(event, this.difficulty);
             }
             else {
-                assert selectedGameMode.equals("Sandbox");
-                navToGame(event, selectedDifficulty);
+                assert this.gameMode.equals("Sandbox");
+                navToGame(event, this.difficulty);
             }
         }
         catch (NullPointerException e) {
@@ -82,13 +77,15 @@ public class MenuController {
         window.setScene(gameScene);
     }
 
-    private void levelSelectControls(ActionEvent event) {
+    // TODO: Handle Mode
+    @FXML
+    private void levelSelectControls(ActionEvent event) throws Exception{
         try {
-            String selectedLevel = getLevel();
-            String selectedDifficulty = getDifficulty();
-            System.out.println(selectedLevel);
-
-            navToGame(event, selectedDifficulty);
+//            String selectedLevel = getLevel();
+//            String selectedDifficulty = getDifficulty();
+            System.out.println(this.level);
+            System.out.println(this.difficulty);
+            navToGame(event, this.difficulty);
         }
         catch (NullPointerException e) {
             System.out.println("Please select a level");
@@ -128,18 +125,22 @@ public class MenuController {
     }
 
     // Helpers
-    private String getDifficulty() {
-        ToggleButton selectedDifficulty = (ToggleButton) difficulty.getSelectedToggle();
-        return selectedDifficulty.getText();
+//    @FXML
+    private void setDifficulty() {
+        ToggleButton selectedDifficulty = (ToggleButton) toggleDifficulty.getSelectedToggle();
+        this.difficulty = selectedDifficulty.getText();
+        System.out.println(this.difficulty);
     }
-
-    private String getGameMode() {
-        ToggleButton selectedGameMode = (ToggleButton) gameMode.getSelectedToggle();
-        return selectedGameMode.getText();
+//    @FXML
+    private void setGameMode() {
+        ToggleButton selectedGameMode = (ToggleButton) toggleGameMode.getSelectedToggle();
+        this.gameMode = selectedGameMode.getText();
     }
-
-    private String getLevel() {
-        ToggleButton selectedLevel = (ToggleButton) level.getSelectedToggle();
-        return selectedLevel.getText();
+//    @FXML
+    private void setLevel() {
+        ToggleButton selectedLevel = (ToggleButton) toggleLevel.getSelectedToggle();
+        this.level = selectedLevel.getText();
+        System.out.println(this.difficulty);
+        System.out.println(this.level);
     }
 }

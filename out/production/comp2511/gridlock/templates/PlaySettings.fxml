@@ -12,25 +12,25 @@
         <Button id="button_controls" layoutX="275.0" layoutY="317.0" mnemonicParsing="false" onAction="#navToMenu" text="Back" />
         <HBox layoutX="224.0" layoutY="56.0">
          <children>
-            <ToggleButton mnemonicParsing="false" selected="true" text="Campaign">
+            <ToggleButton mnemonicParsing="false" onAction="#setGameMode" selected="true" text="Campaign">
                <toggleGroup>
-                  <ToggleGroup fx:id="gameMode" />
+                  <ToggleGroup fx:id="toggleGameMode" />
                </toggleGroup>
             </ToggleButton>
-            <ToggleButton mnemonicParsing="false" text="Sandbox" toggleGroup="$gameMode" />
+            <ToggleButton mnemonicParsing="false" onAction="#setGameMode" text="Sandbox" toggleGroup="$toggleGameMode" />
          </children>
         </HBox>
         <HBox layoutX="219.0" layoutY="143.0">
          <children>
-            <ToggleButton mnemonicParsing="false" selected="true" text="Easy">
+            <ToggleButton mnemonicParsing="false" onAction="#setDifficulty" selected="true" text="Easy">
                <toggleGroup>
-                  <ToggleGroup fx:id="difficulty" />
+                  <ToggleGroup fx:id="toggleDifficulty" />
                </toggleGroup>
             </ToggleButton>
-            <ToggleButton mnemonicParsing="false" text="Medium" toggleGroup="$difficulty" />
-            <ToggleButton mnemonicParsing="false" text="Hard" toggleGroup="$difficulty" />
+            <ToggleButton mnemonicParsing="false" onAction="#setDifficulty" text="Medium" toggleGroup="$toggleDifficulty" />
+            <ToggleButton mnemonicParsing="false" onAction="#setDifficulty" text="Hard" toggleGroup="$toggleDifficulty" />
          </children>
         </HBox>
-      <Button id="button_controls" layoutX="277.0" layoutY="222.0" mnemonicParsing="false" onAction="#playControl" text="Play" />
+      <Button id="button_controls" layoutX="277.0" layoutY="222.0" mnemonicParsing="false" onAction="#playSettingsControl" text="Play" />
     </children>
 </AnchorPane>

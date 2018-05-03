@@ -24,113 +24,35 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="1">
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" prefHeight="25.0" prefWidth="56.0" text="1">
                <toggleGroup>
-                  <ToggleGroup fx:id="level" />
+                  <ToggleGroup fx:id="toggleLevel" />
                </toggleGroup>
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="2" toggleGroup="$level" GridPane.columnIndex="1">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="3" toggleGroup="$level" GridPane.columnIndex="2">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="4" toggleGroup="$level" GridPane.columnIndex="3">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="5" toggleGroup="$level" GridPane.columnIndex="4">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="6" toggleGroup="$level" GridPane.rowIndex="1">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="7" toggleGroup="$level" GridPane.columnIndex="1" GridPane.rowIndex="1">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="8" toggleGroup="$level" GridPane.columnIndex="2" GridPane.rowIndex="1">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="9" toggleGroup="$level" GridPane.columnIndex="3" GridPane.rowIndex="1">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="10" toggleGroup="$level" GridPane.columnIndex="4" GridPane.rowIndex="1">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="11" toggleGroup="$level" GridPane.rowIndex="2">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="12" toggleGroup="$level" GridPane.columnIndex="1" GridPane.rowIndex="2">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="13" toggleGroup="$level" GridPane.columnIndex="2" GridPane.rowIndex="2">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="14" toggleGroup="$level" GridPane.columnIndex="3" GridPane.rowIndex="2">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="15" toggleGroup="$level" GridPane.columnIndex="4" GridPane.rowIndex="2">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="16" toggleGroup="$level" GridPane.rowIndex="3">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="17" toggleGroup="$level" GridPane.columnIndex="1" GridPane.rowIndex="3">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="18" toggleGroup="$level" GridPane.columnIndex="2" GridPane.rowIndex="3">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="19" toggleGroup="$level" GridPane.columnIndex="3" GridPane.rowIndex="3">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
-            <RadioButton contentDisplay="CENTER" mnemonicParsing="false" text="20" toggleGroup="$level" GridPane.columnIndex="4" GridPane.rowIndex="3">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </RadioButton>
+            </ToggleButton>
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="2" toggleGroup="$toggleLevel" GridPane.columnIndex="1" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="3" toggleGroup="$toggleLevel" GridPane.columnIndex="2" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="4" toggleGroup="$toggleLevel" GridPane.columnIndex="3" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="5" toggleGroup="$toggleLevel" GridPane.columnIndex="4" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="6" toggleGroup="$toggleLevel" GridPane.rowIndex="1" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="7" toggleGroup="$toggleLevel" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="8" toggleGroup="$toggleLevel" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="9" toggleGroup="$toggleLevel" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="10" toggleGroup="$toggleLevel" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="11" toggleGroup="$toggleLevel" GridPane.rowIndex="2" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="12" toggleGroup="$toggleLevel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="13" toggleGroup="$toggleLevel" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="14" toggleGroup="$toggleLevel" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="15" toggleGroup="$toggleLevel" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="16" toggleGroup="$toggleLevel" GridPane.rowIndex="3" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="17" toggleGroup="$toggleLevel" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="18" toggleGroup="$toggleLevel" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="19" toggleGroup="$toggleLevel" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+            <ToggleButton mnemonicParsing="false" onAction="#setLevel" text="20" toggleGroup="$toggleLevel" GridPane.columnIndex="4" GridPane.rowIndex="3" />
          </children>
       </GridPane>
       <Label layoutX="286.0" layoutY="20.0" text="Easy" />
       <Label layoutX="264.0" layoutY="60.0" text="Pick a Level" />
-      <Button id="button_controls" layoutX="276.0" layoutY="359.0" mnemonicParsing="false" onAction="#navToPlaySettings" text="Back" />
+      <Button id="button_controls" layoutX="366.0" layoutY="359.0" mnemonicParsing="false" onAction="#navToPlaySettings" text="Back" />
+      <Button id="button_controls" layoutX="185.0" layoutY="359.0" mnemonicParsing="false" onAction="#levelSelectControls" text="Start" />
    </children>
 </AnchorPane>
