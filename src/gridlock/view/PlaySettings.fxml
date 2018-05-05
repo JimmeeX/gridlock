@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.embed.swing.*?>
 <?import javafx.scene.canvas.*?>
@@ -9,32 +10,47 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.PlaySettingsController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.PlaySettingsController">
     <children>
         <VBox alignment="CENTER" layoutX="264.0" layoutY="163.0" />
-        <Button id="button_controls" layoutX="275.0" layoutY="317.0" mnemonicParsing="false" onAction="#navToMenu" text="Back" />
-        <HBox layoutX="224.0" layoutY="56.0">
+        <Button id="button_controls" layoutX="300.0" layoutY="523.0" mnemonicParsing="false" onAction="#navToMenu" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" />
+        <HBox layoutX="160.0" layoutY="49.0" AnchorPane.topAnchor="50.0">
             <children>
-                <ToggleButton mnemonicParsing="false" selected="true" text="Campaign">
+                <ToggleButton mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" selected="true" text="Campaign">
                     <toggleGroup>
                         <ToggleGroup fx:id="toggleGameMode" />
                     </toggleGroup>
+               <HBox.margin>
+                  <Insets left="20.0" right="20.0" />
+               </HBox.margin>
                 </ToggleButton>
-                <ToggleButton mnemonicParsing="false" text="Sandbox" toggleGroup="$toggleGameMode" />
+                <ToggleButton mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Sandbox" toggleGroup="$toggleGameMode">
+               <HBox.margin>
+                  <Insets left="20.0" right="20.0" />
+               </HBox.margin></ToggleButton>
             </children>
         </HBox>
-        <HBox layoutX="219.0" layoutY="143.0">
+        <HBox layoutX="40.0" layoutY="175.0" AnchorPane.topAnchor="175.0">
             <children>
-                <ToggleButton mnemonicParsing="false" selected="true" text="Easy">
+                <ToggleButton mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" selected="true" text="Easy">
                     <toggleGroup>
                         <ToggleGroup fx:id="toggleDifficulty" />
                     </toggleGroup>
+               <HBox.margin>
+                  <Insets left="20.0" right="20.0" />
+               </HBox.margin>
                 </ToggleButton>
-                <ToggleButton mnemonicParsing="false" text="Medium" toggleGroup="$toggleDifficulty" />
-                <ToggleButton mnemonicParsing="false" text="Hard" toggleGroup="$toggleDifficulty" />
+                <ToggleButton mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Medium" toggleGroup="$toggleDifficulty">
+               <HBox.margin>
+                  <Insets left="20.0" right="20.0" />
+               </HBox.margin></ToggleButton>
+                <ToggleButton mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Hard" toggleGroup="$toggleDifficulty">
+               <HBox.margin>
+                  <Insets left="20.0" right="20.0" />
+               </HBox.margin></ToggleButton>
             </children>
         </HBox>
-        <Button id="button_controls" layoutX="277.0" layoutY="222.0" mnemonicParsing="false" onAction="#playSettingsControl" text="Play" />
+        <Button id="button_controls" layoutX="300.0" layoutY="334.0" mnemonicParsing="false" onAction="#playSettingsControl" prefHeight="40.0" prefWidth="200.0" text="Play" AnchorPane.bottomAnchor="200.0" />
       <HBox layoutX="14.0" layoutY="264.0" />
     </children>
 </AnchorPane>

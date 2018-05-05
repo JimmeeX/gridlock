@@ -9,44 +9,50 @@
 
 .root {
     -fx-font-family: Monospaced;
-    -fx-background-color: #3E3D4F;
-    -fx-text-fill: #FEFEFE;
+    -fx-background-color: #424953;
+    -fx-text-fill: #DDDEE0;
 }
 
 #title {
-    -fx-text-fill: #FEFEFE;
+    -fx-font-size: 64px;
+    -fx-text-fill: #DDDEE0;
 }
 
-#button_controls {
-    -fx-font-weight: bold;
-    -fx-text-fill: #FEFEFE;
-    -fx-background-color: #2ACAB9 ;
+#subtitle {
+    -fx-font-size: 24px;
+    -fx-text-fill: #DDDEE0;
 }
 
-/*#toggle_controls {*/
-
-/*}*/
-/*Remove Dot*/
-/*.radio-button {*/
-
-/*}*/
-/*.radio-button > .text {*/
-
-
-.radio-button > .radio {
-    -fx-background-color: transparent;
-}
-.radio-button:selected > .radio > .dot {
-    -fx-background-color: transparent;
+#text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #DDDEE0;
 }
 
-/*.titleFont {*/
-/*-fx-font-size: 34;*/
-/*-fx-text-fill: #c4b9a8;*/
-/*}*/
+#level {
+    -fx-pref-height: 30;
+    -fx-pref-width: 30;
+    -fx-background-radius: 20;
+}
 
-/*.button {*/
-/*-fx-background-color: transparent;*/
-/*-fx-pref-width: 150;*/
-/*-fx-pref-height: 40;*/
-/*}*/
+.button {
+    -fx-text-fill: black;
+    -fx-background-color: #FEA62D;
+}
+
+.button:hover {
+    -fx-background-color: #F29517;
+}
+
+.toggle-button {
+    -fx-text-fill: black;
+    -fx-background-color: #FEA62D;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #F29517;
+    -fx-effect: innershadow(gaussian, black, 5, 0, 0, 0);
+}
+
+.slider .track {
+    -fx-background-color: #FEA62D;
+}

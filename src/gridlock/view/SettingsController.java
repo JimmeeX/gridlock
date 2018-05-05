@@ -6,9 +6,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Slider;
 import javafx.stage.Stage;
 
 public class SettingsController {
+    @FXML
+    Slider soundSlider;
+    @FXML
+    Slider musicSlider;
+
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
         Parent menuParent = FXMLLoader.load(getClass().getResource("Menu.fxml"));
@@ -17,4 +23,10 @@ public class SettingsController {
         window.setScene(menuScene);
     }
     //TODO: Handle Music + Sound (+ Perhaps other settings)
+    private void getSoundLevel() {
+        // TODO
+    }
+    private void getMusicLevel() {
+        // TODO
+    }
 }

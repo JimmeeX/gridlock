@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.GameController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.GameController">
    <children>
-      <Button id="button_controls" layoutX="515.0" layoutY="31.0" mnemonicParsing="false" onAction="#navToMenu" text="Quit" />
-      <HBox layoutX="230.0" layoutY="35.0">
+      <Button id="button_controls" layoutX="471.0" layoutY="516.0" mnemonicParsing="false" onAction="#navToMenu" prefHeight="40.0" prefWidth="200.0" text="Quit" AnchorPane.bottomAnchor="30.0" />
+      <HBox alignment="CENTER" layoutX="140.0" layoutY="53.0" prefHeight="50.0" prefWidth="500.0" AnchorPane.topAnchor="30.0">
          <children>
-            <Label fx:id="modeLabel" layoutX="93.0" layoutY="35.0" text="Label" />
-            <Label fx:id="difficultyLabel" layoutX="229.0" layoutY="44.0" text="Label" />
-            <Label fx:id="levelLabel" layoutX="336.0" layoutY="36.0" text="Label" />
+            <Label id="subtitle" fx:id="modeLabel" layoutX="140.0" layoutY="53.0" text="Label">
+               <HBox.margin>
+                  <Insets left="50.0" right="50.0" />
+               </HBox.margin>
+            </Label>
+            <Label id="subtitle" fx:id="difficultyLabel" layoutX="318.0" layoutY="65.0" text="Label">
+               <HBox.margin>
+                  <Insets left="50.0" right="50.0" />
+               </HBox.margin>
+            </Label>
+            <Label id="subtitle" fx:id="levelLabel" layoutX="482.0" layoutY="55.0" text="Label">
+               <HBox.margin>
+                  <Insets left="50.0" right="50.0" />
+               </HBox.margin>
+            </Label>
          </children>
       </HBox>
    </children>
