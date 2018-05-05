@@ -1,5 +1,6 @@
 package gridlock.view;
 
+import gridlock.model.Board;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import javafx.event.ActionEvent;
@@ -13,10 +14,10 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 public class GameController {
+    private Board board;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
-
 
     @FXML
     private Label modeLabel;
@@ -35,6 +36,12 @@ public class GameController {
         this.modeLabel.setText(this.mode.toString());
         this.difficultyLabel.setText(this.difficulty.toString());
         this.levelLabel.setText(this.level.toString());
+
+        // TODO: Initialise Board Here
+        this.board = new Board();
+        this.board.printGrid();
+
+        // TODO: Draw Board Here
     }
 
     @FXML
