@@ -9,7 +9,7 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.GameController">
    <children>
-      <Button id="button_controls" layoutX="471.0" layoutY="516.0" mnemonicParsing="false" onAction="#navToMenu" prefHeight="40.0" prefWidth="200.0" text="Quit" AnchorPane.bottomAnchor="30.0" />
+      <Button id="button_controls" layoutX="471.0" layoutY="516.0" mnemonicParsing="false" onAction="#navToMenu" prefHeight="40.0" prefWidth="200.0" text="Quit" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="125.0" />
       <HBox alignment="CENTER" layoutX="140.0" layoutY="53.0" prefHeight="50.0" prefWidth="500.0" AnchorPane.topAnchor="30.0">
          <children>
             <Label id="subtitle" fx:id="modeLabel" layoutX="140.0" layoutY="53.0" text="Label">
@@ -29,5 +29,6 @@
             </Label>
          </children>
       </HBox>
+      <Button id="button_controls" fx:id="nextButton" disable="true" layoutX="114.0" layoutY="530.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Next Level" AnchorPane.leftAnchor="125.0" />
    </children>
 </AnchorPane>

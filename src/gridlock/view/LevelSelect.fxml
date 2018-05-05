@@ -25,7 +25,7 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <ToggleButton id="level" mnemonicParsing="false" text="1">
+            <ToggleButton id="level" mnemonicParsing="false" selected="true" text="1">
                <toggleGroup>
                   <ToggleGroup fx:id="toggleLevel" />
                </toggleGroup>

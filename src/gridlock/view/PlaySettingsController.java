@@ -70,7 +70,7 @@ public class PlaySettingsController {
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(selectedMode, selectedDifficulty, -1);
+        gameController.initData(selectedMode, selectedDifficulty, 1);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
