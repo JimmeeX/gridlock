@@ -23,14 +23,15 @@
     -fx-background-color: #2ACAB9 ;
 }
 
-/*.radio-button {*/
-    /*RadioButton: ; buttonAccept = new Button("Accept");*/
-    /*buttonAccept.getStyleClass().add("button1");*/
-/*}*/
-
 /*#toggle_controls {*/
 
 /*}*/
+/*Remove Dot*/
+/*.radio-button {*/
+
+/*}*/
+/*.radio-button > .text {*/
+
 
 .radio-button > .radio {
     -fx-background-color: transparent;

@@ -6,8 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.controllers.MenuController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.AboutController">
     <children>
         <TextArea layoutX="137.0" layoutY="26.0" prefHeight="200.0" prefWidth="327.0" text="Developed by The Ignorant Partridges&#10;&#10;- Alina Young&#10;- James Lin&#10;- Joseph Tran&#10;- Ian Ethan Wong&#10;- Edwin Suyitno" />
         <Button id="button_controls" layoutX="280.0" layoutY="307.0" mnemonicParsing="false" onAction="#navToMenu" text="Back" />
