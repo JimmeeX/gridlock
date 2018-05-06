@@ -2,26 +2,26 @@ package gridlock.model;
 
 public class Block {
 
-    private int id;
+    private String id;
     private Integer[] startPosition;
     private Integer[] endPosition;
 
-    public Block(int id, int size, boolean isHorizontal, int row, int col) {
+    public Block(String id, int row, int col) {
         this.id = id;
         this.startPosition = new Integer[2];
         this.endPosition = new Integer[2];
-        if(isHorizontal) {
-            startPosition[0] = endPosition[0] = row;
-            startPosition[1] = col;
-            endPosition[1] = col + size - 1;
-        } else {
-            startPosition[1] = endPosition[1] = col;
-            startPosition[0] = row;
-            endPosition[0] = row + size - 1;
-        }
+        startPosition[0] = endPosition[0] = row;
+        startPosition[1] = endPosition[1] = col;
     }
 
-    public int getID() {
+    public void addRow(int row) {
+        this.endPosition[0] = row;
+    }
+
+    public void addCol(int col) {
+        this.endPosition[1] = col;
+    }
+    public String getID() {
         return this.id;
     }
 
@@ -39,6 +39,11 @@ public class Block {
 
     public int getCol() {
         return this.startPosition[1];
+    }
+
+    public String toString() {
+        return (id + " " + startPosition[0] + "," + startPosition[1]
+                + " " + endPosition[0] + "," + endPosition[1] + "\n");
     }
 
 }

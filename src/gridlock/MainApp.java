@@ -1,5 +1,6 @@
 package gridlock;
 
+import gridlock.model.Gridlock;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -22,6 +23,8 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
+        Gridlock gl = new Gridlock();
+        gl.process("easy.txt");
         launch(args);
     }
 

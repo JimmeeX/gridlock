@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Board {
 
-    private ArrayList<ArrayList<Integer>> grid;
+    private ArrayList<ArrayList<String>> grid;
     private ArrayList<Block> blocks;
     private int numOfMoves;
     private ArrayList<Block> prevLocations;
@@ -21,31 +21,62 @@ public class Board {
     public void initialiseGrid(int size) {
         this.grid = new ArrayList<>();
         for (int row = 0; row < size; row++) {
-            ArrayList<Integer> newRow = new ArrayList<>();
+            ArrayList<String> newRow = new ArrayList<>();
             for (int col = 0; col < size; col++) {
-                newRow.add(-1);
+                newRow.add("*");
             }
-            if(row == 2) newRow.add(-1);
             this.grid.add(newRow);
         }
     }
 
-    /*public boolean validMove(Block block, Integer[] startPosition) {
-        for (blocks in )
-        return false;
-    }*/
-
-    public ArrayList<ArrayList<Integer>> getGrid() {
-        return this.grid;
-    }
-
     public void printGrid() {
-        for (ArrayList<Integer> row: grid) {
-            for (Integer cell: row) {
+        for (ArrayList<String> row: grid) {
+            for (String cell: row) {
                 System.out.print(cell + " ");
             }
             System.out.println();
         }
+        System.out.println("");
+    }
+
+    public void addBlock(String id, int row, int col){
+        Block newBlock = new Block(id, row, col);
+        this.blocks.add(newBlock);
+        ArrayList<String> newRow = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            if (col != i) newRow.add(this.grid.get(row).get(i));
+            else newRow.add(newBlock.getID());
+        }
+        this.grid.add(row, newRow);
+        this.grid.remove(row + 1);
+    }
+
+    public int blockExist(String id) {
+        for (int block = 0; block < this.blocks.size(); block++) {
+            if (this.blocks.get(block).getID().equals(id)) return block;
+        }
+        return -1;
+    }
+
+    public void incrementSize(int id, int row, int col) {
+        Block thisBlock = this.blocks.get(id);
+        if (thisBlock.getCol() == col) thisBlock.addRow(row);
+        else thisBlock.addCol(col);
+        ArrayList<String> newRow = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            if (col != i) newRow.add(this.grid.get(row).get(i));
+            else newRow.add(thisBlock.getID());
+        }
+        this.grid.add(row, newRow);
+        this.grid.remove(row + 1);
+    }
+
+    public String toString() {
+        String toRet = "";
+        for (Block block: this.blocks) {
+            toRet = toRet + block.toString();
+        }
+        return toRet;
     }
 
 }
