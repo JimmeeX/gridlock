@@ -8,6 +8,10 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * the Board class designed to contain the blocks initialised, grid,
+ * and other functionality of a board game (make move, undo move, etc)
+ */
 public class Board {
     private Difficulty difficulty;
     private Mode mode;
@@ -18,6 +22,9 @@ public class Board {
     private ArrayList<Block> prevLocations;
     private ArrayList<Block> nextLocations;
 
+    /**
+     * Board class constructor
+     */
     public Board() {
         initialiseGrid(6);
         this.blocks = new ArrayList<>();
@@ -26,6 +33,10 @@ public class Board {
         this.nextLocations = new ArrayList<>();
     }
 
+    /**
+     * process input txt file
+     * @param fileName the file name to be processed
+     */
     public void process(String fileName) {
         Scanner sc = null;
         try {
@@ -62,7 +73,8 @@ public class Board {
         this.level = level;
     }
 
-    // CHANGED THIS TO GETTING THE GRID INSTEAD
+    // I CHANGED THIS TO GETTING THE GRID INSTEAD
+    // DIDN'T CHECK IF THIS IS USED IN OTHER FILES SOZ - ALINA
     public ArrayList<ArrayList<String>> getBoard() {
         return this.grid;
     }
@@ -89,6 +101,11 @@ public class Board {
                 '}';
     }
 
+    /**
+     * initialise the grid (size x size)
+     * @param size the length of the grid (square)
+     * @post this.grid.size() >= 0
+     */
     public void initialiseGrid(int size) {
         this.grid = new ArrayList<>();
         for (int row = 0; row < size; row++) {
@@ -100,6 +117,9 @@ public class Board {
         }
     }
 
+    /**
+     * print the grid
+     */
     public void printGrid() {
         for (ArrayList<String> row: grid) {
             for (String cell: row) {
@@ -110,6 +130,12 @@ public class Board {
         System.out.println("");
     }
 
+    /**
+     * add a new block to the grid
+     * @param id the block's id
+     * @param row the row position of the block
+     * @param col the col position of the block
+     */
     public void addBlock(String id, int row, int col){
         Block newBlock = new Block(id, row, col);
         this.blocks.add(newBlock);
@@ -122,6 +148,12 @@ public class Board {
         this.grid.remove(row + 1);
     }
 
+    /**
+     * check if the block has been initialised
+     * @param id the id of the block (in String)
+     * @return -1 if the block doesn't exist
+     * @return the block id if the block exists
+     */
     public int blockExist(String id) {
         for (int block = 0; block < this.blocks.size(); block++) {
             if (this.blocks.get(block).getID().equals(id)) return block;
@@ -129,6 +161,13 @@ public class Board {
         return -1;
     }
 
+    /**
+     * increment the size of initialised blocks
+     * @param id the index of the block in blocks
+     * @param row the row position of the block
+     * @param col the col position of the block
+     * @post the block's size will increase by 1
+     */
     public void incrementSize(int id, int row, int col) {
         Block thisBlock = this.blocks.get(id);
         if (thisBlock.getCol() == col) thisBlock.addRow(row);
@@ -142,10 +181,17 @@ public class Board {
         this.grid.remove(row + 1);
     }
 
+    /**
+     * print all blocks' details
+     */
     public void printBlock() {
         for (Block block: this.blocks) {
             System.out.println(block.toString());
         }
+    }
+
+    public void makeMove() {
+
     }
 
 }
