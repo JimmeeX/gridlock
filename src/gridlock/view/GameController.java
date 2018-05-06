@@ -13,7 +13,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -33,6 +35,13 @@ public class GameController {
     private Label levelLabel;
     @FXML
     private Button nextButton;
+    @FXML
+    private Pane boardField;
+    @FXML
+    private Rectangle r1;
+    @FXML
+    private Rectangle r2;
+
 
     public void initData(Mode mode, Difficulty difficulty, Integer level) {
         this.mode = mode;
@@ -48,6 +57,10 @@ public class GameController {
         this.board.printGrid();
 
         // TODO: Draw Board Here
+        MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
+        MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
+        vmg.makeDraggable(this.r1);
+        hmg.makeDraggable(this.r2);
 //        int num = 36;
 //        int maxColumns = 6;
 //        int maxRows = 6;
@@ -83,3 +96,4 @@ public class GameController {
     }
 
 }
+
