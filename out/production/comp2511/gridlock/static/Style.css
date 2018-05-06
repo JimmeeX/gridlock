@@ -1,0 +1,58 @@
+/** {*/
+/*payne-s-grey: #3E3D4F;*/
+/*submarine: #849396;*/
+/*light-sea-green: #2ACAB9;*/
+/*white: #FEFEFE;*/
+/*swans-down: #DBECDF;*/
+/*medium-turquoise: #49D2C5;*/
+/*}*/
+
+.root {
+    -fx-font-family: Monospaced;
+    -fx-background-color: #424953;
+    -fx-text-fill: #DDDEE0;
+}
+
+#title {
+    -fx-font-size: 64px;
+    -fx-text-fill: #DDDEE0;
+}
+
+#subtitle {
+    -fx-font-size: 24px;
+    -fx-text-fill: #DDDEE0;
+}
+
+#text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #DDDEE0;
+}
+
+#level {
+    -fx-pref-height: 30;
+    -fx-pref-width: 30;
+    -fx-background-radius: 20;
+}
+
+.button {
+    -fx-text-fill: black;
+    -fx-background-color: #FEA62D;
+}
+
+.button:hover {
+    -fx-background-color: #F29517;
+}
+
+.toggle-button {
+    -fx-text-fill: black;
+    -fx-background-color: #FEA62D;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #F29517;
+    -fx-effect: innershadow(gaussian, black, 5, 0, 0, 0);
+}
+
+.slider .track {
+    -fx-background-color: #FEA62D;
+}

@@ -1,3 +1,4 @@
+package gridlock.model;
 
 public class Block {
 
