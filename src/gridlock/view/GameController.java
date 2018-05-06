@@ -57,8 +57,8 @@ public class GameController {
         this.board.printGrid();
 
         // TODO: Draw Board Here
-        MouseGestures vmg = new MouseGestures(boardField, false);
-        MouseGestures hmg = new MouseGestures(boardField, true);
+        MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
+        MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
         vmg.makeDraggable(this.r1);
         hmg.makeDraggable(this.r2);
 //        int num = 36;

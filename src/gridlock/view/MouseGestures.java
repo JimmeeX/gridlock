@@ -11,6 +11,8 @@ public class MouseGestures {
         double y;
     }
     private Pane pane;
+    private int gridX;
+    private int gridY;
     private Boolean isHorizontal;
 
     private double initialMinX;
@@ -20,8 +22,10 @@ public class MouseGestures {
 
     DragContext dragContext = new DragContext();
 
-    public MouseGestures(Pane pane, Boolean isHorizontal) {
+    public MouseGestures(Pane pane, int gridX, int gridY, Boolean isHorizontal) {
         this.pane = pane;
+        this.gridX = gridX;
+        this.gridY = gridY;
         this.isHorizontal = isHorizontal;
     }
 
@@ -34,6 +38,7 @@ public class MouseGestures {
 
         node.setOnMousePressed( onMousePressedEventHandler);
         node.setOnMouseDragged( onMouseDraggedEventHandler);
+        node.setOnMouseReleased(onMouseReleasedEventHandler);
     }
 
     EventHandler<MouseEvent> onMousePressedEventHandler = event -> {
@@ -63,5 +68,19 @@ public class MouseGestures {
             node.setTranslateY(deltaY);
         }
 
+    };
+
+    EventHandler<MouseEvent> onMouseReleasedEventHandler = event -> {
+        Node node = ((Node) (event.getSource()));
+
+        // Round X
+        double xFactor = this.pane.getWidth() / this.gridX;
+        double xRounded = xFactor*(Math.round(node.getTranslateX()/xFactor));
+        node.setTranslateX(xRounded);
+
+        // Round Y
+        double yFactor = this.pane.getHeight() / this.gridY;
+        double yRounded = yFactor*(Math.round(node.getTranslateY()/yFactor));
+        node.setTranslateY(yRounded);
     };
 }
