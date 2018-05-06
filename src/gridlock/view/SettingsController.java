@@ -1,5 +1,7 @@
 package gridlock.view;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,17 +18,28 @@ public class SettingsController {
     Slider musicSlider;
 
     @FXML
+    private void initialize() {
+        this.soundSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                // TODO: Actually change the sound
+                System.out.println(soundSlider.getValue());
+            }
+        });
+        this.musicSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                // TODO: Actually change the music
+                System.out.println(musicSlider.getValue());
+            }
+        });
+    }
+
+    @FXML
     private void navToMenu(ActionEvent event) throws Exception {
         Parent menuParent = FXMLLoader.load(getClass().getResource("Menu.fxml"));
         Scene menuScene = new Scene(menuParent);
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(menuScene);
-    }
-    //TODO: Handle Music + Sound (+ Perhaps other settings)
-    private void getSoundLevel() {
-        // TODO
-    }
-    private void getMusicLevel() {
-        // TODO
     }
 }
