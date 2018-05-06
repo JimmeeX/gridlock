@@ -1,9 +1,17 @@
 package gridlock.model;
 //do we really need an id for a block?
+//hmm I reckon the id is to look for the block
+//(say when we move a block, we refer to them by their idk) - Alina
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Board {
-
+    private Difficulty difficulty;
+    private Mode mode;
+    private Integer level;
     private ArrayList<ArrayList<String>> grid;
     private ArrayList<Block> blocks;
     private int numOfMoves;
@@ -16,6 +24,69 @@ public class Board {
         this.numOfMoves = 0;
         this.prevLocations = new ArrayList<>();
         this.nextLocations = new ArrayList<>();
+    }
+
+    public void process(String fileName) {
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new File(fileName));
+            String prevID = "*";
+            for (int row = 0; row < 6; row++) {
+                for (int col = 0; col < 6; col++) {
+                    String id = sc.next();
+                    if (!id.equals("*")) {
+                        int blockID = blockExist(id);
+                        if (blockID != -1) incrementSize(blockID, row, col);
+                        else addBlock(id, row, col);
+                    }
+                }
+            }
+            printGrid();
+            printBlock();
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (sc != null) sc.close();
+        }
+    }
+
+    public void setDifficulty(String diff) {
+        this.difficulty = Difficulty.valueOf(diff.toUpperCase());
+    }
+
+    public void setMode(String gameMode) {
+        this.mode = Mode.valueOf(gameMode.toUpperCase());
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
+    // CHANGED THIS TO GETTING THE GRID INSTEAD
+    public ArrayList<ArrayList<String>> getBoard() {
+        return this.grid;
+    }
+
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public Mode getMode() {
+        return mode;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    @Override
+    public String toString() {
+        return "Gridlock{" +
+                "board=" + this.grid +
+                ", difficulty=" + difficulty +
+                ", mode=" + mode +
+                ", level=" + level +
+                '}';
     }
 
     public void initialiseGrid(int size) {
@@ -71,12 +142,10 @@ public class Board {
         this.grid.remove(row + 1);
     }
 
-    public String toString() {
-        String toRet = "";
+    public void printBlock() {
         for (Block block: this.blocks) {
-            toRet = toRet + block.toString();
+            System.out.println(block.toString());
         }
-        return toRet;
     }
 
 }

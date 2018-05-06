@@ -43,7 +43,7 @@ public class Block {
 
     public String toString() {
         return (id + " " + startPosition[0] + "," + startPosition[1]
-                + " " + endPosition[0] + "," + endPosition[1] + "\n");
+                + " " + endPosition[0] + "," + endPosition[1]);
     }
 
 }
