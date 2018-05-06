@@ -2,6 +2,7 @@ package gridlock.view;
 
 import gridlock.model.Board;
 import gridlock.model.Difficulty;
+import gridlock.model.Gridlock;
 import gridlock.model.Mode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class GameController {
-    private Board board;
+    private Gridlock gridlock;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
@@ -52,15 +53,18 @@ public class GameController {
         this.difficultyLabel.setText(this.difficulty.toString());
         this.levelLabel.setText(this.level.toString());
 
-        // TODO: Initialise Board Here
-        this.board = new Board();
-        this.board.printGrid();
+        // Read Board from File
+        this.gridlock = new Gridlock();
+        this.gridlock.process("src/gridlock/resources/easy/1.txt");
+        System.out.println(this.gridlock);
 
         // TODO: Draw Board Here
         MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
         MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
         vmg.makeDraggable(this.r1);
         hmg.makeDraggable(this.r2);
+
+
 //        int num = 36;
 //        int maxColumns = 6;
 //        int maxRows = 6;

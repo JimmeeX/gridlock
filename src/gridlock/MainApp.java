@@ -17,14 +17,10 @@ public class MainApp extends Application {
         primaryStage.setTitle("Gridlock");
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.setResizable(false);
-
-
         primaryStage.show();
     }
 
     public static void main(String[] args) {
-        Gridlock gl = new Gridlock();
-        gl.process("easy.txt");
         launch(args);
     }
 
