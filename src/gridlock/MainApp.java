@@ -21,6 +21,8 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
+        Board board = new Board();
+        board.process("easy.txt");
         launch(args);
     }
 
