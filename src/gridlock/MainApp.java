@@ -1,6 +1,6 @@
 package gridlock;
 
-import gridlock.model.Gridlock;
+import gridlock.model.Board;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

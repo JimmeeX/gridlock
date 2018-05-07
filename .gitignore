@@ -2,4 +2,6 @@
 .idea/
 .class
 Junk/
+out/
+comp2511.iml
 !/.gitignore
