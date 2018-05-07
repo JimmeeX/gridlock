@@ -10,6 +10,7 @@ public class MouseGestures {
         double x;
         double y;
     }
+//    ArrayList <Node> environmentObjects;
     private Pane pane;
     private int gridX;
     private int gridY;
@@ -52,6 +53,17 @@ public class MouseGestures {
     EventHandler<MouseEvent> onMouseDraggedEventHandler = event -> {
 
         Node node = ((Node) (event.getSource()));
+
+        // TODO: Get collision (need to know location of other object)
+        /*
+        if(collision):
+           return;
+
+        else {
+            node.setTranslateX(deltaX)
+        }
+        * */
+
         if (this.isHorizontal) {
             double deltaX = dragContext.x + event.getSceneX();
             if (deltaX + this.initialMinX < 0 || deltaX + this.initialMaxX > this.pane.getWidth()) {
@@ -67,7 +79,6 @@ public class MouseGestures {
             }
             node.setTranslateY(deltaY);
         }
-
     };
 
     EventHandler<MouseEvent> onMouseReleasedEventHandler = event -> {

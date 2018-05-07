@@ -1,9 +1,6 @@
 package gridlock.view;
 
-import gridlock.model.Board;
-import gridlock.model.Difficulty;
-import gridlock.model.Gridlock;
-import gridlock.model.Mode;
+import gridlock.model.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -38,11 +35,13 @@ public class GameController {
     private Button nextButton;
     @FXML
     private Pane boardField;
+
+    // Temporary
     @FXML
     private Rectangle r1;
     @FXML
     private Rectangle r2;
-
+    // Add in ArrayList<Nodes> blocks and other stuff
 
     public void initData(Mode mode, Difficulty difficulty, Integer level) {
         this.mode = mode;
@@ -58,12 +57,15 @@ public class GameController {
         this.gridlock.process("src/gridlock/resources/easy/1.txt");
         System.out.println(this.gridlock);
 
-        // TODO: Draw Board Here
+        // TODO: Draw Rectangles and add to Pane (so Pane is its Parent).
+
+
+        // TODO: Apply MouseGestures to each Rectangle (include collisions)
+        // Example
         MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
         MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
         vmg.makeDraggable(this.r1);
         hmg.makeDraggable(this.r2);
-
 
 //        int num = 36;
 //        int maxColumns = 6;
