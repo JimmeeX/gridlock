@@ -21,12 +21,11 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-<<<<<<< HEAD
-=======
+
         //I CHANGED THIS FROM GRIDLOCK TO BOARD - ALINA
         Board gl = new Board();
         gl.process("easy.txt");
->>>>>>> bc0464c7f4b681089a9da70c55269e4c7e87bf6c
+
         launch(args);
     }
 

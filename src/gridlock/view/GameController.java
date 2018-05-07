@@ -4,6 +4,7 @@ import gridlock.model.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -13,17 +14,22 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class GameController {
-    private Gridlock gridlock;
+    private Board board;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
+    private ArrayList<Block> Blocklist;
+
 
     @FXML
     private Label modeLabel;
@@ -43,7 +49,7 @@ public class GameController {
     private Rectangle r2;
     // Add in ArrayList<Nodes> blocks and other stuff
 
-    public void initData(Mode mode, Difficulty difficulty, Integer level) {
+    public void initData(Mode mode, Difficulty difficulty, Integer level, Board b) {
         this.mode = mode;
         this.difficulty = difficulty;
         this.level = level;
@@ -53,9 +59,17 @@ public class GameController {
         this.levelLabel.setText(this.level.toString());
 
         // Read Board from File
-        this.gridlock = new Gridlock();
-        this.gridlock.process("src/gridlock/resources/easy/1.txt");
-        System.out.println(this.gridlock);
+        this.board = new Board();
+        this.board.process("src/gridlock/resources/easy/1.txt");
+        System.out.println(this.board);
+
+        //Set Blocklist
+        this.Blocklist = b.getBlocks();
+        for(Block block: Blocklist){
+            Rectangle rec = new Rectangle(250, 75);
+            rec.setFill(Paint.valueOf("CORAL"));
+            setBlocks(block,rec);
+        }
 
         // TODO: Draw Rectangles and add to Pane (so Pane is its Parent).
 
@@ -93,6 +107,42 @@ public class GameController {
 //
     }
 
+    private Rectangle createBoundsRectangle(Bounds bounds) {
+        Rectangle rect = new Rectangle();
+
+        rect.setFill(Color.TRANSPARENT);
+        rect.setStroke(Color.LIGHTGRAY.deriveColor(1, 1, 1, 0.5));
+        rect.setStrokeType(StrokeType.INSIDE);
+        rect.setStrokeWidth(3);
+
+        rect.setX(bounds.getMinX());
+        rect.setY(bounds.getMinY());
+        rect.setWidth(bounds.getWidth());
+        rect.setHeight(bounds.getHeight());
+        return rect;
+    }
+
+    public void setBlocks(Block b, Rectangle rectangle){
+        int height, width,startrow, startcol;
+        boolean isHorizontal = b.isHorizontal();
+        int size = b.getSize();
+        int row = b.getRow();
+        int col = b.getCol();
+        if(isHorizontal){
+             height = 75;
+             width = 125*size;
+        } else {
+            height = 235*size;
+            width = 75;
+        }
+        startrow = row*75;
+        startcol = col*125;
+
+        rectangle.setHeight(height);
+        rectangle.setWidth(width);
+        rectangle.setX(startrow);
+        rectangle.setY(startcol);
+    }
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
         Parent menuParent = FXMLLoader.load(getClass().getResource("Menu.fxml"));
