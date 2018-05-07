@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 public class GameController {
     private Board board;
@@ -62,24 +63,50 @@ public class GameController {
         this.board = new Board();
         this.board.process("src/gridlock/resources/easy/1.txt");
         System.out.println(this.board);
-
+        System.out.println("================ IN GAME CONTROLLER ====================");
+        board.printGrid();
         //Set Blocklist
-        this.Blocklist = this.board.getBlocks();
-        for(Block block: Blocklist){
-            Rectangle rec = new Rectangle(250, 75);
-            rec.setFill(Paint.valueOf("CORAL"));
-            setBlocks(block,rec);
-        }
 
+        this.Blocklist = board.getBlocks();
         // TODO: Draw Rectangles and add to Pane (so Pane is its Parent).
+        for (Block block : Blocklist) {
+            //if(!block.isHorizontal()) {
+
+            Rectangle rec = new Rectangle(0, 0);
+            rec.setFill(Paint.valueOf("CORAL"));
+            setBlocks(block, rec);
 
 
-        // TODO: Apply MouseGestures to each Rectangle (include collisions)
+            // ===== TEST CODE
+            // MouseGestures hmg = new MouseGestures(boardField, 6, 6, false);
+            //hmg.makeDraggable(rec);
+            //boardField.getChildren().addAll(rec);
+            //}
+            // rec.strokeWidthProperty();
+
+            // TODO: Apply MouseGestures to each Rectangle (include collisions)
+            if (block.isHorizontal()) {
+                MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
+                hmg.makeDraggable(rec);
+
+            } else {
+                MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
+                vmg.makeDraggable(rec);
+            }
+            boardField.getChildren().addAll(rec);
+        }
+    }
+
+
+
+
+
         // Example
-        MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
+       /* MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
         MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
         vmg.makeDraggable(this.r1);
-        hmg.makeDraggable(this.r2);
+        hmg.makeDraggable(this.r2);*/
+
 
 //        int num = 36;
 //        int maxColumns = 6;
@@ -105,15 +132,17 @@ public class GameController {
 //        boardGame.setGridLinesVisible(true);
 //        boardGame.autosize();
 //
-    }
+
 
     private Rectangle createBoundsRectangle(Bounds bounds) {
         Rectangle rect = new Rectangle();
+        System.out.println("============= IN RECTANGLE FUNCTION ================");
 
         rect.setFill(Color.TRANSPARENT);
         rect.setStroke(Color.LIGHTGRAY.deriveColor(1, 1, 1, 0.5));
         rect.setStrokeType(StrokeType.INSIDE);
         rect.setStrokeWidth(3);
+
 
         rect.setX(bounds.getMinX());
         rect.setY(bounds.getMinY());
@@ -128,20 +157,25 @@ public class GameController {
         int size = b.getSize();
         int row = b.getRow();
         int col = b.getCol();
-        if(isHorizontal){
+        if(isHorizontal == true){
              height = 75;
              width = 125*size;
+            //rectangle.setHeight(height);
+            //rectangle.setWidth(width);
         } else {
-            height = 235*size;
-            width = 75;
+            height = 75*size;
+            width = 125;
+            rectangle.setFill(Paint.valueOf("BLACK"));
         }
         startrow = row*75;
         startcol = col*125;
-
+        //startrow = 0;
+        //startcol = 0;
         rectangle.setHeight(height);
-        rectangle.setWidth(width);
-        rectangle.setX(startrow);
-        rectangle.setY(startcol);
+       rectangle.setWidth(width);
+        rectangle.setX(startcol);
+        rectangle.setY(startrow);
+        //Randomcolor(rectangle);
     }
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
@@ -150,6 +184,19 @@ public class GameController {
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(menuScene);
     }
+
+   /* public void Randomcolor(Rectangle rec){
+        float r,g,b;
+        Random rand = new Random();
+        r = rand.nextFloat();
+        g =rand.nextFloat();
+        b = rand.nextFloat();
+
+        Color randomColor;
+        randomColor = new Color(r, g, b);
+
+        rec.setFill(randomColor);
+    }*/
 
 }
 
