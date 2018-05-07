@@ -81,6 +81,9 @@ public class Board {
         printGrid();
         makeMove("z", newPosition(2,4));
         printGrid();
+        if (gameOver() == true) {
+            System.out.println("GAME OVER");
+        }
     }
 
     private Integer[] newPosition(int row, int col) {
