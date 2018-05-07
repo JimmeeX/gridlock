@@ -59,10 +59,17 @@ public class Board {
         }
     }
 
-    public ArrayList<Block> getBlock() {
+    /**
+     * get all blocks initialised
+     * @return blocks arraylist
+     */
+    public ArrayList<Block> getBlocks() {
         return this.blocks;
     }
 
+    /**
+     * simulation of playing the game
+     */
     private void playGame() {
         printGrid();
         makeMove("a", newPosition(0,1));
@@ -86,6 +93,12 @@ public class Board {
         }
     }
 
+    /**
+     * helper method for playing game
+     * @param row the row position of the block
+     * @param col the col position of the block
+     * @return the array of position of the block (row,col)
+     */
     private Integer[] newPosition(int row, int col) {
         Integer[] newPosition = new Integer[2];
         newPosition[0] = row;
@@ -217,6 +230,12 @@ public class Board {
         }
     }
 
+    /**
+     * move a block
+     * @param id the id of the block
+     * @param newStartPosition the new start position after the move
+     * @pre the move is valid (within grid, according to the block direction)
+     */
     public void makeMove(String id, Integer[] newStartPosition) {
         for (Block block : this.blocks) {
             if (block.getID().equals(id)) {
@@ -228,6 +247,11 @@ public class Board {
         }
     }
 
+    /**
+     * check if the game is over (the "z" car is by the exit)
+     * @return false if the game is not over
+     * @return true if the game is over
+     */
     public boolean gameOver() {
         for (Block block: this.blocks) {
             if (block.getID().equals("z")) {
