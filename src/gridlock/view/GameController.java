@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class GameController {
-    private Gridlock gridlock;
+    private Board board;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
@@ -53,9 +53,9 @@ public class GameController {
         this.levelLabel.setText(this.level.toString());
 
         // Read Board from File
-        this.gridlock = new Gridlock();
-        this.gridlock.process("src/gridlock/resources/easy/1.txt");
-        System.out.println(this.gridlock);
+        this.board = new Board();
+        this.board.process("src/gridlock/resources/easy/1.txt");
+        System.out.println(this.board);
 
         // TODO: Draw Rectangles and add to Pane (so Pane is its Parent).
 
