@@ -21,7 +21,7 @@ public class Board {
     private int numOfMoves;
     private ArrayList<Block> prevLocations;
     private ArrayList<Block> nextLocations;
-
+    
     /**
      * Board class constructor
      */
@@ -51,8 +51,8 @@ public class Board {
                     }
                 }
             }
-            //playGame();
-            printGrid();
+            playGame();
+            //printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -65,7 +65,7 @@ public class Board {
     }
 
     private void playGame() {
-        printGrid();
+    	printGrid();
         makeMove("a", newPosition(0,1));
         printGrid();
         makeMove("c", newPosition(0,0));
@@ -80,8 +80,15 @@ public class Board {
         printGrid();
         makeMove("b", newPosition(3,5));
         printGrid();
+        undoMove();
+        printGrid();
+        redoMove();
+        printGrid();
         makeMove("z", newPosition(2,4));
         printGrid();
+        if (gameOver() == true) {
+            System.out.println("GAME OVER");
+        }
     }
 
     private Integer[] newPosition(int row, int col) {
@@ -151,6 +158,7 @@ public class Board {
      * print the grid
      */
     public void printGrid() {
+    	initialiseGrid(6);
         for (Block block: this.blocks) {
             ArrayList<Integer[]> positions = block.getPosition();
             for (Integer[] position : positions ) {
@@ -163,8 +171,10 @@ public class Board {
             }
             System.out.println();
         }
+        System.out.println("nextLocation = " + this.nextLocations.size() + " prevLocation = "
+                + this.prevLocations.size() + " numOfMoves = " + this.numOfMoves);
         System.out.println();
-        initialiseGrid(6);
+        
     }
 
     /**
@@ -234,6 +244,38 @@ public class Board {
             }
         }
         return false;
+    }
+    
+    public void undoMove() {
+        if (this.prevLocations.size() != 0) {
+            Block copy = this.prevLocations.get(this.prevLocations.size() - 1);
+            Block block = new Block(copy.getID(), copy.getPosition().get(0)[0], copy.getPosition().get(0)[1]);
+            this.prevLocations.remove(copy);
+            for (Block oldBlock: this.blocks) {
+                if (oldBlock.getID().equals(block.getID())) {
+                    Block toAdd = new Block(oldBlock.getID(), oldBlock.getPosition().get(0)[0], oldBlock.getPosition().get(0)[1]);
+                    this.nextLocations.add(toAdd);
+                }
+            }
+            makeMove(block.getID(), block.getPosition().get(0));
+            this.prevLocations.remove(this.prevLocations.size() - 1);
+        }
+    }
+
+    public void redoMove() {
+        if (this.nextLocations.size() != 0) {
+            Block copy = this.nextLocations.get(0);
+            Block block = new Block(copy.getID(), copy.getPosition().get(0)[0], copy.getPosition().get(0)[1]);
+            this.nextLocations.remove(copy);
+            for (Block oldBlock: this.blocks) {
+                if (oldBlock.getID().equals(block.getID())) {
+                    Block toAdd = new Block(oldBlock.getID(), oldBlock.getPosition().get(0)[0], oldBlock.getPosition().get(0)[1]);
+                    this.prevLocations.add(toAdd);
+                }
+            }
+            makeMove(block.getID(), block.getPosition().get(0));
+            this.prevLocations.remove(this.prevLocations.size() - 1);
+        }
     }
 
 }
