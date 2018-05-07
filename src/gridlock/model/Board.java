@@ -95,6 +95,8 @@ public class Board {
         if (gameOver() == true) {
             System.out.println("GAME OVER");
         }
+        restart();
+        printGrid();
     }
 
     /**
