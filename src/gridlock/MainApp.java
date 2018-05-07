@@ -17,15 +17,10 @@ public class MainApp extends Application {
         primaryStage.setTitle("Gridlock");
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.setResizable(false);
-
-
         primaryStage.show();
     }
 
     public static void main(String[] args) {
-        //I CHANGED THIS FROM GRIDLOCK TO BOARD - ALINA
-        Board gl = new Board();
-        gl.process("easy.txt");
         launch(args);
     }
 
