@@ -51,7 +51,8 @@ public class Board {
                     }
                 }
             }
-            playGame();
+            //playGame();
+            printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } finally {

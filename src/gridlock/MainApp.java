@@ -25,7 +25,7 @@ public class MainApp extends Application {
     public static void main(String[] args) {
         //I CHANGED THIS FROM GRIDLOCK TO BOARD - ALINA
         Board gl = new Board();
-        gl.process("easy.txt");
+        gl.process("E1.txt");
         launch(args);
     }
 
