@@ -16,7 +16,7 @@ public class Board {
     private Difficulty difficulty;
     private Mode mode;
     private Integer level;
-    private ArrayList<ArrayList<String>> grid;
+    private ArrayList<String[]> grid;
     private ArrayList<Block> blocks;
     private int numOfMoves;
     private ArrayList<Block> prevLocations;
@@ -41,7 +41,6 @@ public class Board {
         Scanner sc = null;
         try {
             sc = new Scanner(new File(fileName));
-            String prevID = "*";
             for (int row = 0; row < 6; row++) {
                 for (int col = 0; col < 6; col++) {
                     String id = sc.next();
@@ -52,13 +51,43 @@ public class Board {
                     }
                 }
             }
-            printGrid();
-            printBlock();
+            playGame();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } finally {
             if (sc != null) sc.close();
         }
+    }
+
+    public ArrayList<Block> getBlock() {
+        return this.blocks;
+    }
+
+    private void playGame() {
+        printGrid();
+        makeMove("a", newPosition(0,1));
+        printGrid();
+        makeMove("c", newPosition(0,0));
+        printGrid();
+        makeMove("d", newPosition(3,0));
+        printGrid();
+        makeMove("g", newPosition(5,0));
+        printGrid();
+        makeMove("f", newPosition(4,1));
+        printGrid();
+        makeMove("e", newPosition(3,3));
+        printGrid();
+        makeMove("b", newPosition(3,5));
+        printGrid();
+        makeMove("z", newPosition(2,4));
+        printGrid();
+    }
+
+    private Integer[] newPosition(int row, int col) {
+        Integer[] newPosition = new Integer[2];
+        newPosition[0] = row;
+        newPosition[1] = col;
+        return newPosition;
     }
 
     public void setDifficulty(String diff) {
@@ -75,7 +104,7 @@ public class Board {
 
     // I CHANGED THIS TO GETTING THE GRID INSTEAD
     // DIDN'T CHECK IF THIS IS USED IN OTHER FILES SOZ - ALINA
-    public ArrayList<ArrayList<String>> getBoard() {
+    public ArrayList<String[]> getBoard() {
         return this.grid;
     }
 
@@ -95,9 +124,9 @@ public class Board {
     public String toString() {
         return "Gridlock{" +
                 "board=" + this.grid +
-                ", difficulty=" + difficulty +
-                ", mode=" + mode +
-                ", level=" + level +
+                ", difficulty=" + this.difficulty +
+                ", mode=" + this.mode +
+                ", level=" + this.level + ", numOfMoves=" + this.numOfMoves +
                 '}';
     }
 
@@ -109,9 +138,9 @@ public class Board {
     public void initialiseGrid(int size) {
         this.grid = new ArrayList<>();
         for (int row = 0; row < size; row++) {
-            ArrayList<String> newRow = new ArrayList<>();
+            String[] newRow = new String[6];
             for (int col = 0; col < size; col++) {
-                newRow.add("*");
+                newRow[col] = "*";
             }
             this.grid.add(newRow);
         }
@@ -121,13 +150,20 @@ public class Board {
      * print the grid
      */
     public void printGrid() {
-        for (ArrayList<String> row: grid) {
-            for (String cell: row) {
-                System.out.print(cell + " ");
+        for (Block block: this.blocks) {
+            ArrayList<Integer[]> positions = block.getPosition();
+            for (Integer[] position : positions ) {
+                this.grid.get(position[0])[position[1]] = block.getID();
+            }
+        }
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 6; col++) {
+                System.out.print(this.grid.get(row)[col] + " ");
             }
             System.out.println();
         }
-        System.out.println("");
+        System.out.println();
+        initialiseGrid(6);
     }
 
     /**
@@ -139,13 +175,6 @@ public class Board {
     public void addBlock(String id, int row, int col){
         Block newBlock = new Block(id, row, col);
         this.blocks.add(newBlock);
-        ArrayList<String> newRow = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            if (col != i) newRow.add(this.grid.get(row).get(i));
-            else newRow.add(newBlock.getID());
-        }
-        this.grid.add(row, newRow);
-        this.grid.remove(row + 1);
     }
 
     /**
@@ -170,15 +199,10 @@ public class Board {
      */
     public void incrementSize(int id, int row, int col) {
         Block thisBlock = this.blocks.get(id);
-        if (thisBlock.getCol() == col) thisBlock.addRow(row);
-        else thisBlock.addCol(col);
-        ArrayList<String> newRow = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            if (col != i) newRow.add(this.grid.get(row).get(i));
-            else newRow.add(thisBlock.getID());
-        }
-        this.grid.add(row, newRow);
-        this.grid.remove(row + 1);
+        Integer[] newPosition = new Integer[2];
+        newPosition[0] = row;
+        newPosition[1] = col;
+        thisBlock.addPosition(newPosition);
     }
 
     /**
@@ -190,8 +214,25 @@ public class Board {
         }
     }
 
-    public void makeMove() {
+    public void makeMove(String id, Integer[] newStartPosition) {
+        for (Block block : this.blocks) {
+            if (block.getID().equals(id)) {
+                Block oldBlock = new Block(id, block.getPosition().get(0)[0], block.getPosition().get(0)[1]);
+                this.prevLocations.add(oldBlock);
+                numOfMoves++;
+                block.setNewPosition(newStartPosition);
+            }
+        }
+    }
 
+    public boolean gameOver() {
+        for (Block block: this.blocks) {
+            if (block.getID().equals("z")) {
+                if (block.getPosition().get(0)[1] == 4) return true;
+                else return false;
+            }
+        }
+        return false;
     }
 
 }

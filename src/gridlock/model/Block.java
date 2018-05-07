@@ -1,5 +1,7 @@
 package gridlock.model;
 
+import java.util.ArrayList;
+
 /**
  * Block class designed to store a block's information such as
  * its id and position on the grid
@@ -7,8 +9,7 @@ package gridlock.model;
 public class Block {
 
     private String id;
-    private Integer[] startPosition;
-    private Integer[] endPosition;
+    private ArrayList<Integer[]> position;
 
     /**
      * Block class constructor
@@ -18,28 +19,15 @@ public class Block {
      */
     public Block(String id, int row, int col) {
         this.id = id;
-        this.startPosition = new Integer[2];
-        this.endPosition = new Integer[2];
-        startPosition[0] = endPosition[0] = row;
-        startPosition[1] = endPosition[1] = col;
+        this.position = new ArrayList<>();
+        Integer[] newPosition = new Integer[2];
+        newPosition[0] = row;
+        newPosition[1] = col;
+        this.position.add(newPosition);
     }
 
-    /**
-     * extend the row of the block
-     * @param row the row where the block extends to
-     * @post startPosition[0] != endPosition[0]
-     */
-    public void addRow(int row) {
-        this.endPosition[0] = row;
-    }
-
-    /**
-     * extend the col of the block
-     * @param col the col where the block extends to
-     * @post startPosition[1] != endPosition[1]
-     */
-    public void addCol(int col) {
-        this.endPosition[1] = col;
+    public void addPosition(Integer[] newPosition) {
+        this.position.add(newPosition);
     }
 
     /**
@@ -56,7 +44,7 @@ public class Block {
      * @return false if the block is vertical
      */
     public boolean isHorizontal() {
-        return (startPosition[0].equals(endPosition[0]));
+        return (position.get(0)[0] == position.get(1)[0]);
     }
 
     /**
@@ -64,23 +52,39 @@ public class Block {
      * @return the size of the block
      */
     public int getSize() {
-        return (Math.abs(endPosition[0] + endPosition[1] - startPosition[0] - startPosition[1]));
+        return position.size();
+    }
+
+    public ArrayList<Integer[]> getPosition() {
+        return this.position;
+    }
+
+    /**
+     * get the starting column of the block
+     * @return the starting column of the block
+     */
+    public int getCol() {
+        return position.get(0)[1];
     }
 
     /**
      * get the starting row of the block
-     * @return the starting position's row of the block
+     * @return the starting row of the block
      */
     public int getRow() {
-        return this.startPosition[0];
+        return position.get(0)[0];
     }
 
-    /**
-     * get the starting col of the block
-     * @return the starting position's col of the block
-     */
-    public int getCol() {
-        return this.startPosition[1];
+    public void setNewPosition(Integer[] newPosition) {
+        if (isHorizontal()) {
+            for (int item = 0; item < this.position.size(); item++) {
+                this.position.get(item)[1] = newPosition[1] + item;
+            }
+        } else {
+            for (int item = 0; item < this.position.size(); item++) {
+                this.position.get(item)[0] = newPosition[0] + item;
+            }
+        }
     }
 
     /**
@@ -88,8 +92,11 @@ public class Block {
      * @return the block's id and position details
      */
     public String toString() {
-        return (id + " " + startPosition[0] + "," + startPosition[1]
-                + " " + endPosition[0] + "," + endPosition[1]);
+        String toRet =  id + " ";
+        for (Integer[] position : this.position) {
+            toRet = toRet + "(" +  position[0] + "," + position[1] + ") ";
+        }
+        return toRet;
     }
 
 }
