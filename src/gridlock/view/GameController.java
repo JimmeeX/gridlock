@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class GameController {
-    private Gridlock gridlock;
+    private Board gridlock;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
@@ -52,8 +52,64 @@ public class GameController {
         this.difficultyLabel.setText(this.difficulty.toString());
         this.levelLabel.setText(this.level.toString());
 
-        // Read Board from File
-        this.gridlock = new Gridlock();
+        // Read Board from File/**
+        //     * undo the previous move made
+        //     * @post this.nextLocations.size()++
+        //     * @post this.prevLocation.size()--
+        //     */
+        //    public void undoMove() {
+        //        if (this.prevLocations.size() != 0) {
+        //            Block copy = this.prevLocations.get(this.prevLocations.size() - 1);
+        //            Block block = new Block(copy.getID(), copy.getPosition().get(0)[0], copy.getPosition().get(0)[1]);
+        //            this.prevLocations.remove(copy);
+        //            for (Block oldBlock: this.blocks) {
+        //                if (oldBlock.getID().equals(block.getID())) {
+        //                    Block toAdd = new Block(oldBlock.getID(), oldBlock.getPosition().get(0)[0], oldBlock.getPosition().get(0)[1]);
+        //                    this.nextLocations.add(toAdd);
+        //                }
+        //            }
+        //            makeMove(block.getID(), block.getPosition().get(0));
+        //            this.prevLocations.remove(this.prevLocations.size() - 1);
+        //        }
+        //    }
+        //
+        //    /**
+        //     * redo the move undone
+        //     * @post this.nextLocation.size()--
+        //     * @post this.prevLocation.size()++
+        //     */
+        //    public void redoMove() {
+        //        if (this.nextLocations.size() != 0) {
+        //            Block copy = this.nextLocations.get(0);
+        //            Block block = new Block(copy.getID(), copy.getPosition().get(0)[0], copy.getPosition().get(0)[1]);
+        //            this.nextLocations.remove(copy);
+        //            for (Block oldBlock: this.blocks) {
+        //                if (oldBlock.getID().equals(block.getID())) {
+        //                    Block toAdd = new Block(oldBlock.getID(), oldBlock.getPosition().get(0)[0], oldBlock.getPosition().get(0)[1]);
+        //                    this.prevLocations.add(toAdd);
+        //                }
+        //            }
+        //            makeMove(block.getID(), block.getPosition().get(0));
+        //            this.prevLocations.remove(this.prevLocations.size() - 1);
+        //        }
+        //    }
+        //
+        //    /**
+        //     * restart back to the initial position of the board
+        //     * @post this.numOfMoves = 0
+        //     * @post this.prevLocations.size() = 0
+        //     * @post this.nextLocation.size() = 0
+        //     */
+        //    public void restart() {
+        //        for (int item = this.prevLocations.size(); item > 0; item--) {
+        //            Block block = this.prevLocations.get(item - 1);
+        //            makeMove(block.getID(), block.getPosition().get(0));
+        //        }
+        //        this.prevLocations.clear();
+        //        this.nextLocations.clear();
+        //        this.numOfMoves = 0;
+        //    }
+        this.gridlock = new Board();
         this.gridlock.process("src/gridlock/resources/easy/1.txt");
         System.out.println(this.gridlock);
 

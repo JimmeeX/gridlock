@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_comp2511" default="compile.module.comp2511">
+  <dirname property="module.comp2511.basedir" file="${ant.file.module_comp2511}"/>
+  
+  <property name="module.jdk.home.comp2511" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.comp2511" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.comp2511" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.comp2511" value="-encoding UTF-8 -source 9 -target 9 ${compiler.args}"/>
+  
+  <property name="comp2511.output.dir" value="${module.comp2511.basedir}/out/production/comp2511"/>
+  <property name="comp2511.testoutput.dir" value="${module.comp2511.basedir}/out/test/comp2511"/>
+  
+  <path id="comp2511.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="comp2511.module.production.classpath">
+    <path refid="${module.jdk.classpath.comp2511}"/>
+  </path>
+  
+  <path id="comp2511.runtime.production.module.classpath">
+    <pathelement location="${comp2511.output.dir}"/>
+  </path>
+  
+  <path id="comp2511.module.classpath">
+    <path refid="${module.jdk.classpath.comp2511}"/>
+    <pathelement location="${comp2511.output.dir}"/>
+  </path>
+  
+  <path id="comp2511.runtime.module.classpath">
+    <pathelement location="${comp2511.testoutput.dir}"/>
+    <pathelement location="${comp2511.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.comp2511">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.comp2511">
+    <patternset refid="excluded.from.module.comp2511"/>
+  </patternset>
+  
+  <path id="comp2511.module.sourcepath">
+    <dirset dir="${module.comp2511.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.comp2511" depends="compile.module.comp2511.production,compile.module.comp2511.tests" description="Compile module comp2511"/>
+  
+  <target name="compile.module.comp2511.production" depends="register.custom.compilers" description="Compile module comp2511; production classes">
+    <mkdir dir="${comp2511.output.dir}"/>
+    <javac2 destdir="${comp2511.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.comp2511}/javac">
+      <compilerarg line="${compiler.args.comp2511}"/>
+      <bootclasspath refid="comp2511.module.bootclasspath"/>
+      <classpath refid="comp2511.module.production.classpath"/>
+      <src refid="comp2511.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.comp2511"/>
+    </javac2>
+    
+    <copy todir="${comp2511.output.dir}">
+      <fileset dir="${module.comp2511.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.comp2511.tests" depends="register.custom.compilers,compile.module.comp2511.production" description="compile module comp2511; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.comp2511" description="cleanup module">
+    <delete dir="${comp2511.output.dir}"/>
+    <delete dir="${comp2511.testoutput.dir}"/>
+  </target>
+</project>
