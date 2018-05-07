@@ -29,7 +29,7 @@ public class GameController {
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
-    private ArrayList<Block> Blocklist;
+    private ArrayList<Block> blockList;
 
 
     @FXML
@@ -42,13 +42,6 @@ public class GameController {
     private Button nextButton;
     @FXML
     private Pane boardField;
-
-    // Temporary
-    @FXML
-    private Rectangle r1;
-    @FXML
-    private Rectangle r2;
-    // Add in ArrayList<Nodes> blocks and other stuff
 
     public void initData(Mode mode, Difficulty difficulty, Integer level) {
         this.mode = mode;
@@ -65,15 +58,16 @@ public class GameController {
         System.out.println(this.board);
         System.out.println("================ IN GAME CONTROLLER ====================");
         board.printGrid();
-        //Set Blocklist
+        //Set blockList
 
-        this.Blocklist = board.getBlocks();
+        this.blockList = board.getBlocks();
         // TODO: Draw Rectangles and add to Pane (so Pane is its Parent).
-        for (Block block : Blocklist) {
+        for (Block block : blockList) {
             //if(!block.isHorizontal()) {
 
             Rectangle rec = new Rectangle(0, 0);
             rec.setFill(Paint.valueOf("CORAL"));
+            rec.setStroke(Color.LIGHTCYAN);
             setBlocks(block, rec);
 
 
