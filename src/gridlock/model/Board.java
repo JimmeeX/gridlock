@@ -59,6 +59,10 @@ public class Board {
         }
     }
 
+    /**
+     * get the size of the grid
+     * @return grid.size()
+     */
     public int getGridSize() {
         return this.grid.size();
     }
