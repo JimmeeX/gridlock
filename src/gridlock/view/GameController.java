@@ -132,7 +132,6 @@ public class GameController {
 
     private Rectangle createBoundsRectangle(Bounds bounds) {
         Rectangle rect = new Rectangle();
-        System.out.println("============= IN RECTANGLE FUNCTION ================");
 
         rect.setFill(Color.TRANSPARENT);
         rect.setStroke(Color.LIGHTGRAY.deriveColor(1, 1, 1, 0.5));
