@@ -91,8 +91,6 @@
                   <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="5" />
                </children>
             </GridPane>
-            <Rectangle fx:id="r2" arcHeight="5.0" arcWidth="5.0" fill="#575b5e" height="75.0" layoutX="250.0" stroke="BLACK" strokeType="INSIDE" width="250.0" />
-            <Rectangle fx:id="r1" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="225.0" layoutY="150.0" stroke="BLACK" strokeType="INSIDE" width="125.0" />
          </children>
       </Pane>
    </children>

@@ -43,11 +43,7 @@ public class GameController {
     @FXML
     private Pane boardField;
 
-    // Temporary
-    @FXML
-    private Rectangle r1;
-    @FXML
-    private Rectangle r2;
+
     // Add in ArrayList<Nodes> blocks and other stuff
 
     public void initData(Mode mode, Difficulty difficulty, Integer level) {
@@ -160,12 +156,14 @@ public class GameController {
         if(isHorizontal == true){
              height = 75;
              width = 125*size;
+            if(size == 2) rectangle.setFill(Paint.valueOf("YELLOW"));
             //rectangle.setHeight(height);
             //rectangle.setWidth(width);
         } else {
             height = 75*size;
             width = 125;
-            rectangle.setFill(Paint.valueOf("BLACK"));
+           if(size == 3) rectangle.setFill(Paint.valueOf("BLUE"));
+           if(size == 2) rectangle.setFill(Paint.valueOf("GREEN"));
         }
         startrow = row*75;
         startcol = col*125;
