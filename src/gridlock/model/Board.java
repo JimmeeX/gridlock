@@ -59,6 +59,10 @@ public class Board {
         }
     }
 
+    public int getGridSize() {
+        return this.grid.size();
+    }
+
     /**
      * get all blocks initialised
      * @return blocks arraylist
