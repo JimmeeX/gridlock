@@ -62,14 +62,17 @@ public class GameController {
 
         this.blockList = board.getBlocks();
         // TODO: Draw Rectangles and add to Pane (so Pane is its Parent).
-        for (Block block : blockList) {
-            //if(!block.isHorizontal()) {
 
-            Rectangle rec = new Rectangle(0, 0);
-            rec.setFill(Paint.valueOf("CORAL"));
-            rec.setStroke(Color.LIGHTCYAN);
+        for (int i = 0; i < this.blockList.size(); i++) {
+            Block block = this.blockList.get(i);
+            Rectangle rec = new Rectangle(0,0);
+            if(i == 0) {
+                rec.setId("player");
+            }
+            else {
+                rec.setId("obstacles");
+            }
             setBlocks(block, rec);
-
 
             // ===== TEST CODE
             // MouseGestures hmg = new MouseGestures(boardField, 6, 6, false);
@@ -151,18 +154,21 @@ public class GameController {
         int size = b.getSize();
         int row = b.getRow();
         int col = b.getCol();
+
+//        int gridX = this.boardField.getWidth() /
+
         if(isHorizontal == true){
              height = 75;
-             width = 125*size;
+             width = 75*size;
             //rectangle.setHeight(height);
             //rectangle.setWidth(width);
         } else {
             height = 75*size;
-            width = 125;
+            width = 75;
             rectangle.setFill(Paint.valueOf("BLACK"));
         }
         startrow = row*75;
-        startcol = col*125;
+        startcol = col*75;
         //startrow = 0;
         //startcol = 0;
         rectangle.setHeight(height);
