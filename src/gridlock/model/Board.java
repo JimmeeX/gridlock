@@ -59,6 +59,10 @@ public class Board {
         }
     }
 
+    public int getGridSize() {
+        return this.grid.size();
+    }
+
     /**
      * get all blocks initialised
      * @return blocks arraylist
@@ -95,6 +99,8 @@ public class Board {
         if (gameOver() == true) {
             System.out.println("GAME OVER");
         }
+        restart();
+        printGrid();
     }
 
     /**
@@ -276,6 +282,11 @@ public class Board {
         return false;
     }
 
+    /**
+     * undo the previous move made
+     * @post this.nextLocations.size()++
+     * @post this.prevLocation.size()--
+     */
     public void undoMove() {
         if (this.prevLocations.size() != 0) {
             Block copy = this.prevLocations.get(this.prevLocations.size() - 1);
@@ -292,6 +303,11 @@ public class Board {
         }
     }
 
+    /**
+     * redo the move undone
+     * @post this.nextLocation.size()--
+     * @post this.prevLocation.size()++
+     */
     public void redoMove() {
         if (this.nextLocations.size() != 0) {
             Block copy = this.nextLocations.get(0);
@@ -308,4 +324,19 @@ public class Board {
         }
     }
 
+    /**
+     * restart back to the initial position of the board
+     * @post this.numOfMoves = 0
+     * @post this.prevLocations.size() = 0
+     * @post this.nextLocation.size() = 0
+     */
+    public void restart() {
+        for (int item = this.prevLocations.size(); item > 0; item--) {
+            Block block = this.prevLocations.get(item - 1);
+            makeMove(block.getID(), block.getPosition().get(0));
+        }
+        this.prevLocations.clear();
+        this.nextLocations.clear();
+        this.numOfMoves = 0;
+    }
 }

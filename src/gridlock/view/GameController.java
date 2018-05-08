@@ -60,7 +60,9 @@ public class GameController {
         board.printGrid();
         //Set blockList
 
+
         this.blockList = board.getBlocks();
+
         // TODO: Draw Rectangles and add to Pane (so Pane is its Parent).
 
         for (int i = 0; i < this.blockList.size(); i++) {

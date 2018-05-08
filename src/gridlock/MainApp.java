@@ -7,6 +7,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.File;
+
 public class MainApp extends Application {
 
     @Override
@@ -21,11 +23,8 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-
-        //I CHANGED THIS FROM GRIDLOCK TO BOARD - ALINA
-        Board gl = new Board();
-        gl.process("easy.txt");
-
+        Board board = new Board();
+        board.process("src/gridlock/resources/easy/1.txt");
         launch(args);
     }
 
