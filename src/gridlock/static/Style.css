@@ -40,6 +40,16 @@
     -fx-border-radius: 50;
 }
 
+#obstacles {
+    -fx-stroke: cyan;
+    -fx-fill: black;
+}
+
+#player {
+    -fx-stroke: cyan;
+    -fx-fill: red;
+}
+
 .button {
     -fx-font-size: 20;
     -fx-text-fill: white;
