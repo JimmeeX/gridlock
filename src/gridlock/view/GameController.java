@@ -29,7 +29,6 @@ public class GameController {
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
-    private ArrayList<Block> blockList;
 
 
     @FXML
@@ -39,9 +38,15 @@ public class GameController {
     @FXML
     private Label levelLabel;
     @FXML
+    private Pane boardField;
+    @FXML
     private Button nextButton;
     @FXML
-    private Pane boardField;
+    private Button undoButton;
+    @FXML
+    private Button redoButton;
+    @FXML
+    private Button resetButton;
 
     public void initData(Mode mode, Difficulty difficulty, Integer level) {
         this.mode = mode;
@@ -57,18 +62,14 @@ public class GameController {
         this.board.process("src/gridlock/resources/easy/1.txt");
         System.out.println(this.board);
         System.out.println("================ IN GAME CONTROLLER ====================");
-        board.printGrid();
-        //Set blockList
+        this.board.printGrid();
 
+        // Draw Rectangles and add to Pane (so Pane is its Parent).
 
-        this.blockList = board.getBlocks();
-
-        // TODO: Draw Rectangles and add to Pane (so Pane is its Parent).
-
-        for (int i = 0; i < this.blockList.size(); i++) {
-            Block block = this.blockList.get(i);
+        for (Block block: this.board.getBlocks()) {
             Rectangle rec = new Rectangle(0,0);
-            if(i == 0) {
+            rec.setUserData(block.getID());
+            if(block.getID().equals("z")) {
                 rec.setId("player");
             }
             else {
@@ -85,53 +86,30 @@ public class GameController {
 
             // TODO: Apply MouseGestures to each Rectangle (include collisions)
             if (block.isHorizontal()) {
-                MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
+                MouseGestures hmg = new MouseGestures(block.getID(), this.board, this.boardField, 6, 6, true);
                 hmg.makeDraggable(rec);
 
             } else {
-                MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
+                MouseGestures vmg = new MouseGestures(block.getID(), this.board, this.boardField, 6, 6, false);
                 vmg.makeDraggable(rec);
             }
-            boardField.getChildren().addAll(rec);
+            this.boardField.getChildren().addAll(rec);
         }
+        System.out.println(this.boardField.getChildren());
     }
 
-
-
-
-
-        // Example
-       /* MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
-        MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
-        vmg.makeDraggable(this.r1);
-        hmg.makeDraggable(this.r2);*/
-
-
-//        int num = 36;
-//        int maxColumns = 6;
-//        int maxRows = 6;
-//        GridPane boardGame = new GridPane();
-//        boardGame.setAlignment(Pos.CENTER);
-//        Collection<StackPane> stackPanes = new ArrayList<StackPane>();
-//        for (int row = 0; row < maxRows; row++) {
-//            for (int col = maxColumns - 1; col >= 0; col--) {
-//                StackPane stackPane = new StackPane();
-//
-//                // To occupy fixed space set the max and min size of
-//                // stackpanes.
-//                // stackPane.setPrefSize(150.0, 200.0);
-//                stackPane.setMaxSize(100.0, 100.0);
-//                stackPane.setMinSize(100.0, 100.0);
-//
-//                boardGame.add(stackPane, col, row);
-//                stackPanes.add(stackPane);
-//                num--;
-//            }
-//        }
-//        boardGame.setGridLinesVisible(true);
-//        boardGame.autosize();
-//
-
+    // Current Information
+    private void updateBoard() {
+        ArrayList<Block> blockList = this.board.getBlocks();
+        for (int i = 0; i < blockList.size(); i++) {
+            Block block = blockList.get(i);
+            Rectangle rec = new Rectangle(0,0);
+//            this.boardField.getChildren().set()
+            // Get Rectangle from Children
+            setBlocks(block, rec);
+//            this.boardField.getChildren().get(i+1).setLayoutX(0);
+        }
+    }
 
     private Rectangle createBoundsRectangle(Bounds bounds) {
         Rectangle rect = new Rectangle();
@@ -150,8 +128,8 @@ public class GameController {
         return rect;
     }
 
-    public void setBlocks(Block b, Rectangle rectangle){
-        int height, width,startrow, startcol;
+    private void setBlocks(Block b, Rectangle rectangle){
+        int height, width, startrow, startcol;
         boolean isHorizontal = b.isHorizontal();
         int size = b.getSize();
         int row = b.getRow();
@@ -167,24 +145,44 @@ public class GameController {
         } else {
             height = 75*size;
             width = 75;
-            rectangle.setFill(Paint.valueOf("BLACK"));
         }
         startrow = row*75;
         startcol = col*75;
-        //startrow = 0;
-        //startcol = 0;
+
         rectangle.setHeight(height);
-       rectangle.setWidth(width);
+        rectangle.setWidth(width);
         rectangle.setX(startcol);
         rectangle.setY(startrow);
-        //Randomcolor(rectangle);
     }
+
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
         Parent menuParent = FXMLLoader.load(getClass().getResource("Menu.fxml"));
         Scene menuScene = new Scene(menuParent);
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(menuScene);
+    }
+
+    @FXML
+    private void undoMove(ActionEvent event) {
+        this.board.printGrid();
+        this.board.undoMove();
+        this.board.printGrid();
+    }
+
+    @FXML
+    private void redoMove(ActionEvent event) {
+        this.board.printGrid();
+        this.board.redoMove();
+        this.board.printGrid();
+    }
+
+    @FXML
+    private void resetBoard(ActionEvent event) {
+        this.board.printGrid();
+        this.board.restart();
+//        this.updateBoard();
+        this.board.printGrid();
     }
 
    /* public void Randomcolor(Rectangle rec){

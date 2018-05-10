@@ -1,5 +1,6 @@
 package gridlock.view;
 
+import gridlock.model.Board;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -10,6 +11,10 @@ public class MouseGestures {
         double x;
         double y;
     }
+
+    private Board board;
+    private String id;
+
 //    ArrayList <Node> environmentObjects;
     private Pane pane;
     private int gridX;
@@ -23,7 +28,9 @@ public class MouseGestures {
 
     DragContext dragContext = new DragContext();
 
-    public MouseGestures(Pane pane, int gridX, int gridY, Boolean isHorizontal) {
+    public MouseGestures(String id, Board board, Pane pane, int gridX, int gridY, Boolean isHorizontal) {
+        this.id = id;
+        this.board = board;
         this.pane = pane;
         this.gridX = gridX;
         this.gridY = gridY;
@@ -42,7 +49,7 @@ public class MouseGestures {
         node.setOnMouseReleased(onMouseReleasedEventHandler);
     }
 
-    EventHandler<MouseEvent> onMousePressedEventHandler = event -> {
+    private EventHandler<MouseEvent> onMousePressedEventHandler = event -> {
 
         Node node = ((Node) (event.getSource()));
 
@@ -50,7 +57,7 @@ public class MouseGestures {
         dragContext.y = node.getTranslateY() - event.getSceneY();
     };
 
-    EventHandler<MouseEvent> onMouseDraggedEventHandler = event -> {
+    private EventHandler<MouseEvent> onMouseDraggedEventHandler = event -> {
 
         Node node = ((Node) (event.getSource()));
 
@@ -81,8 +88,11 @@ public class MouseGestures {
         }
     };
 
-    EventHandler<MouseEvent> onMouseReleasedEventHandler = event -> {
+    private EventHandler<MouseEvent> onMouseReleasedEventHandler = event -> {
         Node node = ((Node) (event.getSource()));
+
+        System.out.println(node.getBoundsInParent().getMaxX());
+        System.out.println(node.getBoundsInParent().getMaxY());
 
         // Round X
         double xFactor = this.pane.getWidth() / this.gridX;
@@ -93,5 +103,18 @@ public class MouseGestures {
         double yFactor = this.pane.getHeight() / this.gridY;
         double yRounded = yFactor*(Math.round(node.getTranslateY()/yFactor));
         node.setTranslateY(yRounded);
+
+        // Make Move?
+//        System.out.println(node.getBoundsInParent().getMaxX());
+//        System.out.println(node.getBoundsInParent().getMaxY());
+//        // x refers to column; y refers to row
+//        int newRow = (int)(yRounded / yFactor);
+//        int newCol = (int)(xRounded / xFactor);
+////        System.out.println(newRow);
+////        System.out.println(newCol);
+//        Integer[] newPosition = {newRow, newCol};
+//        this.board.makeMove(this.id, newPosition);
+//        this.board.printGrid();
+//        System.out.println(this.pane.getChildren());
     };
 }
