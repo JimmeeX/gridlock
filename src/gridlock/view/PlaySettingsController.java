@@ -1,6 +1,5 @@
 package gridlock.view;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import javafx.event.ActionEvent;
@@ -31,10 +30,6 @@ public class PlaySettingsController {
         try {
             Mode selectedMode = this.getMode();
             Difficulty selectedDifficulty = this.getDifficulty();
-//            ToggleButton selectedGameMode = (ToggleButton) toggleGameMode.getSelectedToggle();
-//            String selectedGameModeValue = selectedGameMode.getText();
-//            ToggleButton selectedDifficulty = (ToggleButton) toggleDifficulty.getSelectedToggle();
-//            String selectedDifficultyValue = selectedDifficulty.getText();
 
             if (selectedMode == Mode.CAMPAIGN) {
                 navToLevelSelect(event, selectedMode, selectedDifficulty);
@@ -85,25 +80,4 @@ public class PlaySettingsController {
         ToggleButton selectedDifficulty = (ToggleButton) toggleDifficulty.getSelectedToggle();
         return Difficulty.valueOf(selectedDifficulty.getText().toUpperCase());
     }
-
-//        this.game.setDifficulty(selectedDifficulty.getText());
-//        // TODO: Modify ToggleButton so that something is always selected. (So try/catch is not needed)
-//        try {
-//            this.setGameMode();
-//            this.setDifficulty();
-//            System.out.println(this.game);
-//            if (this.game.getMode() == Mode.CAMPAIGN) {
-//                // Load Game Menu
-//                navToLevelSelect(event);
-//            }
-//            else {
-//                assert this.game.getMode() == Mode.SANDBOX;
-//                navToGame(event);
-//            }
-//        }
-//        catch (NullPointerException e) {
-//            System.out.println("Please specify a difficulty and game mode.");
-//        }
-//    }
-
 }

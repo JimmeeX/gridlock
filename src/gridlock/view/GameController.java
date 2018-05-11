@@ -60,14 +60,8 @@ public class GameController {
         this.levelLabel.setText(this.level.toString());
 
         // Read Board from File
-        this.board = new Board();
-        this.board.process("src/gridlock/resources/easy/1.txt");
-        System.out.println(this.board);
-        System.out.println("================ IN GAME CONTROLLER ====================");
-        this.board.printGrid();
-        this.recNodeList = new ArrayList<>();
+        this.initialiseBoard("src/gridlock/resources/easy/1.txt");
 
-        // Add gameStateListener
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -83,6 +77,20 @@ public class GameController {
             }
         });
 
+        // Draw the Rectangles and add it to the Board
+        this.initialiseNodeList();
+
+        // Add Drag/Drop Functionality to the Rectangles
+        this.addMouseGestures();
+    }
+
+    private void initialiseBoard(String file) {
+        this.board = new Board();
+        this.board.process(file);
+    }
+
+    private void initialiseNodeList() {
+        this.recNodeList = new ArrayList<>();
         // Draw Rectangles and add to Pane (so Pane is its Parent).
         for (Block block: this.board.getBlocks()) {
             Rectangle rec = new Rectangle(0, 0);
@@ -94,92 +102,56 @@ public class GameController {
             }
             setBlocks(block, rec);
             this.recNodeList.add(rec);
-            //this.boardField.getChildren().addAll(rec);
         }
-            ArrayList<Node> recNL = this.recNodeList;
-            ArrayList<Block> blockL = this.board.getBlocks();
-            for(int i = 0; i < blockL.size(); i++) {
-                Node currNode = this.recNodeList.get(i);
-                // TODO: Apply MouseGestures to each Rectangle (include collisions)
-                if (blockL.get(i).isHorizontal()) {
-                    MouseGestures hmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, 6, 6, true, currNode, this.recNodeList);
-                    hmg.makeDraggable(recNodeList.get(i));
+    }
 
-                } else {
-                    MouseGestures vmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, 6, 6, false, currNode, this.recNodeList);
-                    vmg.makeDraggable(recNodeList.get(i));
-                }
-                this.boardField.getChildren().addAll(recNL.get(i));
+    private void addMouseGestures() {
+        ArrayList<Block> blockL = this.board.getBlocks();
+        for(int i = 0; i < blockL.size(); i++) {
+            Node currNode = this.recNodeList.get(i);
+            if (blockL.get(i).isHorizontal()) {
+                MouseGestures hmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, 6, 6, true, currNode, this.recNodeList);
+                hmg.makeDraggable(recNodeList.get(i));
+
+            } else {
+                MouseGestures vmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, 6, 6, false, currNode, this.recNodeList);
+                vmg.makeDraggable(recNodeList.get(i));
             }
+            this.boardField.getChildren().addAll(this.recNodeList.get(i));
         }
+    }
 
     // Current Information
     private void updateBoard() {
         ArrayList<Block> blockList = this.board.getBlocks();
         for (int i = 0; i < blockList.size(); i++) {
             Block block = blockList.get(i);
+
             // Retrieve the Rectangle and Update it with new position
             Rectangle rec = (Rectangle) this.boardField.getChildren().get(i + 1);
             setBlocks(block, rec);
             this.boardField.getChildren().set(i + 1, rec);
         }
     }
-        // Example
-       /* MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
-        MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
-        vmg.makeDraggable(this.r1);
-        hmg.makeDraggable(this.r2);*/
 
+    private void setBlocks(Block b, Rectangle rec) {
+        int height, width, startRow, startCol;
 
-//        int num = 36;
-//        int maxColumns = 6;
-//        int maxRows = 6;
-//        GridPane boardGame = new GridPane();
-//        boardGame.setAlignment(Pos.CENTER);
-//        Collection<StackPane> stackPanes = new ArrayList<StackPane>();
-//        for (int row = 0; row < maxRows; row++) {
-//            for (int col = maxColumns - 1; col >= 0; col--) {
-//                StackPane stackPane = new StackPane();
-//
-//                // To occupy fixed space set the max and min size of
-//                // stackpanes.
-//                // stackPane.setPrefSize(150.0, 200.0);
-//                stackPane.setMaxSize(100.0, 100.0);
-//                stackPane.setMinSize(100.0, 100.0);
-//
-//                boardGame.add(stackPane, col, row);
-//                stackPanes.add(stackPane);
-//                num--;
-//            }
-//        }
-//        boardGame.setGridLinesVisible(true);
-//        boardGame.autosize();
-//
-
-
-    private void setBlocks(Block b, Rectangle rec){
-        int height, width, startrow, startcol;
-        boolean isHorizontal = b.isHorizontal();
-        int size = b.getSize();
-        int row = b.getRow();
-        int col = b.getCol();
-
-//        int gridX = this.boardField.getWidth() /
-
-        if(isHorizontal){
-             height = 75;
-             width = 75*size;
+        // TODO: Generalise numbers to boardField.pane / grid(X/Y)
+        if(b.isHorizontal()){
+            height = 75;
+            width = 75*b.getSize();
         } else {
-            height = 75*size;
+            height = 75*b.getSize();
             width = 75;
         }
-        startrow = row*75;
-        startcol = col*75;
+        startRow = b.getRow()*75;
+        startCol = b.getCol()*75;
 
         rec.setHeight(height);
         rec.setWidth(width);
-        rec.setX(startcol);
-        rec.setY(startrow);
+        rec.setX(startCol);
+        rec.setY(startRow);
         rec.setTranslateX(0);
         rec.setTranslateY(0);
     }
@@ -238,19 +210,5 @@ public class GameController {
         this.updateBoard();
         this.board.printGrid();
     }
-
-   /* public void Randomcolor(Rectangle rec){
-        float r,g,b;
-        Random rand = new Random();
-        r = rand.nextFloat();
-        g =rand.nextFloat();
-        b = rand.nextFloat();
-
-        Color randomColor;
-        randomColor = new Color(r, g, b);
-
-        rec.setFill(randomColor);
-    }*/
-
 }
 
