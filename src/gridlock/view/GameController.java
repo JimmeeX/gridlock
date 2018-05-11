@@ -26,6 +26,7 @@ import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
@@ -35,8 +36,7 @@ public class GameController {
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
-
-//    ArrayList<Node> block
+    private ArrayList<Node> recNodeList;
 
     @FXML
     private Label modeLabel;
@@ -50,6 +50,7 @@ public class GameController {
     private Button nextButton;
 
     public void initData(Mode mode, Difficulty difficulty, Integer level) {
+        // Initialise Variables
         this.mode = mode;
         this.difficulty = difficulty;
         this.level = level;
@@ -64,6 +65,7 @@ public class GameController {
         System.out.println(this.board);
         System.out.println("================ IN GAME CONTROLLER ====================");
         this.board.printGrid();
+        this.recNodeList = new ArrayList<>();
 
         // Add gameStateListener
         // Add Listener for Win Game Condition
@@ -83,36 +85,33 @@ public class GameController {
 
         // Draw Rectangles and add to Pane (so Pane is its Parent).
         for (Block block: this.board.getBlocks()) {
-            Rectangle rec = new Rectangle(0,0);
+            Rectangle rec = new Rectangle(0, 0);
             rec.setUserData(block.getID());
-            if(block.getID().equals("z")) {
+            if (block.getID().equals("z")) {
                 rec.setId("player");
-            }
-            else {
+            } else {
                 rec.setId("obstacles");
             }
             setBlocks(block, rec);
-
-            // ===== TEST CODE
-            // MouseGestures hmg = new MouseGestures(boardField, 6, 6, false);
-            //hmg.makeDraggable(rec);
-            //boardField.getChildren().addAll(rec);
-            //}
-            // rec.strokeWidthProperty();
-
-            // TODO: Apply MouseGestures to each Rectangle (include collisions)
-            if (block.isHorizontal()) {
-                MouseGestures hmg = new MouseGestures(block.getID(), this.board, this.boardField, 6, 6, true);
-                hmg.makeDraggable(rec);
-
-            } else {
-                MouseGestures vmg = new MouseGestures(block.getID(), this.board, this.boardField, 6, 6, false);
-                vmg.makeDraggable(rec);
-            }
-            this.boardField.getChildren().addAll(rec);
+            this.recNodeList.add(rec);
+            //this.boardField.getChildren().addAll(rec);
         }
-        System.out.println(this.boardField.getChildren());
-    }
+            ArrayList<Node> recNL = this.recNodeList;
+            ArrayList<Block> blockL = this.board.getBlocks();
+            for(int i = 0; i < blockL.size(); i++) {
+                Node currNode = this.recNodeList.get(i);
+                // TODO: Apply MouseGestures to each Rectangle (include collisions)
+                if (blockL.get(i).isHorizontal()) {
+                    MouseGestures hmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, 6, 6, true, currNode, this.recNodeList);
+                    hmg.makeDraggable(recNodeList.get(i));
+
+                } else {
+                    MouseGestures vmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, 6, 6, false, currNode, this.recNodeList);
+                    vmg.makeDraggable(recNodeList.get(i));
+                }
+                this.boardField.getChildren().addAll(recNL.get(i));
+            }
+        }
 
     // Current Information
     private void updateBoard() {
@@ -120,11 +119,43 @@ public class GameController {
         for (int i = 0; i < blockList.size(); i++) {
             Block block = blockList.get(i);
             // Retrieve the Rectangle and Update it with new position
-            Rectangle rec = (Rectangle)this.boardField.getChildren().get(i+1);
+            Rectangle rec = (Rectangle) this.boardField.getChildren().get(i + 1);
             setBlocks(block, rec);
-            this.boardField.getChildren().set(i+1, rec);
+            this.boardField.getChildren().set(i + 1, rec);
         }
     }
+        // Example
+       /* MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
+        MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
+        vmg.makeDraggable(this.r1);
+        hmg.makeDraggable(this.r2);*/
+
+
+//        int num = 36;
+//        int maxColumns = 6;
+//        int maxRows = 6;
+//        GridPane boardGame = new GridPane();
+//        boardGame.setAlignment(Pos.CENTER);
+//        Collection<StackPane> stackPanes = new ArrayList<StackPane>();
+//        for (int row = 0; row < maxRows; row++) {
+//            for (int col = maxColumns - 1; col >= 0; col--) {
+//                StackPane stackPane = new StackPane();
+//
+//                // To occupy fixed space set the max and min size of
+//                // stackpanes.
+//                // stackPane.setPrefSize(150.0, 200.0);
+//                stackPane.setMaxSize(100.0, 100.0);
+//                stackPane.setMinSize(100.0, 100.0);
+//
+//                boardGame.add(stackPane, col, row);
+//                stackPanes.add(stackPane);
+//                num--;
+//            }
+//        }
+//        boardGame.setGridLinesVisible(true);
+//        boardGame.autosize();
+//
+
 
     private void setBlocks(Block b, Rectangle rec){
         int height, width, startrow, startcol;
