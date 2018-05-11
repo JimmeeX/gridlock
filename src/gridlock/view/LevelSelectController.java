@@ -42,14 +42,14 @@ public class LevelSelectController {
 
     @FXML
     private void levelSelectControls(ActionEvent event) throws Exception {
-        try {
-            Integer selectedLevel = this.getLevel();
-            this.navToGame(event, selectedLevel);
-        }
+//        try {
+        Integer selectedLevel = this.getLevel();
+        this.navToGame(event, selectedLevel);
+//        }
 
-        catch (NullPointerException e) {
-            System.out.println("Please selected a level");
-        }
+//        catch (NullPointerException e) {
+//            System.out.println("Please selected a level");
+//        }
     }
 
     private void navToGame(ActionEvent event, Integer selectedLevel) throws Exception {
