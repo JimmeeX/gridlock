@@ -111,19 +111,49 @@ public class GameController {
             }
         }
 
-
-
     // Current Information
     private void updateBoard() {
         ArrayList<Block> blockList = this.board.getBlocks();
         for (int i = 0; i < blockList.size(); i++) {
             Block block = blockList.get(i);
             // Retrieve the Rectangle and Update it with new position
-            Rectangle rec = (Rectangle)this.boardField.getChildren().get(i+1);
+            Rectangle rec = (Rectangle) this.boardField.getChildren().get(i + 1);
             setBlocks(block, rec);
-            this.boardField.getChildren().set(i+1, rec);
+            this.boardField.getChildren().set(i + 1, rec);
         }
     }
+        // Example
+       /* MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
+        MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
+        vmg.makeDraggable(this.r1);
+        hmg.makeDraggable(this.r2);*/
+
+
+//        int num = 36;
+//        int maxColumns = 6;
+//        int maxRows = 6;
+//        GridPane boardGame = new GridPane();
+//        boardGame.setAlignment(Pos.CENTER);
+//        Collection<StackPane> stackPanes = new ArrayList<StackPane>();
+//        for (int row = 0; row < maxRows; row++) {
+//            for (int col = maxColumns - 1; col >= 0; col--) {
+//                StackPane stackPane = new StackPane();
+//
+//                // To occupy fixed space set the max and min size of
+//                // stackpanes.
+//                // stackPane.setPrefSize(150.0, 200.0);
+//                stackPane.setMaxSize(100.0, 100.0);
+//                stackPane.setMinSize(100.0, 100.0);
+//
+//                boardGame.add(stackPane, col, row);
+//                stackPanes.add(stackPane);
+//                num--;
+//            }
+//        }
+//        boardGame.setGridLinesVisible(true);
+//        boardGame.autosize();
+//
+
 
     private void setBlocks(Block b, Rectangle rec){
         int height, width, startrow, startcol;
