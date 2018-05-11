@@ -22,6 +22,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
+import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -33,6 +35,8 @@ public class GameController {
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
+
+//    ArrayList<Node> block
 
     @FXML
     private Label modeLabel;
@@ -69,7 +73,7 @@ public class GameController {
                 if (newValue) {
                     nextButton.setDisable(false);
                     // Pop up Window
-
+                    nextButton.fire();
                 }
                 else {
                     nextButton.setDisable(true);
@@ -78,7 +82,6 @@ public class GameController {
         });
 
         // Draw Rectangles and add to Pane (so Pane is its Parent).
-
         for (Block block: this.board.getBlocks()) {
             Rectangle rec = new Rectangle(0,0);
             rec.setUserData(block.getID());
@@ -150,8 +153,27 @@ public class GameController {
         rec.setTranslateY(0);
     }
 
-    private void showWinWindow() {
+    @FXML
+    private void showGameWin(ActionEvent event) throws Exception {
+//        Stage gameWinStage = new Stage();
+//        gameWinStage.initModality();
+//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("GameWin.fxml"));
+//        Parent gameWinPopup = fxmlLoader.load();
+//        Stage gameWinStage = new Stage();
+//        gameWinStage.show();
+        Popup gameWinPopup = new Popup();
 
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("GameWin.fxml"));
+
+        Parent gameWinParent = loader.load();
+        Scene gameWinScene = new Scene(gameWinParent);
+
+        GameWinController gameWinController = loader.getController();
+        gameWinController.initData(this.mode, this.difficulty, this.level, 10);
+        gameWinPopup.getContent().add(gameWinParent);
+
+        gameWinPopup.show(((Node)event.getSource()).getScene().getWindow());
     }
 
     @FXML
