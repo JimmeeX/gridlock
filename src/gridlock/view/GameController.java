@@ -41,12 +41,6 @@ public class GameController {
     private Pane boardField;
     @FXML
     private Button nextButton;
-    @FXML
-    private Button undoButton;
-    @FXML
-    private Button redoButton;
-    @FXML
-    private Button resetButton;
 
     public void initData(Mode mode, Difficulty difficulty, Integer level) {
         this.mode = mode;
@@ -98,37 +92,23 @@ public class GameController {
         System.out.println(this.boardField.getChildren());
     }
 
+    private void initialiseBoard() {
+
+    }
+
     // Current Information
     private void updateBoard() {
         ArrayList<Block> blockList = this.board.getBlocks();
         for (int i = 0; i < blockList.size(); i++) {
             Block block = blockList.get(i);
-            Rectangle rec = new Rectangle(0,0);
-//            this.boardField.getChildren().set()
-            // Get Rectangle from Children
+            // Retrieve the Rectangle and Update it with new position
+            Rectangle rec = (Rectangle)this.boardField.getChildren().get(i+1);
             setBlocks(block, rec);
-//            this.boardField.getChildren().get(i+1).setLayoutX(0);
+            this.boardField.getChildren().set(i+1, rec);
         }
     }
 
-    private Rectangle createBoundsRectangle(Bounds bounds) {
-        Rectangle rect = new Rectangle();
-        System.out.println("============= IN RECTANGLE FUNCTION ================");
-
-        rect.setFill(Color.TRANSPARENT);
-        rect.setStroke(Color.LIGHTGRAY.deriveColor(1, 1, 1, 0.5));
-        rect.setStrokeType(StrokeType.INSIDE);
-        rect.setStrokeWidth(3);
-
-
-        rect.setX(bounds.getMinX());
-        rect.setY(bounds.getMinY());
-        rect.setWidth(bounds.getWidth());
-        rect.setHeight(bounds.getHeight());
-        return rect;
-    }
-
-    private void setBlocks(Block b, Rectangle rectangle){
+    private void setBlocks(Block b, Rectangle rec){
         int height, width, startrow, startcol;
         boolean isHorizontal = b.isHorizontal();
         int size = b.getSize();
@@ -137,11 +117,9 @@ public class GameController {
 
 //        int gridX = this.boardField.getWidth() /
 
-        if(isHorizontal == true){
+        if(isHorizontal){
              height = 75;
              width = 75*size;
-            //rectangle.setHeight(height);
-            //rectangle.setWidth(width);
         } else {
             height = 75*size;
             width = 75;
@@ -149,10 +127,12 @@ public class GameController {
         startrow = row*75;
         startcol = col*75;
 
-        rectangle.setHeight(height);
-        rectangle.setWidth(width);
-        rectangle.setX(startcol);
-        rectangle.setY(startrow);
+        rec.setHeight(height);
+        rec.setWidth(width);
+        rec.setX(startcol);
+        rec.setY(startrow);
+        rec.setTranslateX(0);
+        rec.setTranslateY(0);
     }
 
     @FXML
@@ -167,6 +147,7 @@ public class GameController {
     private void undoMove(ActionEvent event) {
         this.board.printGrid();
         this.board.undoMove();
+        this.updateBoard();
         this.board.printGrid();
     }
 
@@ -174,6 +155,7 @@ public class GameController {
     private void redoMove(ActionEvent event) {
         this.board.printGrid();
         this.board.redoMove();
+        this.updateBoard();
         this.board.printGrid();
     }
 
@@ -181,7 +163,7 @@ public class GameController {
     private void resetBoard(ActionEvent event) {
         this.board.printGrid();
         this.board.restart();
-//        this.updateBoard();
+        this.updateBoard();
         this.board.printGrid();
     }
 

@@ -91,9 +91,6 @@ public class MouseGestures {
     private EventHandler<MouseEvent> onMouseReleasedEventHandler = event -> {
         Node node = ((Node) (event.getSource()));
 
-        System.out.println(node.getBoundsInParent().getMaxX());
-        System.out.println(node.getBoundsInParent().getMaxY());
-
         // Round X
         double xFactor = this.pane.getWidth() / this.gridX;
         double xRounded = xFactor*(Math.round(node.getTranslateX()/xFactor));
@@ -104,17 +101,12 @@ public class MouseGestures {
         double yRounded = yFactor*(Math.round(node.getTranslateY()/yFactor));
         node.setTranslateY(yRounded);
 
-        // Make Move?
-//        System.out.println(node.getBoundsInParent().getMaxX());
-//        System.out.println(node.getBoundsInParent().getMaxY());
-//        // x refers to column; y refers to row
-//        int newRow = (int)(yRounded / yFactor);
-//        int newCol = (int)(xRounded / xFactor);
-////        System.out.println(newRow);
-////        System.out.println(newCol);
-//        Integer[] newPosition = {newRow, newCol};
-//        this.board.makeMove(this.id, newPosition);
-//        this.board.printGrid();
-//        System.out.println(this.pane.getChildren());
+        // Make Move
+        // x refers to column; y refers to row
+        int newRow = (int)((yRounded + this.initialMinY) / yFactor);
+        int newCol = (int)((xRounded +this.initialMinX) / xFactor);
+        Integer[] newPosition = {newRow, newCol};
+        this.board.makeMove(this.id, newPosition);
+        this.board.printGrid();
     };
 }
