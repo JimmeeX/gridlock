@@ -107,6 +107,7 @@ public class MouseGestures {
         int newCol = (int)((xRounded +this.initialMinX) / xFactor);
         Integer[] newPosition = {newRow, newCol};
         this.board.makeMove(this.id, newPosition);
+        this.board.checkGameOver();
         this.board.printGrid();
     };
 }

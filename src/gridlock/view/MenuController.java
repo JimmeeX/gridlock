@@ -70,7 +70,6 @@ public class MenuController {
     private void quitGame(ActionEvent event) {
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.close();
-        System.out.println("You pressed Quit");
     }
 
 }

@@ -1,6 +1,10 @@
 package gridlock.view;
 
 import gridlock.model.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,7 +34,6 @@ public class GameController {
     private Difficulty difficulty;
     private Integer level;
 
-
     @FXML
     private Label modeLabel;
     @FXML
@@ -57,6 +60,22 @@ public class GameController {
         System.out.println(this.board);
         System.out.println("================ IN GAME CONTROLLER ====================");
         this.board.printGrid();
+
+        // Add gameStateListener
+        // Add Listener for Win Game Condition
+        this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (newValue) {
+                    nextButton.setDisable(false);
+                    // Pop up Window
+
+                }
+                else {
+                    nextButton.setDisable(true);
+                }
+            }
+        });
 
         // Draw Rectangles and add to Pane (so Pane is its Parent).
 
@@ -90,10 +109,6 @@ public class GameController {
             this.boardField.getChildren().addAll(rec);
         }
         System.out.println(this.boardField.getChildren());
-    }
-
-    private void initialiseBoard() {
-
     }
 
     // Current Information
@@ -133,6 +148,10 @@ public class GameController {
         rec.setY(startrow);
         rec.setTranslateX(0);
         rec.setTranslateY(0);
+    }
+
+    private void showWinWindow() {
+
     }
 
     @FXML
