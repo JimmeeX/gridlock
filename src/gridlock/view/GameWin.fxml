@@ -13,7 +13,7 @@
          <children>
             <Label id="subtitle" fx:id="starsLabel" text="Label" />
             <Label id="subtitle" fx:id="movesLabel" text="Label" />
-            <Button layoutX="207.0" layoutY="203.0" mnemonicParsing="false" onAction="#navToNextLevel" text="Next Level" AnchorPane.topAnchor="203.0" />
+            <Button fx:id="nextLevelButton" layoutX="207.0" layoutY="203.0" mnemonicParsing="false" onAction="#navToNextLevel" text="Next Level" AnchorPane.topAnchor="203.0" />
             <Button layoutX="222.0" layoutY="243.0" mnemonicParsing="false" onAction="#restartLevel" text="Restart" AnchorPane.rightAnchor="281.0" />
             <Button layoutX="234.0" layoutY="329.0" mnemonicParsing="false" onAction="#navToMenu" text="Back" />
          </children>

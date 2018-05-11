@@ -25,6 +25,7 @@ import javafx.scene.shape.StrokeType;
 import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -158,25 +159,24 @@ public class GameController {
 
     @FXML
     private void showGameWin(ActionEvent event) throws Exception {
-//        Stage gameWinStage = new Stage();
-//        gameWinStage.initModality();
-//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("GameWin.fxml"));
-//        Parent gameWinPopup = fxmlLoader.load();
-//        Stage gameWinStage = new Stage();
-//        gameWinStage.show();
-        Popup gameWinPopup = new Popup();
+        // Initialise Popup Stage
+        Stage gameWinStage = new Stage();
+        gameWinStage.initStyle(StageStyle.UNDECORATED);
+        gameWinStage.initModality(Modality.APPLICATION_MODAL);
+        gameWinStage.initOwner(((Node)event.getSource()).getScene().getWindow());
 
+        // Load Screen
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("GameWin.fxml"));
-
         Parent gameWinParent = loader.load();
         Scene gameWinScene = new Scene(gameWinParent);
 
+        // Attach Controller
         GameWinController gameWinController = loader.getController();
         gameWinController.initData(this.mode, this.difficulty, this.level, 10);
-        gameWinPopup.getContent().add(gameWinParent);
 
-        gameWinPopup.show(((Node)event.getSource()).getScene().getWindow());
+        gameWinStage.setScene(gameWinScene);
+        gameWinStage.show();
     }
 
     @FXML
