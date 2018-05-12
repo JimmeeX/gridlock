@@ -1,16 +1,26 @@
 package gridlock.view;
 
+import gridlock.model.Board;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
+
+import java.util.ArrayList;
 
 public class MouseGestures {
     class DragContext {
         double x;
         double y;
     }
-//    ArrayList <Node> environmentObjects;
+
+    private Board board;
+    private String id;
+
+    private ArrayList <Node> enObjects;
+    private Node currObject;
+
     private Pane pane;
     private int gridX;
     private int gridY;
@@ -21,13 +31,19 @@ public class MouseGestures {
     private double initialMinY;
     private double initialMaxY;
 
-    DragContext dragContext = new DragContext();
+    private DragContext dragContext = new DragContext();
 
-    public MouseGestures(Pane pane, int gridX, int gridY, Boolean isHorizontal) {
+    public MouseGestures(String id, Board board, Pane pane,
+                         int gridX, int gridY, Boolean isHorizontal,
+                            Node recNode, ArrayList<Node> recNodeL) {
+        this.id = id;
+        this.board = board;
         this.pane = pane;
         this.gridX = gridX;
         this.gridY = gridY;
         this.isHorizontal = isHorizontal;
+        this.currObject = recNode;
+        this.enObjects = recNodeL;
     }
 
     public void makeDraggable(Node node) {
@@ -42,7 +58,7 @@ public class MouseGestures {
         node.setOnMouseReleased(onMouseReleasedEventHandler);
     }
 
-    EventHandler<MouseEvent> onMousePressedEventHandler = event -> {
+    private EventHandler<MouseEvent> onMousePressedEventHandler = event -> {
 
         Node node = ((Node) (event.getSource()));
 
@@ -50,38 +66,28 @@ public class MouseGestures {
         dragContext.y = node.getTranslateY() - event.getSceneY();
     };
 
-    EventHandler<MouseEvent> onMouseDraggedEventHandler = event -> {
+    private EventHandler<MouseEvent> onMouseDraggedEventHandler = event -> {
 
         Node node = ((Node) (event.getSource()));
-
-        // TODO: Get collision (need to know location of other object)
-        /*
-        if(collision):
-           return;
-
-        else {
-            node.setTranslateX(deltaX)
-        }
-        * */
+        double deltaX = dragContext.x + event.getSceneX();
+        double deltaY = dragContext.y + event.getSceneY();
 
         if (this.isHorizontal) {
-            double deltaX = dragContext.x + event.getSceneX();
-            if (deltaX + this.initialMinX < 0 || deltaX + this.initialMaxX > this.pane.getWidth()) {
+            if ((deltaX + this.initialMinX < 0 || deltaX + this.initialMaxX > this.pane.getWidth()) || collisionCheck()) {
                 return;
             }
             node.setTranslateX(deltaX);
         }
 
         else {
-            double deltaY = dragContext.y + event.getSceneY();
-            if (deltaY + this.initialMinY < 0 || deltaY + this.initialMaxY > this.pane.getHeight()) {
+            if (deltaY + this.initialMinY < 0 || deltaY + this.initialMaxY > this.pane.getHeight() || collisionCheck()) {
                 return;
             }
             node.setTranslateY(deltaY);
         }
     };
 
-    EventHandler<MouseEvent> onMouseReleasedEventHandler = event -> {
+    private EventHandler<MouseEvent> onMouseReleasedEventHandler = event -> {
         Node node = ((Node) (event.getSource()));
 
         // Round X
@@ -93,5 +99,42 @@ public class MouseGestures {
         double yFactor = this.pane.getHeight() / this.gridY;
         double yRounded = yFactor*(Math.round(node.getTranslateY()/yFactor));
         node.setTranslateY(yRounded);
+
+        // Make Move
+        int newRow = (int)((yRounded + this.initialMinY) / yFactor);
+        int newCol = (int)((xRounded +this.initialMinX) / xFactor);
+        Integer[] newPosition = {newRow, newCol};
+        this.board.makeMove(this.id, newPosition);
+        this.board.checkGameOver();
     };
+
+    // TODO: Make Collisions more smoother
+    private boolean collisionCheck() {
+        // Make Bounds Smaller
+        Rectangle bounds;
+        if (this.isHorizontal) {
+            bounds = new Rectangle(
+                    this.currObject.getBoundsInParent().getMinX() + 2,
+                    this.currObject.getBoundsInParent().getMinY() + 2,
+                    this.currObject.getBoundsInParent().getWidth() - 4,
+                    this.currObject.getBoundsInParent().getHeight() - 4
+            );
+        }
+        else {
+            bounds = new Rectangle(
+                    this.currObject.getBoundsInParent().getMinX() + 2,
+                    this.currObject.getBoundsInParent().getMinY() + 2,
+                    this.currObject.getBoundsInParent().getWidth() - 4,
+                    this.currObject.getBoundsInParent().getHeight() - 4
+            );
+        }
+        for (Node enObject: this.enObjects) {
+            if (bounds.intersects(enObject.getBoundsInParent()) && (!this.currObject.equals(enObject))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }

@@ -3,6 +3,9 @@ package gridlock.model;
 //hmm I reckon the id is to look for the block
 //(say when we move a block, we refer to them by their idk) - Alina
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -22,6 +25,9 @@ public class Board {
     private ArrayList<Block> prevLocations;
     private ArrayList<Block> nextLocations;
 
+    // Added by James :)
+    private BooleanProperty gameState;
+
     /**
      * Board class constructor
      */
@@ -31,6 +37,10 @@ public class Board {
         this.numOfMoves = 0;
         this.prevLocations = new ArrayList<>();
         this.nextLocations = new ArrayList<>();
+
+        // Added by James :)
+        // Board starts off as unsolved (ie, false)
+        this.gameState = new SimpleBooleanProperty(false);
     }
 
     /**
@@ -176,6 +186,7 @@ public class Board {
         }
     }
 
+
     /**
      * print the grid
      */
@@ -284,6 +295,32 @@ public class Board {
             }
         }
         return false;
+    }
+
+    /**
+     * Check if the game is over (the "z" car is by the exit)
+     * Will send "true" to "gameState" if game is over
+     */
+    // Added by James :)
+    public void checkGameOver() {
+        this.gameState.setValue(false);
+        for (Block block: this.blocks) {
+            if (block.getID().equals("z")) {
+                if (block.getPosition().get(0)[1] == 4) {
+                    this.gameState.setValue(true);
+                }
+            }
+        }
+    }
+
+    // Added by James :)
+    public boolean isGameState() {
+        return gameState.get();
+    }
+
+    // Added by James :)
+    public BooleanProperty gameStateProperty() {
+        return gameState;
     }
 
     /**

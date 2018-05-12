@@ -1,6 +1,10 @@
 package gridlock.view;
 
 import gridlock.model.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,8 +22,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
+import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
@@ -29,8 +37,7 @@ public class GameController {
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
-    private ArrayList<Block> blockList;
-
+    private ArrayList<Node> recNodeList;
 
     @FXML
     private Label modeLabel;
@@ -39,11 +46,12 @@ public class GameController {
     @FXML
     private Label levelLabel;
     @FXML
-    private Button nextButton;
-    @FXML
     private Pane boardField;
+    @FXML
+    private Button nextButton;
 
     public void initData(Mode mode, Difficulty difficulty, Integer level) {
+        // Initialise Variables
         this.mode = mode;
         this.difficulty = difficulty;
         this.level = level;
@@ -53,132 +61,124 @@ public class GameController {
         this.levelLabel.setText(this.level.toString());
 
         // Read Board from File
-        this.board = new Board();
-        this.board.process("src/gridlock/resources/easy/1.txt");
-        System.out.println(this.board);
-        System.out.println("================ IN GAME CONTROLLER ====================");
-        board.printGrid();
-        //Set blockList
+        this.initialiseBoard("src/gridlock/resources/easy/1.txt");
 
-
-        this.blockList = board.getBlocks();
-
-        // TODO: Draw Rectangles and add to Pane (so Pane is its Parent).
-
-        for (int i = 0; i < this.blockList.size(); i++) {
-            Block block = this.blockList.get(i);
-            Rectangle rec = new Rectangle(0,0);
-            if(i == 0) {
-                rec.setId("player");
+        // Add Listener for Win Game Condition
+        this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (newValue) {
+                    nextButton.setDisable(false);
+                    // Pop up Window
+                    nextButton.fire();
+                }
+                else {
+                    nextButton.setDisable(true);
+                }
             }
-            else {
+        });
+
+        // Draw the Rectangles and add it to the Board
+        this.initialiseNodeList();
+
+        // Add Drag/Drop Functionality to the Rectangles
+        this.addMouseGestures();
+    }
+
+    private void initialiseBoard(String file) {
+        this.board = new Board();
+        this.board.process(file);
+    }
+
+    private void initialiseNodeList() {
+        this.recNodeList = new ArrayList<>();
+        // Draw Rectangles and add to Pane (so Pane is its Parent).
+        for (Block block: this.board.getBlocks()) {
+            Rectangle rec = new Rectangle(0, 0);
+            rec.setUserData(block.getID());
+            if (block.getID().equals("z")) {
+                rec.setId("player");
+            } else {
                 rec.setId("obstacles");
             }
             setBlocks(block, rec);
+            this.recNodeList.add(rec);
+        }
+    }
 
-            // ===== TEST CODE
-            // MouseGestures hmg = new MouseGestures(boardField, 6, 6, false);
-            //hmg.makeDraggable(rec);
-            //boardField.getChildren().addAll(rec);
-            //}
-            // rec.strokeWidthProperty();
-
-            // TODO: Apply MouseGestures to each Rectangle (include collisions)
-            if (block.isHorizontal()) {
-                MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
-                hmg.makeDraggable(rec);
+    private void addMouseGestures() {
+        ArrayList<Block> blockL = this.board.getBlocks();
+        for(int i = 0; i < blockL.size(); i++) {
+            Node currNode = this.recNodeList.get(i);
+            if (blockL.get(i).isHorizontal()) {
+                MouseGestures hmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, 6, 6, true, currNode, this.recNodeList);
+                hmg.makeDraggable(recNodeList.get(i));
 
             } else {
-                MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
-                vmg.makeDraggable(rec);
+                MouseGestures vmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, 6, 6, false, currNode, this.recNodeList);
+                vmg.makeDraggable(recNodeList.get(i));
             }
-            boardField.getChildren().addAll(rec);
+            this.boardField.getChildren().addAll(this.recNodeList.get(i));
         }
     }
 
+    // Current Information
+    private void updateBoard() {
+        ArrayList<Block> blockList = this.board.getBlocks();
+        for (int i = 0; i < blockList.size(); i++) {
+            Block block = blockList.get(i);
 
-
-
-
-        // Example
-       /* MouseGestures vmg = new MouseGestures(boardField, 6, 6, false);
-        MouseGestures hmg = new MouseGestures(boardField, 6, 6, true);
-        vmg.makeDraggable(this.r1);
-        hmg.makeDraggable(this.r2);*/
-
-
-//        int num = 36;
-//        int maxColumns = 6;
-//        int maxRows = 6;
-//        GridPane boardGame = new GridPane();
-//        boardGame.setAlignment(Pos.CENTER);
-//        Collection<StackPane> stackPanes = new ArrayList<StackPane>();
-//        for (int row = 0; row < maxRows; row++) {
-//            for (int col = maxColumns - 1; col >= 0; col--) {
-//                StackPane stackPane = new StackPane();
-//
-//                // To occupy fixed space set the max and min size of
-//                // stackpanes.
-//                // stackPane.setPrefSize(150.0, 200.0);
-//                stackPane.setMaxSize(100.0, 100.0);
-//                stackPane.setMinSize(100.0, 100.0);
-//
-//                boardGame.add(stackPane, col, row);
-//                stackPanes.add(stackPane);
-//                num--;
-//            }
-//        }
-//        boardGame.setGridLinesVisible(true);
-//        boardGame.autosize();
-//
-
-
-    private Rectangle createBoundsRectangle(Bounds bounds) {
-        Rectangle rect = new Rectangle();
-        System.out.println("============= IN RECTANGLE FUNCTION ================");
-
-        rect.setFill(Color.TRANSPARENT);
-        rect.setStroke(Color.LIGHTGRAY.deriveColor(1, 1, 1, 0.5));
-        rect.setStrokeType(StrokeType.INSIDE);
-        rect.setStrokeWidth(3);
-
-
-        rect.setX(bounds.getMinX());
-        rect.setY(bounds.getMinY());
-        rect.setWidth(bounds.getWidth());
-        rect.setHeight(bounds.getHeight());
-        return rect;
+            // Retrieve the Rectangle and Update it with new position
+            Rectangle rec = (Rectangle) this.boardField.getChildren().get(i + 1);
+            setBlocks(block, rec);
+            this.boardField.getChildren().set(i + 1, rec);
+        }
     }
 
-    public void setBlocks(Block b, Rectangle rectangle){
-        int height, width,startrow, startcol;
-        boolean isHorizontal = b.isHorizontal();
-        int size = b.getSize();
-        int row = b.getRow();
-        int col = b.getCol();
+    private void setBlocks(Block b, Rectangle rec) {
+        int height, width, startRow, startCol;
 
-//        int gridX = this.boardField.getWidth() /
-
-        if(isHorizontal == true){
-             height = 75;
-             width = 75*size;
-            //rectangle.setHeight(height);
-            //rectangle.setWidth(width);
+        // TODO: Generalise numbers to boardField.pane / grid(X/Y)
+        if(b.isHorizontal()){
+            height = 75;
+            width = 75*b.getSize();
         } else {
-            height = 75*size;
+            height = 75*b.getSize();
             width = 75;
-            rectangle.setFill(Paint.valueOf("BLACK"));
         }
-        startrow = row*75;
-        startcol = col*75;
-        //startrow = 0;
-        //startcol = 0;
-        rectangle.setHeight(height);
-       rectangle.setWidth(width);
-        rectangle.setX(startcol);
-        rectangle.setY(startrow);
-        //Randomcolor(rectangle);
+        startRow = b.getRow()*75;
+        startCol = b.getCol()*75;
+
+        rec.setHeight(height);
+        rec.setWidth(width);
+        rec.setX(startCol);
+        rec.setY(startRow);
+        rec.setTranslateX(0);
+        rec.setTranslateY(0);
     }
+
+    @FXML
+    private void showGameWin(ActionEvent event) throws Exception {
+        // Initialise Popup Stage
+        Stage gameWinStage = new Stage();
+        gameWinStage.initStyle(StageStyle.UNDECORATED);
+        gameWinStage.initModality(Modality.APPLICATION_MODAL);
+        gameWinStage.initOwner(((Node)event.getSource()).getScene().getWindow());
+
+        // Load Screen
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("GameWin.fxml"));
+        Parent gameWinParent = loader.load();
+        Scene gameWinScene = new Scene(gameWinParent);
+
+        // Attach Controller
+        GameWinController gameWinController = loader.getController();
+        gameWinController.initData(this.mode, this.difficulty, this.level, 10);
+
+        gameWinStage.setScene(gameWinScene);
+        gameWinStage.show();
+    }
+
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
         Parent menuParent = FXMLLoader.load(getClass().getResource("Menu.fxml"));
@@ -187,18 +187,28 @@ public class GameController {
         window.setScene(menuScene);
     }
 
-   /* public void Randomcolor(Rectangle rec){
-        float r,g,b;
-        Random rand = new Random();
-        r = rand.nextFloat();
-        g =rand.nextFloat();
-        b = rand.nextFloat();
+    @FXML
+    private void undoMove(ActionEvent event) {
+        this.board.printGrid();
+        this.board.undoMove();
+        this.updateBoard();
+        this.board.printGrid();
+    }
 
-        Color randomColor;
-        randomColor = new Color(r, g, b);
+    @FXML
+    private void redoMove(ActionEvent event) {
+        this.board.printGrid();
+        this.board.redoMove();
+        this.updateBoard();
+        this.board.printGrid();
+    }
 
-        rec.setFill(randomColor);
-    }*/
-
+    @FXML
+    private void resetBoard(ActionEvent event) {
+        this.board.printGrid();
+        this.board.restart();
+        this.updateBoard();
+        this.board.printGrid();
+    }
 }
 

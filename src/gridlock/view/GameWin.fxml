@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: black;" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.GameWinController">
+   <children>
+      <VBox alignment="CENTER" layoutX="200.0" layoutY="142.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0">
+         <children>
+            <Label id="subtitle" fx:id="starsLabel" text="Label" />
+            <Label id="subtitle" fx:id="movesLabel" text="Label" />
+            <Button fx:id="nextLevelButton" layoutX="207.0" layoutY="203.0" mnemonicParsing="false" onAction="#navToNextLevel" text="Next Level" AnchorPane.topAnchor="203.0" />
+            <Button layoutX="222.0" layoutY="243.0" mnemonicParsing="false" onAction="#restartLevel" text="Restart" AnchorPane.rightAnchor="281.0" />
+            <Button layoutX="234.0" layoutY="329.0" mnemonicParsing="false" onAction="#navToMenu" text="Back" />
+         </children>
+      </VBox>
+      <Label id="title" layoutX="156.0" layoutY="24.0" text="You Win!" AnchorPane.topAnchor="30.0" />
+   </children>
+</AnchorPane>

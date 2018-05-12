@@ -31,7 +31,10 @@
             </Label>
          </children>
       </HBox>
-      <Button id="button_controls" fx:id="nextButton" disable="true" layoutX="114.0" layoutY="530.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Next Level" AnchorPane.leftAnchor="125.0" />
+      <Button fx:id="undoButton" layoutX="48.0" layoutY="75.0" mnemonicParsing="false" onAction="#undoMove" text="Undo" />
+      <Button fx:id="redoButton" layoutX="49.0" layoutY="159.0" mnemonicParsing="false" onAction="#redoMove" text="Redo" />
+      <Button fx:id="resetButton" layoutX="48.0" layoutY="236.0" mnemonicParsing="false" onAction="#resetBoard" text="Reset" />
+      <Button id="button_controls" fx:id="nextButton" disable="true" layoutX="114.0" layoutY="530.0" mnemonicParsing="false" onAction="#showGameWin" prefHeight="40.0" prefWidth="200.0" text="Next Level" AnchorPane.leftAnchor="125.0" />
       <Button id="button_controls" layoutX="471.0" layoutY="516.0" mnemonicParsing="false" onAction="#navToMenu" prefHeight="40.0" prefWidth="200.0" text="Quit" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="125.0" />
       <Pane fx:id="boardField" layoutX="32.0" layoutY="96.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="175.0" AnchorPane.rightAnchor="175.0" AnchorPane.topAnchor="75.0">
          <children>
