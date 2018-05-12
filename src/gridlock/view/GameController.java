@@ -61,7 +61,11 @@ public class GameController {
         this.movesLabel.setText("0");
 
         // Read Board from File
-        this.initialiseBoard("src/gridlock/resources/easy/1.txt");
+        String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
+//        System.out.println(levelName);
+        this.initialiseBoard(levelName);
+
+        this.board.printGrid();
 
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
