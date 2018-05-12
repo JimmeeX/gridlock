@@ -26,6 +26,10 @@ public class Block {
         this.position.add(newPosition);
     }
 
+    /**
+     * add a new position where the block is at
+     * @param newPosition the new [row,col] the block is at
+     */
     public void addPosition(Integer[] newPosition) {
         this.position.add(newPosition);
     }
@@ -36,15 +40,6 @@ public class Block {
      */
     public String getID() {
         return this.id;
-    }
-
-    /**
-     * check if the block is horizontal or vertical
-     * @return true if the block is horizontal
-     * @return false if the block is vertical
-     */
-    public boolean isHorizontal() {
-        return (position.get(0)[0] == position.get(1)[0]);
     }
 
     /**
@@ -85,6 +80,25 @@ public class Block {
                 this.position.get(item)[0] = newPosition[0] + item;
             }
         }
+    }
+
+    /**
+     * check if the block is horizontal or vertical
+     * @return true if the block is horizontal
+     * @return false if the block is vertical
+     */
+    public boolean isHorizontal() {
+        return (position.get(0)[0] == position.get(1)[0]);
+    }
+
+    public boolean samePosition(Integer[] newPosition) {
+        if (newPosition[0] == this.position.get(0)[0]) {
+            if (newPosition[1] == this.position.get(0)[1]) {
+                //System.out.println(newPosition[0] + "," + newPosition[1]);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
