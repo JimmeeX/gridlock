@@ -105,11 +105,11 @@ public class GameController {
         for(int i = 0; i < blockL.size(); i++) {
             Node currNode = this.recNodeList.get(i);
             if (blockL.get(i).isHorizontal()) {
-                MouseGestures hmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, 6, 6, true, currNode, this.recNodeList);
+                MouseGestures hmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, currNode, this.recNodeList);
                 hmg.makeDraggable(recNodeList.get(i));
 
             } else {
-                MouseGestures vmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, 6, 6, false, currNode, this.recNodeList);
+                MouseGestures vmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, currNode, this.recNodeList);
                 vmg.makeDraggable(recNodeList.get(i));
             }
             this.boardField.getChildren().addAll(this.recNodeList.get(i));
@@ -132,16 +132,19 @@ public class GameController {
     private void setBlocks(Block b, Rectangle rec) {
         int height, width, startRow, startCol;
 
-        // TODO: Generalise numbers to boardField.pane / grid(X/Y)
+        // Pane Size
+        int widthFactor = 450 / this.board.getGridSize();
+        int heightFactor = 450 / this.board.getGridSize();
+
         if(b.isHorizontal()){
-            height = 75;
-            width = 75*b.getSize();
+            height = heightFactor;
+            width = widthFactor*b.getSize();
         } else {
-            height = 75*b.getSize();
-            width = 75;
+            height = heightFactor*b.getSize();
+            width = widthFactor;
         }
-        startRow = b.getRow()*75;
-        startCol = b.getCol()*75;
+        startRow = b.getRow()*heightFactor;
+        startCol = b.getCol()*widthFactor;
 
         rec.setHeight(height);
         rec.setWidth(width);
