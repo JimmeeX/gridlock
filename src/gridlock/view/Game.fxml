@@ -83,5 +83,7 @@
             </GridPane>
          </children>
       </Pane>
+      <Label id="subtitle" fx:id="movesLabel" alignment="CENTER" layoutX="674.0" layoutY="91.0" text="Label" AnchorPane.leftAnchor="639.0" AnchorPane.rightAnchor="10.0" />
+      <Label id="subtitle" fx:id="timeLabel" alignment="CENTER" layoutX="658.0" layoutY="190.0" text="Label" AnchorPane.leftAnchor="639.0" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>

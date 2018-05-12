@@ -38,7 +38,6 @@ public class GameWinController {
 
         // Save Information
 
-
         // If Level 20, then disable nextLevelButton
         if (this.level == 20) {
             nextLevelButton.setDisable(true);

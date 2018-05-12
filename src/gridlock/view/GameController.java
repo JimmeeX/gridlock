@@ -1,6 +1,7 @@
 package gridlock.view;
 
 import gridlock.model.*;
+import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -40,6 +41,10 @@ public class GameController {
     @FXML
     private Label levelLabel;
     @FXML
+    private Label movesLabel;
+    @FXML
+    private Label timeLabel;
+    @FXML
     private Pane boardField;
     @FXML
     private Button nextButton;
@@ -53,6 +58,7 @@ public class GameController {
         this.modeLabel.setText(this.mode.toString());
         this.difficultyLabel.setText(this.difficulty.toString());
         this.levelLabel.setText(this.level.toString());
+        this.movesLabel.setText("0");
 
         // Read Board from File
         this.initialiseBoard("src/gridlock/resources/easy/1.txt");
@@ -69,6 +75,14 @@ public class GameController {
                 else {
                     nextButton.setDisable(true);
                 }
+            }
+        });
+
+        // Add Listener for Board Moves
+        this.board.numMovesProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                movesLabel.setText(newValue.toString());
             }
         });
 
@@ -184,7 +198,7 @@ public class GameController {
 
         // Attach Controller
         GameWinController gameWinController = loader.getController();
-        gameWinController.initData(this.mode, this.difficulty, this.level, 10);
+        gameWinController.initData(this.mode, this.difficulty, this.level, this.board.getNumOfMoves());
 
         gameWinStage.setScene(gameWinScene);
         gameWinStage.show();
@@ -202,6 +216,7 @@ public class GameController {
     private void undoMove(ActionEvent event) {
         this.board.printGrid();
         this.board.undoMove();
+        this.board.updateNumMoves();
         this.updateBoard();
         this.board.printGrid();
     }
@@ -210,6 +225,7 @@ public class GameController {
     private void redoMove(ActionEvent event) {
         this.board.printGrid();
         this.board.redoMove();
+        this.board.updateNumMoves();
         this.updateBoard();
         this.board.printGrid();
     }
@@ -218,6 +234,7 @@ public class GameController {
     private void resetBoard(ActionEvent event) {
         this.board.printGrid();
         this.board.restart();
+        this.board.updateNumMoves();
         this.updateBoard();
         this.board.printGrid();
     }
