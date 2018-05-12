@@ -7,9 +7,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.SettingsController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: black;" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.SettingsController">
     <children>
-        <VBox alignment="CENTER" layoutX="300.0" layoutY="91.0" prefHeight="200.0" prefWidth="248.0">
+        <VBox alignment="CENTER" layoutX="300.0" layoutY="91.0" prefHeight="200.0" prefWidth="248.0" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0">
             <children>
                 <Label id="text" text="Sound" />
                 <Slider fx:id="soundSlider" prefHeight="14.0" prefWidth="215.0">
@@ -20,6 +20,7 @@
                 <Slider fx:id="musicSlider" />
             </children>
         </VBox>
-        <Button id="button_controls" layoutX="324.0" layoutY="524.0" mnemonicParsing="false" onAction="#navToMenu" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" />
+        <Button id="button_controls" layoutX="324.0" layoutY="524.0" mnemonicParsing="false" onAction="#navToMenu" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" />
+      <Label id="title" alignment="CENTER" layoutX="386.0" layoutY="54.0" text="Label" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="30.0" />
     </children>
 </AnchorPane>

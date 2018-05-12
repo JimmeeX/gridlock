@@ -15,6 +15,13 @@
     -fx-text-fill: #DDDEE0;
 }
 
+#popup {
+    -fx-background-image: none;
+    -fx-background-color: black;
+    -fx-border-color:  #C39E3A;
+    -fx-border-width: 10;
+}
+
 #title {
     -fx-font-size: 64px;
     -fx-font-weight: 900;
@@ -41,13 +48,17 @@
 }
 
 #obstacles {
-    -fx-stroke: cyan;
-    -fx-fill: black;
+    -fx-arc-width: 25;
+    -fx-arc-height: 25;
 }
 
 #player {
-    -fx-stroke: cyan;
-    -fx-fill: red;
+    -fx-arc-width: 25;
+    -fx-arc-height: 25;
+}
+
+#grid {
+    -fx-background-color: #6A4A24;
 }
 
 .button {

@@ -5,8 +5,12 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class MouseGestures {
@@ -33,6 +37,8 @@ public class MouseGestures {
 
     private DragContext dragContext = new DragContext();
 
+    private MediaPlayer mediaPlayer;
+
     public MouseGestures(String id, Board board, Pane pane,
                          int gridX, int gridY, Boolean isHorizontal,
                             Node recNode, ArrayList<Node> recNodeL) {
@@ -44,6 +50,22 @@ public class MouseGestures {
         this.isHorizontal = isHorizontal;
         this.currObject = recNode;
         this.enObjects = recNodeL;
+
+        // Initialise Sound
+        Media musicFile = new Media(new File("src/gridlock/static/audio/block_move_0.wav").toURI().toString());
+        mediaPlayer = new MediaPlayer(musicFile);
+        // TODO: Set Volume. How to get values from SettingsController in a nice way?
+//        mediaPlayer.setVolume();
+
+        mediaPlayer.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                // Set audio back to the beginning.
+                mediaPlayer.stop();
+                mediaPlayer.seek(mediaPlayer.getStartTime());
+            }
+        });
+
     }
 
     public void makeDraggable(Node node) {
@@ -106,28 +128,19 @@ public class MouseGestures {
         Integer[] newPosition = {newRow, newCol};
         this.board.makeMove(this.id, newPosition);
         this.board.checkGameOver();
+
+        mediaPlayer.play();
     };
 
     // TODO: Make Collisions more smoother
     private boolean collisionCheck() {
         // Make Bounds Smaller
-        Rectangle bounds;
-        if (this.isHorizontal) {
-            bounds = new Rectangle(
-                    this.currObject.getBoundsInParent().getMinX() + 2,
-                    this.currObject.getBoundsInParent().getMinY() + 2,
-                    this.currObject.getBoundsInParent().getWidth() - 4,
-                    this.currObject.getBoundsInParent().getHeight() - 4
-            );
-        }
-        else {
-            bounds = new Rectangle(
-                    this.currObject.getBoundsInParent().getMinX() + 2,
-                    this.currObject.getBoundsInParent().getMinY() + 2,
-                    this.currObject.getBoundsInParent().getWidth() - 4,
-                    this.currObject.getBoundsInParent().getHeight() - 4
-            );
-        }
+        Rectangle bounds = new Rectangle(
+                this.currObject.getBoundsInParent().getMinX() + 2,
+                this.currObject.getBoundsInParent().getMinY() + 2,
+                this.currObject.getBoundsInParent().getWidth() - 4,
+                this.currObject.getBoundsInParent().getHeight() - 4
+        );
         for (Node enObject: this.enObjects) {
             if (bounds.intersects(enObject.getBoundsInParent()) && (!this.currObject.equals(enObject))) {
                 return true;
