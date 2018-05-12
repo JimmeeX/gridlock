@@ -1,36 +1,30 @@
 package gridlock.view;
 
 import gridlock.model.*;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
+import javafx.scene.effect.BoxBlur;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.InnerShadow;
+import javafx.scene.effect.Reflection;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
 import javafx.stage.Modality;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
 
 public class GameController {
     private Board board;
@@ -155,6 +149,20 @@ public class GameController {
         rec.setY(startRow);
         rec.setTranslateX(0);
         rec.setTranslateY(0);
+
+        // Add Image
+        if (b.getID().equals("z")) {
+            rec.setFill(new ImagePattern(new Image("gridlock/static/block_2.jpg")));
+        }
+        else {
+            // TODO: How to rotate a texture?
+            rec.setFill(new ImagePattern(new Image("gridlock/static/block_1.jpg")));
+        }
+        rec.setEffect(new BoxBlur());
+
+        // Add Effects
+        InnerShadow effect = new InnerShadow();
+        rec.setEffect(effect);
     }
 
     @FXML
@@ -209,6 +217,11 @@ public class GameController {
         this.board.restart();
         this.updateBoard();
         this.board.printGrid();
+    }
+
+    @FXML
+    private void showHint(ActionEvent event) {
+        // TODO
     }
 }
 
