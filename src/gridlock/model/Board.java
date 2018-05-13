@@ -3,6 +3,9 @@ package gridlock.model;
 //hmm I reckon the id is to look for the block
 //(say when we move a block, we refer to them by their idk) - Alina
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -18,9 +21,11 @@ public class Board {
     private Integer level;
     private ArrayList<String[]> grid;
     private ArrayList<Block> blocks;
-    private int numOfMoves;
     private ArrayList<Block> prevLocations;
     private ArrayList<Block> nextLocations;
+
+    // Added by James :)
+    private BooleanProperty gameState;
 
     /**
      * Board class constructor
@@ -28,9 +33,12 @@ public class Board {
     public Board() {
         initialiseGrid(6);
         this.blocks = new ArrayList<>();
-        this.numOfMoves = 0;
         this.prevLocations = new ArrayList<>();
         this.nextLocations = new ArrayList<>();
+
+        // Added by James :)
+        // Board starts off as unsolved (ie, false)
+        this.gameState = new SimpleBooleanProperty(false);
     }
 
     /**
@@ -51,8 +59,7 @@ public class Board {
                     }
                 }
             }
-            playGame();
-            printGrid();
+            //playGame();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -60,6 +67,10 @@ public class Board {
         }
     }
 
+    /**
+     * get the size of the grid
+     * @return grid.size()
+     */
     public int getGridSize() {
         return this.grid.size();
     }
@@ -97,9 +108,6 @@ public class Board {
         printGrid();
         makeMove("z", newPosition(2,4));
         printGrid();
-        if (gameOver() == true) {
-            System.out.println("GAME OVER");
-        }
         restart();
         printGrid();
     }
@@ -129,8 +137,6 @@ public class Board {
         this.level = level;
     }
 
-    // I CHANGED THIS TO GETTING THE GRID INSTEAD
-    // DIDN'T CHECK IF THIS IS USED IN OTHER FILES SOZ - ALINA
     public ArrayList<String[]> getBoard() {
         return this.grid;
     }
@@ -147,13 +153,17 @@ public class Board {
         return level;
     }
 
+    public int getNumOfMoves() {
+        return this.prevLocations.size();
+    }
+
     @Override
     public String toString() {
         return "Gridlock{" +
                 "board=" + this.grid +
                 ", difficulty=" + this.difficulty +
                 ", mode=" + this.mode +
-                ", level=" + this.level + ", numOfMoves=" + this.numOfMoves +
+                ", level=" + this.level + ", numOfMoves=" + this.prevLocations.size()+
                 '}';
     }
 
@@ -173,6 +183,7 @@ public class Board {
         }
     }
 
+
     /**
      * print the grid
      */
@@ -191,15 +202,15 @@ public class Board {
             System.out.println();
         }
         System.out.println("nextLocation = " + this.nextLocations.size() + " prevLocation = "
-                + this.prevLocations.size() + " numOfMoves = " + this.numOfMoves);
-        /*System.out.println("prevLoc:");
+                + this.prevLocations.size() + " numOfMoves = " + this.prevLocations.size());
+        System.out.println("prevLoc:");
         for (Block block: prevLocations) {
             System.out.println(block.toString());
         }
         System.out.println("nextLoc:");
         for (Block block: nextLocations) {
             System.out.println(block.toString());
-        }*/
+        }
         System.out.println();
     }
 
@@ -258,29 +269,75 @@ public class Board {
      * @pre the move is valid (within grid, according to the block direction)
      */
     public void makeMove(String id, Integer[] newStartPosition) {
+        makeMove (id, newStartPosition, true);
+    }
+    private void makeMove(String id, Integer[] newStartPosition, boolean undoAutomatisation) {
         for (Block block : this.blocks) {
             if (block.getID().equals(id)) {
-                Block oldBlock = new Block(id, block.getPosition().get(0)[0], block.getPosition().get(0)[1]);
-                this.prevLocations.add(oldBlock);
-                numOfMoves++;
-                block.setNewPosition(newStartPosition);
+                if(!block.samePosition(newStartPosition) && !collide(block, newStartPosition)) {
+                    Block oldBlock = new Block(id, block.getPosition().get(0)[0], block.getPosition().get(0)[1]);
+                    this.prevLocations.add(oldBlock);
+                    block.setNewPosition(newStartPosition);
+                    if (undoAutomatisation && !nextLocations.isEmpty()) {
+                        // Decide redo availability: if the new step if equal to the
+                        //      redo step, the redo is maintained. Otherwise, redo options are deleted.
+                        Block problyDeletedBlock = nextLocations.get(nextLocations.size() - 1);
+                        if (block.getID().equals(problyDeletedBlock.getID())
+                                && block.getCol() == problyDeletedBlock.getCol()
+                                && block.getRow() == problyDeletedBlock.getRow()) {
+                            nextLocations.remove(nextLocations.size()-1);
+                        } else {
+                            nextLocations.clear();
+                        }
+                    }
+                }
             }
         }
     }
 
     /**
-     * check if the game is over (the "z" car is by the exit)
-     * @return false if the game is not over
-     * @return true if the game is over
+     * Check if the new position of a block collides with others
+     * @param thisBlock
+     * @param newStartPosition
+     * @return
      */
-    public boolean gameOver() {
+    private boolean collide(Block thisBlock, Integer[] newStartPosition) {
         for (Block block: this.blocks) {
-            if (block.getID().equals("z")) {
-                if (block.getPosition().get(0)[1] == 4) return true;
-                else return false;
+            if (!block.getID().equals(thisBlock.getID())) {
+                for (Integer[] position : block.getPosition()) {
+                    if (position[0] == newStartPosition[0] && position[1] == newStartPosition[1]) {
+                        return true;
+                    }
+                }
             }
         }
         return false;
+    }
+
+    /**
+     * Check if the game is over (the "z" car is by the exit)
+     * Will send "true" to "gameState" if game is over
+     */
+    // Added by James :)
+    public void checkGameOver() {
+        this.gameState.setValue(false);
+        for (Block block: this.blocks) {
+            if (block.getID().equals("z")) {
+                if (block.getPosition().get(0)[1] == 4) {
+                    this.gameState.setValue(true);
+                }
+            }
+        }
+    }
+
+    // Added by James :)
+    public boolean isGameState() {
+        return gameState.get();
+    }
+
+    // Added by James :)
+    public BooleanProperty gameStateProperty() {
+        return gameState;
     }
 
     /**
@@ -292,14 +349,14 @@ public class Board {
         if (this.prevLocations.size() != 0) {
             Block copy = this.prevLocations.get(this.prevLocations.size() - 1);
             Block block = new Block(copy.getID(), copy.getPosition().get(0)[0], copy.getPosition().get(0)[1]);
-            this.prevLocations.remove(copy);
+            this.prevLocations.remove(this.prevLocations.size() - 1);
             for (Block oldBlock: this.blocks) {
                 if (oldBlock.getID().equals(block.getID())) {
                     Block toAdd = new Block(oldBlock.getID(), oldBlock.getPosition().get(0)[0], oldBlock.getPosition().get(0)[1]);
                     this.nextLocations.add(toAdd);
                 }
             }
-            makeMove(block.getID(), block.getPosition().get(0));
+            makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
     }
@@ -311,16 +368,16 @@ public class Board {
      */
     public void redoMove() {
         if (this.nextLocations.size() != 0) {
-            Block copy = this.nextLocations.get(0);
+            Block copy = this.nextLocations.get(this.nextLocations.size() - 1);
             Block block = new Block(copy.getID(), copy.getPosition().get(0)[0], copy.getPosition().get(0)[1]);
-            this.nextLocations.remove(copy);
+            this.nextLocations.remove(this.nextLocations.size()-1);
             for (Block oldBlock: this.blocks) {
                 if (oldBlock.getID().equals(block.getID())) {
                     Block toAdd = new Block(oldBlock.getID(), oldBlock.getPosition().get(0)[0], oldBlock.getPosition().get(0)[1]);
                     this.prevLocations.add(toAdd);
                 }
             }
-            makeMove(block.getID(), block.getPosition().get(0));
+            makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
     }
@@ -332,13 +389,11 @@ public class Board {
      * @post this.nextLocation.size() = 0
      */
     public void restart() {
-        for (int item = this.prevLocations.size(); item > 0; item--) {
-            Block block = this.prevLocations.get(item - 1);
-            makeMove(block.getID(), block.getPosition().get(0));
+        while (this.prevLocations.size() > 0) {
+            undoMove();
         }
         this.prevLocations.clear();
         this.nextLocations.clear();
-        this.numOfMoves = 0;
     }
 
 }
