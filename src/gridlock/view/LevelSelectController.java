@@ -2,6 +2,7 @@ package gridlock.view;
 
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
+import gridlock.model.SystemSettings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +15,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
 public class LevelSelectController {
+    private SystemSettings settings;
     private Mode mode;
     private Difficulty difficulty;
 
@@ -24,7 +26,8 @@ public class LevelSelectController {
     @FXML
     private Label difficultyLabel;
 
-    public void initData(Mode mode, Difficulty difficulty) {
+    public void initData(SystemSettings settings, Mode mode, Difficulty difficulty) {
+        this.settings = settings;
         this.mode = mode;
         this.difficulty = difficulty;
 
@@ -34,8 +37,14 @@ public class LevelSelectController {
 
     @FXML
     private void navToPlaySettings(ActionEvent event) throws Exception {
-        Parent playSettingsParent = FXMLLoader.load(getClass().getResource("PlaySettings.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("PlaySettings.fxml"));
+        Parent playSettingsParent = loader.load();
         Scene playSettingsScene = new Scene(playSettingsParent);
+
+        PlaySettingsController playSettingsController = loader.getController();
+        playSettingsController.initData(this.settings);
+
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(playSettingsScene);
     }
@@ -59,7 +68,7 @@ public class LevelSelectController {
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(this.mode, this.difficulty, selectedLevel);
+        gameController.initData(this.settings, this.mode, this.difficulty, selectedLevel);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
@@ -68,5 +77,10 @@ public class LevelSelectController {
     private Integer getLevel() {
         ToggleButton selectedLevel = (ToggleButton) toggleLevel.getSelectedToggle();
         return Integer.parseInt(selectedLevel.getText());
+    }
+
+    @FXML
+    private void playButtonPressSound() {
+        this.settings.playButtonPressSound();
     }
 }

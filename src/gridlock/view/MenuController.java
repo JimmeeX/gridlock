@@ -1,5 +1,6 @@
 package gridlock.view;
 
+import gridlock.model.SystemSettings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +10,11 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MenuController {
+    private SystemSettings settings;
+
+    public void initData(SystemSettings settings) {
+        this.settings = settings;
+    }
 
     /**
      * Navigate to Play Settings Scene after press "Play"
@@ -17,8 +23,14 @@ public class MenuController {
      */
     @FXML
     private void navToPlaySettings(ActionEvent event) throws Exception {
-        Parent playSettingsParent = FXMLLoader.load(getClass().getResource("PlaySettings.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("PlaySettings.fxml"));
+        Parent playSettingsParent = loader.load();
         Scene playSettingsScene = new Scene(playSettingsParent);
+
+        PlaySettingsController playSettingsController = loader.getController();
+        playSettingsController.initData(this.settings);
+
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(playSettingsScene);
     }
@@ -30,8 +42,14 @@ public class MenuController {
      */
     @FXML
     private void navToSettings(ActionEvent event) throws Exception {
-        Parent settingsParent = FXMLLoader.load(getClass().getResource("Settings.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("Settings.fxml"));
+        Parent settingsParent = loader.load();
         Scene settingsScene = new Scene(settingsParent);
+
+        SettingsController settingsController = loader.getController();
+        settingsController.initData(this.settings);
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(settingsScene);
     }
@@ -43,8 +61,14 @@ public class MenuController {
      */
     @FXML
     private void navToHelp(ActionEvent event) throws Exception {
-        Parent helpParent = FXMLLoader.load(getClass().getResource("Help.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("Help.fxml"));
+        Parent helpParent = loader.load();
         Scene helpScene = new Scene(helpParent);
+
+        HelpController helpController = loader.getController();
+        helpController.initData(this.settings);
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(helpScene);
     }
@@ -56,8 +80,14 @@ public class MenuController {
      */
     @FXML
     private void navToAbout(ActionEvent event) throws Exception {
-        Parent aboutParent = FXMLLoader.load(getClass().getResource("About.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("About.fxml"));
+        Parent aboutParent = loader.load();
         Scene aboutScene = new Scene(aboutParent);
+
+        AboutController aboutController = loader.getController();
+        aboutController.initData(this.settings);
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(aboutScene);
     }
@@ -72,4 +102,8 @@ public class MenuController {
         window.close();
     }
 
+    @FXML
+    private void playButtonPressSound() {
+        this.settings.playButtonPressSound();
+    }
 }

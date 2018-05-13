@@ -28,6 +28,7 @@ import javafx.stage.StageStyle;
 import java.util.ArrayList;
 
 public class GameController {
+    private SystemSettings settings;
     private Board board;
     private Mode mode;
     private Difficulty difficulty;
@@ -47,8 +48,9 @@ public class GameController {
     @FXML
     private Button nextButton;
 
-    public void initData(Mode mode, Difficulty difficulty, Integer level) {
+    public void initData(SystemSettings settings, Mode mode, Difficulty difficulty, Integer level) {
         // Initialise Variables
+        this.settings = settings;
         this.mode = mode;
         this.difficulty = difficulty;
         this.level = level;
@@ -120,11 +122,11 @@ public class GameController {
         for(int i = 0; i < blockL.size(); i++) {
             Node currNode = this.recNodeList.get(i);
             if (blockL.get(i).isHorizontal()) {
-                MouseGestures hmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, currNode, this.recNodeList);
+                MouseGestures hmg = new MouseGestures(this.settings, blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, currNode, this.recNodeList);
                 hmg.makeDraggable(recNodeList.get(i));
 
             } else {
-                MouseGestures vmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, currNode, this.recNodeList);
+                MouseGestures vmg = new MouseGestures(this.settings, blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, currNode, this.recNodeList);
                 vmg.makeDraggable(recNodeList.get(i));
             }
             this.boardField.getChildren().addAll(this.recNodeList.get(i));
@@ -173,7 +175,6 @@ public class GameController {
             rec.setFill(new ImagePattern(new Image("gridlock/static/block_6.jpg")));
         }
         else {
-            // TODO: How to rotate a texture?
             rec.setFill(new ImagePattern(new Image("gridlock/static/block_7.jpg")));
         }
         rec.setEffect(new BoxBlur());
@@ -199,7 +200,7 @@ public class GameController {
 
         // Attach Controller
         GameWinController gameWinController = loader.getController();
-        gameWinController.initData(this.mode, this.difficulty, this.level, this.board.getNumOfMoves());
+        gameWinController.initData(this.settings, this.mode, this.difficulty, this.level, this.board.getNumOfMoves());
 
         gameWinStage.setScene(gameWinScene);
         gameWinStage.show();
@@ -213,7 +214,7 @@ public class GameController {
         Scene levelSelectScene = new Scene(levelSelectParent);
 
         LevelSelectController levelSelectController = loader.getController();
-        levelSelectController.initData(this.mode, this.difficulty);
+        levelSelectController.initData(this.settings, this.mode, this.difficulty);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(levelSelectScene);
@@ -221,9 +222,15 @@ public class GameController {
 
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
-        Parent menuParent = FXMLLoader.load(getClass().getResource("Menu.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("Menu.fxml"));
+        Parent menuParent = loader.load();
         Scene menuScene = new Scene(menuParent);
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+        MenuController menuController = loader.getController();
+        menuController.initData(this.settings);
+
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(menuScene);
     }
 
@@ -257,6 +264,11 @@ public class GameController {
     @FXML
     private void showHint(ActionEvent event) {
         // TODO
+    }
+
+    @FXML
+    private void playButtonPressSound() {
+        this.settings.playButtonPressSound();
     }
 }
 

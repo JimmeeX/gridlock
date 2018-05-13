@@ -25,12 +25,12 @@
       <Label id="title" alignment="CENTER" layoutX="156.0" layoutY="24.0" text="You Win!" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="10.0" />
       <VBox alignment="CENTER" layoutX="50.0" layoutY="248.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="200.0">
          <children>
-            <Button layoutX="52.0" layoutY="229.0" mnemonicParsing="false" onAction="#restartLevel" prefHeight="40.0" prefWidth="200.0" text="Restart" AnchorPane.rightAnchor="348.0">
+            <Button layoutX="52.0" layoutY="229.0" mnemonicParsing="false" onAction="#restartLevel" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Restart" AnchorPane.rightAnchor="348.0">
                <VBox.margin>
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
             </Button>
-            <Button layoutX="23.0" layoutY="285.0" mnemonicParsing="false" onAction="#navToMenu" prefHeight="40.0" prefWidth="200.0" text="Back">
+            <Button layoutX="23.0" layoutY="285.0" mnemonicParsing="false" onAction="#navToMenu" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Back">
                <VBox.margin>
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
@@ -39,12 +39,12 @@
       </VBox>
       <VBox alignment="CENTER" layoutX="348.0" layoutY="232.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="200.0">
          <children>
-            <Button fx:id="nextLevelButton" layoutX="348.0" layoutY="222.0" mnemonicParsing="false" onAction="#navToNextLevel" prefHeight="40.0" prefWidth="200.0" text="Next Level" AnchorPane.topAnchor="222.0">
+            <Button fx:id="nextLevelButton" layoutX="348.0" layoutY="222.0" mnemonicParsing="false" onAction="#navToNextLevel" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Next Level" AnchorPane.topAnchor="222.0">
                <VBox.margin>
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
             </Button>
-            <Button layoutX="382.0" layoutY="285.0" mnemonicParsing="false" onAction="#navToLevelSelect" text="Level Select">
+            <Button layoutX="382.0" layoutY="285.0" mnemonicParsing="false" onAction="#navToLevelSelect" onMousePressed="#playButtonPressSound" text="Level Select">
                <VBox.margin>
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
