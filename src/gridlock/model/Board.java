@@ -165,7 +165,7 @@ public class Board {
     public void initialiseGrid(int size) {
         this.grid = new ArrayList<>();
         for (int row = 0; row < size; row++) {
-            String[] newRow = new String[6];
+            String[] newRow = new String[size];
             for (int col = 0; col < size; col++) {
                 newRow[col] = "*";
             }
@@ -340,4 +340,5 @@ public class Board {
         this.nextLocations.clear();
         this.numOfMoves = 0;
     }
+
 }
