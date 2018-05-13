@@ -62,8 +62,6 @@ public class GameController {
         String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
         this.initialiseBoard(levelName);
 
-        this.board.printGrid();
-
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -229,29 +227,23 @@ public class GameController {
 
     @FXML
     private void undoMove(ActionEvent event) {
-        this.board.printGrid();
         this.board.undoMove();
         this.board.updateNumMoves();
         this.updateBoard();
-        this.board.printGrid();
     }
 
     @FXML
     private void redoMove(ActionEvent event) {
-        this.board.printGrid();
         this.board.redoMove();
         this.board.updateNumMoves();
         this.updateBoard();
-        this.board.printGrid();
     }
 
     @FXML
     private void resetBoard(ActionEvent event) {
-        this.board.printGrid();
         this.board.restart();
         this.board.updateNumMoves();
         this.updateBoard();
-        this.board.printGrid();
     }
 
     @FXML

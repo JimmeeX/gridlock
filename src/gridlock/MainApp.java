@@ -1,6 +1,6 @@
 package gridlock;
 
-import gridlock.model.Board;
+import gridlock.model.BoardSimulation;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -22,9 +22,8 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-        Board board = new Board();
-        board.process("src/gridlock/resources/easy/1.txt");
+        BoardSimulation bs = new BoardSimulation();
+        bs.playGame();
         launch(args);
     }
-
 }

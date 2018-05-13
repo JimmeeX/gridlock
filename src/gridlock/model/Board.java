@@ -63,7 +63,8 @@ public class Board {
                     }
                 }
             }
-            //playGame();
+            System.out.println("DEBUG Zero movement");
+            printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -85,48 +86,6 @@ public class Board {
      */
     public ArrayList<Block> getBlocks() {
         return this.blocks;
-    }
-
-    /**
-     * simulation of playing the game
-     */
-    private void playGame() {
-        printGrid();
-        makeMove("a", newPosition(0,1));
-        printGrid();
-        makeMove("c", newPosition(0,0));
-        printGrid();
-        makeMove("d", newPosition(3,0));
-        printGrid();
-        makeMove("g", newPosition(5,0));
-        printGrid();
-        makeMove("f", newPosition(4,1));
-        printGrid();
-        makeMove("e", newPosition(3,3));
-        printGrid();
-        makeMove("b", newPosition(3,5));
-        printGrid();
-        undoMove();
-        printGrid();
-        redoMove();
-        printGrid();
-        makeMove("z", newPosition(2,4));
-        printGrid();
-        restart();
-        printGrid();
-    }
-
-    /**
-     * helper method for playing game
-     * @param row the row position of the block
-     * @param col the col position of the block
-     * @return the array of position of the block (row,col)
-     */
-    private Integer[] newPosition(int row, int col) {
-        Integer[] newPosition = new Integer[2];
-        newPosition[0] = row;
-        newPosition[1] = col;
-        return newPosition;
     }
 
     public void setDifficulty(String diff) {
@@ -288,16 +247,24 @@ public class Board {
      * @pre the move is valid (within grid, according to the block direction)
      */
     public void makeMove(String id, Integer[] newStartPosition) {
+        int oldNumOfMoves = getNumOfMoves();
         makeMove (id, newStartPosition, true);
+        if (getNumOfMoves() != oldNumOfMoves) {
+            System.out.println("DEBUG Normal movement");
+            printGrid();
+        } else {
+            System.out.println("DEBUG No movement\n");
+        }
     }
-    private void makeMove(String id, Integer[] newStartPosition, boolean undoAutomatisation) {
+    private void makeMove(String id, Integer[] newStartPosition, boolean redoAutomatisation) {
         for (Block block : this.blocks) {
             if (block.getID().equals(id)) {
-                if(!block.samePosition(newStartPosition) && !collide(block, newStartPosition)) {
+                if(!block.samePosition(newStartPosition) && validDirection(block, newStartPosition)
+                        && !collide(block, newStartPosition)) {
                     Block oldBlock = new Block(id, block.getPosition().get(0)[0], block.getPosition().get(0)[1]);
                     this.prevLocations.add(oldBlock);
                     block.setNewPosition(newStartPosition);
-                    if (undoAutomatisation && !nextLocations.isEmpty()) {
+                    if (redoAutomatisation && !nextLocations.isEmpty()) {
                         // Decide redo availability: if the new step if equal to the
                         //      redo step, the redo is maintained. Otherwise, redo options are deleted.
                         Block problyDeletedBlock = nextLocations.get(nextLocations.size() - 1);
@@ -315,7 +282,17 @@ public class Board {
     }
 
     /**
-     * Check if the new position of a block collides with others
+     * Check whether the block is validly horizontally / vertically shifted to the new position
+     * @param thisBlock
+     * @param newStartPosition the new starting position of the block
+     * @return
+     */
+    private boolean validDirection(Block thisBlock, Integer[] newStartPosition) {
+        return thisBlock.isHorizontal() ? newStartPosition[0].equals(thisBlock.getRow())
+                : newStartPosition[1].equals(thisBlock.getCol());
+    }
+    /**
+     * Check if the new position of a block collides with others and walls
      * @param thisBlock
      * @param newStartPosition
      * @return
@@ -324,11 +301,20 @@ public class Board {
         for (Block block: this.blocks) {
             if (!block.getID().equals(thisBlock.getID())) {
                 for (Integer[] position : block.getPosition()) {
-                    if (position[0] == newStartPosition[0] && position[1] == newStartPosition[1]) {
-                        return true;
+                    if (thisBlock.isHorizontal()) {
+                        if (position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize()-1 &&
+                            position[0] == newStartPosition[0]) return true;
+                    } else {
+                        if (position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize()-1 &&
+                            position[1] == newStartPosition[1]) return true;
                     }
                 }
             }
+        }
+        if (thisBlock.isHorizontal()) {
+            if (newStartPosition[1] + thisBlock.getSize()-1 > 6) return true;
+        } else {
+            if (newStartPosition[0] + thisBlock.getSize()-1 > 6) return true;
         }
         return false;
     }
@@ -378,6 +364,8 @@ public class Board {
             makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
+        System.out.println("DEBUG Undo movement:");
+        printGrid();
     }
 
     /**
@@ -399,6 +387,8 @@ public class Board {
             makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
+        System.out.println("DEBUG Redo movement:");
+        printGrid();
     }
 
     /**
@@ -413,6 +403,8 @@ public class Board {
         }
         this.prevLocations.clear();
         this.nextLocations.clear();
+        System.out.println("DEBUG Restart movement:");
+        printGrid();
     }
 
 }
