@@ -94,15 +94,20 @@ public class MouseGestures {
         double deltaX = dragContext.x + event.getSceneX();
         double deltaY = dragContext.y + event.getSceneY();
 
+        double distMinX = deltaX + this.initialMinX;
+        double distMaxX = deltaX + this.initialMaxX;
+        double distMinY = deltaY + this.initialMinY;
+        double distMaxY = deltaY + this.initialMaxY;
+
         if (this.isHorizontal) {
-            if ((deltaX + this.initialMinX < 0 || deltaX + this.initialMaxX > this.pane.getWidth()) || collisionCheck()) {
+            if ((distMinX < 0 || distMaxX > this.pane.getWidth()) || collisionCheck(distMinX, distMaxX, distMinY, distMaxY)) {
                 return;
             }
             node.setTranslateX(deltaX);
         }
 
         else {
-            if (deltaY + this.initialMinY < 0 || deltaY + this.initialMaxY > this.pane.getHeight() || collisionCheck()) {
+            if (distMinY < 0 || distMaxY > this.pane.getHeight() || collisionCheck(distMinX, distMaxX, distMinY, distMaxY)) {
                 return;
             }
             node.setTranslateY(deltaY);
@@ -127,20 +132,22 @@ public class MouseGestures {
         int newCol = (int)((xRounded +this.initialMinX) / xFactor);
         Integer[] newPosition = {newRow, newCol};
         this.board.makeMove(this.id, newPosition);
+        this.board.updateNumMoves();
         this.board.checkGameOver();
 
         mediaPlayer.play();
     };
 
-    // TODO: Make Collisions more smoother
-    private boolean collisionCheck() {
+    private boolean collisionCheck(double minX, double maxX, double minY, double maxY) {
         // Make Bounds Smaller
-        Rectangle bounds = new Rectangle(
-                this.currObject.getBoundsInParent().getMinX() + 2,
-                this.currObject.getBoundsInParent().getMinY() + 2,
-                this.currObject.getBoundsInParent().getWidth() - 4,
-                this.currObject.getBoundsInParent().getHeight() - 4
-        );
+        Rectangle bounds;
+        if (this.isHorizontal) {
+            // For Horizontal Rectangles, make Y bounds small, with normal X bounds.
+            bounds = new Rectangle(minX, (this.initialMinY + this.initialMaxY)/2, maxX - minX, 1);
+        }
+        else {
+            bounds = new Rectangle((this.initialMinX + this.initialMaxX)/2, minY, 1, maxY - minY);
+        }
         for (Node enObject: this.enObjects) {
             if (bounds.intersects(enObject.getBoundsInParent()) && (!this.currObject.equals(enObject))) {
                 return true;

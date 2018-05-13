@@ -1,6 +1,7 @@
 package gridlock.view;
 
 import gridlock.model.*;
+import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -40,6 +41,8 @@ public class GameController {
     @FXML
     private Label levelLabel;
     @FXML
+    private Label movesLabel;
+    @FXML
     private Pane boardField;
     @FXML
     private Button nextButton;
@@ -52,10 +55,14 @@ public class GameController {
 
         this.modeLabel.setText(this.mode.toString());
         this.difficultyLabel.setText(this.difficulty.toString());
-        this.levelLabel.setText(this.level.toString());
+        this.levelLabel.setText("Level " + this.level.toString());
+        this.movesLabel.setText("Moves: 0");
 
         // Read Board from File
-        this.initialiseBoard("src/gridlock/resources/easy/1.txt");
+        String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
+        this.initialiseBoard(levelName);
+
+        this.board.printGrid();
 
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
@@ -69,6 +76,14 @@ public class GameController {
                 else {
                     nextButton.setDisable(true);
                 }
+            }
+        });
+
+        // Add Listener for Board Moves
+        this.board.numMovesProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                movesLabel.setText("Moves: " + newValue.toString());
             }
         });
 
@@ -105,11 +120,11 @@ public class GameController {
         for(int i = 0; i < blockL.size(); i++) {
             Node currNode = this.recNodeList.get(i);
             if (blockL.get(i).isHorizontal()) {
-                MouseGestures hmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, 6, 6, true, currNode, this.recNodeList);
+                MouseGestures hmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, currNode, this.recNodeList);
                 hmg.makeDraggable(recNodeList.get(i));
 
             } else {
-                MouseGestures vmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, 6, 6, false, currNode, this.recNodeList);
+                MouseGestures vmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, currNode, this.recNodeList);
                 vmg.makeDraggable(recNodeList.get(i));
             }
             this.boardField.getChildren().addAll(this.recNodeList.get(i));
@@ -132,16 +147,19 @@ public class GameController {
     private void setBlocks(Block b, Rectangle rec) {
         int height, width, startRow, startCol;
 
-        // TODO: Generalise numbers to boardField.pane / grid(X/Y)
+        // Pane Size
+        int widthFactor = 450 / this.board.getGridSize();
+        int heightFactor = 450 / this.board.getGridSize();
+
         if(b.isHorizontal()){
-            height = 75;
-            width = 75*b.getSize();
+            height = heightFactor;
+            width = widthFactor*b.getSize();
         } else {
-            height = 75*b.getSize();
-            width = 75;
+            height = heightFactor*b.getSize();
+            width = widthFactor;
         }
-        startRow = b.getRow()*75;
-        startCol = b.getCol()*75;
+        startRow = b.getRow()*heightFactor;
+        startCol = b.getCol()*widthFactor;
 
         rec.setHeight(height);
         rec.setWidth(width);
@@ -152,11 +170,11 @@ public class GameController {
 
         // Add Image
         if (b.getID().equals("z")) {
-            rec.setFill(new ImagePattern(new Image("gridlock/static/block_2.jpg")));
+            rec.setFill(new ImagePattern(new Image("gridlock/static/block_6.jpg")));
         }
         else {
             // TODO: How to rotate a texture?
-            rec.setFill(new ImagePattern(new Image("gridlock/static/block_1.jpg")));
+            rec.setFill(new ImagePattern(new Image("gridlock/static/block_7.jpg")));
         }
         rec.setEffect(new BoxBlur());
 
@@ -181,10 +199,24 @@ public class GameController {
 
         // Attach Controller
         GameWinController gameWinController = loader.getController();
-        gameWinController.initData(this.mode, this.difficulty, this.level, 10);
+        gameWinController.initData(this.mode, this.difficulty, this.level, this.board.getNumOfMoves());
 
         gameWinStage.setScene(gameWinScene);
         gameWinStage.show();
+    }
+
+    @FXML
+    private void navToLevelSelect(ActionEvent event) throws Exception {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("LevelSelect.fxml"));
+        Parent levelSelectParent = loader.load();
+        Scene levelSelectScene = new Scene(levelSelectParent);
+
+        LevelSelectController levelSelectController = loader.getController();
+        levelSelectController.initData(this.mode, this.difficulty);
+
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        window.setScene(levelSelectScene);
     }
 
     @FXML
@@ -199,6 +231,7 @@ public class GameController {
     private void undoMove(ActionEvent event) {
         this.board.printGrid();
         this.board.undoMove();
+        this.board.updateNumMoves();
         this.updateBoard();
         this.board.printGrid();
     }
@@ -207,6 +240,7 @@ public class GameController {
     private void redoMove(ActionEvent event) {
         this.board.printGrid();
         this.board.redoMove();
+        this.board.updateNumMoves();
         this.updateBoard();
         this.board.printGrid();
     }
@@ -215,6 +249,7 @@ public class GameController {
     private void resetBoard(ActionEvent event) {
         this.board.printGrid();
         this.board.restart();
+        this.board.updateNumMoves();
         this.updateBoard();
         this.board.printGrid();
     }

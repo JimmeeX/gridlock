@@ -48,17 +48,36 @@
 }
 
 #obstacles {
-    -fx-arc-width: 25;
-    -fx-arc-height: 25;
+    -fx-arc-width: 0;
+    -fx-arc-height: 0;
+    /*-fx-fill: transparent;*/
+    /*-fx-stroke: red;*/
+    /*-fx-effect: dropshadow(gaussian, red, 25, 0, 0, 0);*/
 }
 
 #player {
-    -fx-arc-width: 25;
-    -fx-arc-height: 25;
+    -fx-arc-width: 0;
+    -fx-arc-height: 0;
+    /*-fx-fill: transparent;*/
+    /*-fx-stroke: white;*/
+    /*-fx-effect: dropshadow(gaussian, white, 25, 0, 0, 0);*/
 }
 
 #grid {
-    -fx-background-color: #6A4A24;
+    -fx-background-color: #343232;
+}
+
+#goal {
+    -fx-fill: #343232;
+    -fx-stroke: transparent;
+    /*-fx-effect: dropshadow(gaussian, #343232, 5, 0, 0, 0);*/
+}
+
+#goal_arrow {
+    -fx-fill: transparent;
+    /*-fx-stroke: black;*/
+    -fx-stroke-width: 5;
+    /*-fx-effect: dropshadow(gaussian, white, 10, 0, 0, 0);*/
 }
 
 .button {
