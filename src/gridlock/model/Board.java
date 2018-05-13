@@ -4,9 +4,7 @@ package gridlock.model;
 //(say when we move a block, we refer to them by their idk) - Alina
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,7 +26,6 @@ public class Board {
 
     // Added by James :)
     private BooleanProperty gameState;
-    private IntegerProperty numMoves;
 
     /**
      * Board class constructor
@@ -42,7 +39,6 @@ public class Board {
         // Added by James :)
         // Board starts off as unsolved (ie, false)
         this.gameState = new SimpleBooleanProperty(false);
-        this.numMoves = new SimpleIntegerProperty(0);
     }
 
     /**
@@ -159,21 +155,6 @@ public class Board {
 
     public int getNumOfMoves() {
         return this.prevLocations.size();
-    }
-
-    // Added by James :)
-    public void updateNumMoves() {
-        this.numMoves.setValue(this.prevLocations.size());
-    }
-
-    // Added by James :)
-    public int getNumMoves() {
-        return numMoves.get();
-    }
-
-    // Added by James :)
-    public IntegerProperty numMovesProperty() {
-        return numMoves;
     }
 
     @Override
