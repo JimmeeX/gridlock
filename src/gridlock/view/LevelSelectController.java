@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class LevelSelectController {
@@ -19,6 +20,8 @@ public class LevelSelectController {
     private Mode mode;
     private Difficulty difficulty;
 
+    @FXML
+    private GridPane levels;
     @FXML
     private ToggleGroup toggleLevel;
     @FXML
@@ -33,6 +36,33 @@ public class LevelSelectController {
 
         this.modeLabel.setText(mode.toString());
         this.difficultyLabel.setText(difficulty.toString());
+
+
+        this.applyLevelComplete();
+    }
+
+    private void applyLevelComplete() {
+        Integer[] levelData = this.settings.getLevelComplete(this.difficulty);
+        for (int i = 0; i < levelData.length; i++) {
+            ToggleButton levelButton = (ToggleButton)this.levels.getChildren().get(i);
+            // TODO: Maybe Make Style a bit prettier through css
+            switch (levelData[i]) {
+                case 0:
+                    levelButton.setStyle("-fx-background-color: black");
+                    // Paint Incomplete Level
+                    break;
+                case 1:
+                    levelButton.setStyle("-fx-background-color: #D1A163");
+                    break;
+                case 2:
+                    levelButton.setStyle("-fx-background-color: #D2D3D5");
+                    break;
+                case 3:
+                    levelButton.setStyle("-fx-background-color: #F3BA2F");
+                    break;
+            }
+            this.levels.getChildren().set(i, levelButton);
+        }
     }
 
     @FXML

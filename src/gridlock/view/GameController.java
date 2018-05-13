@@ -72,6 +72,16 @@ public class GameController {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
                     nextButton.setDisable(false);
+                    // TODO: These are just test numbers for 1,2,3 stars
+                    if (board.getNumMoves() <= 15) {
+                        settings.setLevelComplete(difficulty, level, 3);
+                    }
+                    else if (board.getNumMoves() <= 25) {
+                        settings.setLevelComplete(difficulty, level, 2);
+                    }
+                    else {
+                        settings.setLevelComplete(difficulty, level, 1);
+                    }
                     // Pop up Window
                     nextButton.fire();
                 }

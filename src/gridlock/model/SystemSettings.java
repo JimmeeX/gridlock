@@ -69,6 +69,42 @@ public class SystemSettings {
         Arrays.fill(this.hardLevels, 0);
     }
 
+    public void setLevelComplete(Difficulty difficulty, Integer level, Integer value) {
+        switch (difficulty.toString()) {
+            case "EASY":
+                this.easyLevels[level-1] = Math.max(this.easyLevels[level-1], value);
+                break;
+
+            case "MEDIUM":
+                this.mediumLevels[level-1] = Math.max(this.mediumLevels[level-1], value);
+                break;
+
+            case "HARD":
+                this.hardLevels[level-1] = Math.max(this.hardLevels[level-1], value);
+                break;
+
+            default:
+                System.out.println("Invalid Input");
+        }
+    }
+
+    public Integer[] getLevelComplete(Difficulty difficulty) {
+        switch (difficulty.toString()) {
+            case "EASY":
+                return this.easyLevels;
+
+            case "MEDIUM":
+                return this.mediumLevels;
+
+            case "HARD":
+                return this.hardLevels;
+
+            default:
+                System.out.println("Invalid Input");
+                return null;
+        }
+    }
+
     public double getSoundVolume() {
         return soundVolume.get();
     }

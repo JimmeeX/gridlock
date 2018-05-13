@@ -10,7 +10,7 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: black;" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.LevelSelectController">
    <children>
-      <GridPane alignment="CENTER" layoutX="163.0" layoutY="214.0" prefHeight="252.0" prefWidth="500.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0">
+      <GridPane fx:id="levels" alignment="CENTER" layoutX="163.0" layoutY="214.0" prefHeight="252.0" prefWidth="500.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0">
         <columnConstraints>
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
