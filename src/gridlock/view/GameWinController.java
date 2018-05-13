@@ -34,7 +34,7 @@ public class GameWinController {
         this.level = level;
 
         this.starsLabel.setText("3 Stars");
-        this.movesLabel.setText(numMoves.toString());
+        this.movesLabel.setText("Moves: " + numMoves.toString());
 
         // Save Information
 
@@ -63,6 +63,23 @@ public class GameWinController {
         // Close the popup window -> return to the game with a new board state
         popupWindow.close();
 
+    }
+
+    @FXML
+    private void navToLevelSelect(ActionEvent event) throws Exception {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("LevelSelect.fxml"));
+        Parent levelSelectParent = loader.load();
+        Scene levelSelectScene = new Scene(levelSelectParent);
+
+        LevelSelectController levelSelectController = loader.getController();
+        levelSelectController.initData(this.mode, this.difficulty);
+
+        Stage popupWindow = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage owner = (Stage)popupWindow.getOwner();
+        owner.setScene(levelSelectScene);
+
+        popupWindow.close();
     }
 
     @FXML

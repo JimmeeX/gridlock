@@ -43,8 +43,6 @@ public class GameController {
     @FXML
     private Label movesLabel;
     @FXML
-    private Label timeLabel;
-    @FXML
     private Pane boardField;
     @FXML
     private Button nextButton;
@@ -57,12 +55,11 @@ public class GameController {
 
         this.modeLabel.setText(this.mode.toString());
         this.difficultyLabel.setText(this.difficulty.toString());
-        this.levelLabel.setText(this.level.toString());
-        this.movesLabel.setText("0");
+        this.levelLabel.setText("Level " + this.level.toString());
+        this.movesLabel.setText("Moves: 0");
 
         // Read Board from File
         String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
-//        System.out.println(levelName);
         this.initialiseBoard(levelName);
 
         this.board.printGrid();
@@ -86,7 +83,7 @@ public class GameController {
         this.board.numMovesProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                movesLabel.setText(newValue.toString());
+                movesLabel.setText("Moves: " + newValue.toString());
             }
         });
 
@@ -173,11 +170,11 @@ public class GameController {
 
         // Add Image
         if (b.getID().equals("z")) {
-            rec.setFill(new ImagePattern(new Image("gridlock/static/block_2.jpg")));
+            rec.setFill(new ImagePattern(new Image("gridlock/static/block_6.jpg")));
         }
         else {
             // TODO: How to rotate a texture?
-            rec.setFill(new ImagePattern(new Image("gridlock/static/block_1.jpg")));
+            rec.setFill(new ImagePattern(new Image("gridlock/static/block_7.jpg")));
         }
         rec.setEffect(new BoxBlur());
 
@@ -206,6 +203,20 @@ public class GameController {
 
         gameWinStage.setScene(gameWinScene);
         gameWinStage.show();
+    }
+
+    @FXML
+    private void navToLevelSelect(ActionEvent event) throws Exception {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("LevelSelect.fxml"));
+        Parent levelSelectParent = loader.load();
+        Scene levelSelectScene = new Scene(levelSelectParent);
+
+        LevelSelectController levelSelectController = loader.getController();
+        levelSelectController.initData(this.mode, this.difficulty);
+
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        window.setScene(levelSelectScene);
     }
 
     @FXML
