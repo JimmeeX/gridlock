@@ -245,19 +245,11 @@ public class Board {
      * move a block
      * @param id the id of the block
      * @param newStartPosition the new start position after the move
+     * @param redoAutomatisation is the caller redo/undo
      * @pre the move is valid (within grid, according to the block direction)
      */
-    public void makeMove(String id, Integer[] newStartPosition) {
-        int oldNumOfMoves = getNumMoves();
-        makeMove (id, newStartPosition, true);
-        if (getNumMoves() != oldNumOfMoves) {
-            System.out.println("DEBUG Normal movement");
-            printGrid();
-        } else {
-            System.out.println("DEBUG No movement\n");
-        }
-    }
-    private void makeMove(String id, Integer[] newStartPosition, boolean redoAutomatisation) {
+
+    public void makeMove(String id, Integer[] newStartPosition, boolean redoAutomatisation) {
         for (Block block : this.blocks) {
             if (block.getID().equals(id)) {
                 if(!block.samePosition(newStartPosition)
@@ -265,34 +257,12 @@ public class Board {
                     Block oldBlock = new Block(id, block.getPosition().get(0)[0], block.getPosition().get(0)[1]);
                     this.prevLocations.add(oldBlock);
                     block.setNewPosition(newStartPosition);
-                    if (redoAutomatisation && !nextLocations.isEmpty()) {
-                        // Decide redo availability: if the new step if equal to the
-                        //      redo step, the redo is maintained. Otherwise, redo options are deleted.
-                        Block problyDeletedBlock = nextLocations.get(nextLocations.size() - 1);
-                        if (block.getID().equals(problyDeletedBlock.getID())
-                                && block.getCol() == problyDeletedBlock.getCol()
-                                && block.getRow() == problyDeletedBlock.getRow()) {
-                            nextLocations.remove(nextLocations.size()-1);
-                        } else {
-                            nextLocations.clear();
-                        }
-                    }
+                    if (redoAutomatisation) nextLocations.clear();
                 }
             }
         }
     }
 
-    /**
-     * Check whether the block is validly horizontally / vertically shifted to the new position
-     * @param thisBlock
-     * @param newStartPosition the new starting position of the block
-     * @return
-     */
-    /*
-    private boolean validDirection(Block thisBlock, Integer[] newStartPosition) {
-        return thisBlock.isHorizontal() ? newStartPosition[0].equals(thisBlock.getRow())
-                : newStartPosition[1].equals(thisBlock.getCol());
-    }*/
     /**
      * Check if the new position of a block collides with others and walls
      * @param thisBlock
@@ -362,8 +332,6 @@ public class Board {
             makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
-        System.out.println("DEBUG Undo movement:");
-        printGrid();
     }
 
     /**
@@ -385,8 +353,6 @@ public class Board {
             makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
-        System.out.println("DEBUG Redo movement:");
-        printGrid();
     }
 
     /**
@@ -401,8 +367,6 @@ public class Board {
         }
         this.prevLocations.clear();
         this.nextLocations.clear();
-        System.out.println("DEBUG Restart movement:");
-        printGrid();
     }
 
 }
