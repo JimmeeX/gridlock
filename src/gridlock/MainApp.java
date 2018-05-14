@@ -1,6 +1,5 @@
 package gridlock;
 
-import gridlock.model.BoardSimulation;
 import gridlock.model.SystemSettings;
 import gridlock.view.MenuController;
 import javafx.application.Application;

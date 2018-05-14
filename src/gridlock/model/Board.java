@@ -30,9 +30,6 @@ public class Board {
     private BooleanProperty gameState;
     private IntegerProperty numMoves;
 
-    // Edwin: for debug
-    private boolean debugMode = false;
-
     /**
      * Board class constructor
      */
@@ -66,7 +63,6 @@ public class Board {
                     }
                 }
             }
-            debugGrid ("Zero", true);
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -193,16 +189,6 @@ public class Board {
         }
         System.out.println();
     }
-    /** Debug for grids
-     *
-     * @param title
-     * @param movement
-     */
-    private void debugGrid (String title, boolean movement) {
-        if (!debugMode) return;
-        System.out.println("DEBUG " + title);
-        if (movement) printGrid();
-    }
 
     /**
      * add a new block to the grid
@@ -256,18 +242,10 @@ public class Board {
      * Two makeMove: public and private. To move a block
      * @param id the id of the block
      * @param newStartPosition the new start position after the move
+     * @param redoAutomatisation is the caller redo/undo
      * @pre the move is valid (within grid, according to the block direction)
      */
-    public void makeMove(String id, Integer[] newStartPosition) {
-        int oldNumOfMoves = prevLocations.size();
-        makeMove (id, newStartPosition, true);
-        if (prevLocations.size() != oldNumOfMoves) {
-            debugGrid ("Normal", true);
-        } else {
-            debugGrid ("Normal", false);
-        }
-    }
-    private void makeMove(String id, Integer[] newStartPosition, boolean redoAutomatisation) {
+    public void makeMove(String id, Integer[] newStartPosition, boolean redoAutomatisation) {
         for (Block block : this.blocks) {
             if (block.getID().equals(id)) {
                 if(!block.samePosition(newStartPosition)
@@ -281,11 +259,6 @@ public class Board {
         }
     }
 
-    /*
-    private boolean validDirection(Block thisBlock, Integer[] newStartPosition) {
-        return thisBlock.isHorizontal() ? newStartPosition[0].equals(thisBlock.getRow())
-                : newStartPosition[1].equals(thisBlock.getCol());
-    }*/
     /**
      * Check if the new position of a block collides with others and walls
      * @param thisBlock
@@ -355,7 +328,6 @@ public class Board {
             makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
-        debugGrid("Undo_", true);
     }
 
     /**
@@ -377,7 +349,6 @@ public class Board {
             makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
-        debugGrid("Redo_", true);
     }
 
     /**
@@ -392,7 +363,6 @@ public class Board {
         }
         this.prevLocations.clear();
         this.nextLocations.clear();
-        debugGrid("Restart_", true);
     }
 
     public void generateLevel () {

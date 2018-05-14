@@ -108,6 +108,7 @@ public class GameController {
     private void initialiseBoard(String file) {
         this.board = new Board();
         this.board.process(file);
+        this.board.printGrid();
     }
 
     private void initialiseNodeList() {
@@ -261,6 +262,7 @@ public class GameController {
         this.board.undoMove();
         this.board.updateNumMoves();
         this.updateBoard();
+        this.board.printGrid();
     }
 
     @FXML
@@ -268,6 +270,7 @@ public class GameController {
         this.board.redoMove();
         this.board.updateNumMoves();
         this.updateBoard();
+        this.board.printGrid();
     }
 
     @FXML
@@ -275,6 +278,7 @@ public class GameController {
         this.board.restart();
         this.board.updateNumMoves();
         this.updateBoard();
+        this.board.printGrid();
     }
 
     @FXML
