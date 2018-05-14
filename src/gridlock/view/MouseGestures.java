@@ -94,20 +94,24 @@ public class MouseGestures {
         double deltaX = dragContext.x + event.getSceneX();
         double deltaY = dragContext.y + event.getSceneY();
 
+        System.out.println("deltaX = " + deltaX + " initialMinX = " + initialMinX);
+
         double distMinX = deltaX + this.initialMinX;
         double distMaxX = deltaX + this.initialMaxX;
         double distMinY = deltaY + this.initialMinY;
         double distMaxY = deltaY + this.initialMaxY;
 
         if (this.isHorizontal) {
-            if ((distMinX < 0 || distMaxX > this.pane.getWidth()) || collisionCheck(distMinX, distMaxX, distMinY, distMaxY)) {
+            if ((distMinX < 0 || distMaxX > this.pane.getWidth())/* || collisionCheck(distMinX, distMaxX, distMinY, distMaxY)*/) {
+                System.out.println("DistMinX = " + distMinX + " DistMaxX = " + distMaxX + " PaneWidth = " + this.pane.getWidth());
                 return;
             }
             node.setTranslateX(deltaX);
         }
 
         else {
-            if (distMinY < 0 || distMaxY > this.pane.getHeight() || collisionCheck(distMinX, distMaxX, distMinY, distMaxY)) {
+            if (distMinY < 0 || distMaxY > this.pane.getHeight()/* || collisionCheck(distMinX, distMaxX, distMinY, distMaxY)*/) {
+                System.out.println("PaneHeight = " + this.pane.getHeight());
                 return;
             }
             node.setTranslateY(deltaY);
@@ -131,7 +135,8 @@ public class MouseGestures {
         int newRow = (int)((yRounded + this.initialMinY) / yFactor);
         int newCol = (int)((xRounded +this.initialMinX) / xFactor);
         Integer[] newPosition = {newRow, newCol};
-        this.board.makeMove(this.id, newPosition);
+        this.board.makeMove(this.id, newPosition, true);
+        this.board.printGrid();
         this.board.updateNumMoves();
         this.board.checkGameOver();
 

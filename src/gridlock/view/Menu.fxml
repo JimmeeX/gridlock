@@ -7,10 +7,31 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: black;" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.MenuController">
     <children>
-        <Label id="title" alignment="CENTER" contentDisplay="CENTER" layoutX="283.0" layoutY="57.0" text="Gridlock" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" />
-          <Button id="button_controls" layoutX="300.0" layoutY="250.0" mnemonicParsing="false" onAction="#navToPlaySettings" prefHeight="100.0" prefWidth="200.0" style="-fx-font-size: 48;" text="Play" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" />
+        <ImageView fx:id="boximage"
+                   disable="false"
+                   fitHeight="300.0" fitWidth="400.0"
+                   layoutX="200.0" layoutY="100.0"
+                   pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@image/Gridlock_logo.png" />
+            </image>
+        </ImageView>
+        <ToggleButton id="button_controls" layoutX="300.0" layoutY="250.0" mnemonicParsing="false" onAction="#navToPlaySettings" prefHeight="100.0" prefWidth="200.0" style="-fx-font-size: 48;" text="" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" />
+            <ImageView fx:id="boximage"
+                       disable="false"
+                       fitHeight="100.0" fitWidth="100.0"
+                       layoutX="300.0" layoutY="250.0"
+                       pickOnBounds="true"
+                       preserveRatio="true">
+                <image>
+                    <Image url="@image/play button.png" />
+                </image>
+            </ImageView>
       <HBox alignment="CENTER" layoutX="67.0" layoutY="325.0" prefHeight="99.0" prefWidth="740.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
          <children>
                 <Button id="button_controls" layoutX="144.0" layoutY="309.0" mnemonicParsing="false" onAction="#navToSettings" prefHeight="40.0" prefWidth="200.0" text="Settings">
