@@ -1,0 +1,6 @@
+ * * * * * *
+ * * a b c *
+ z z a b c *
+ d d e b c *
+ * f e * * *
+ * f g g * *

@@ -2,6 +2,7 @@ package gridlock.view;
 
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
+import gridlock.model.SystemSettings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,12 +12,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class LevelSelectController {
+    private SystemSettings settings;
     private Mode mode;
     private Difficulty difficulty;
 
+    @FXML
+    private GridPane levels;
     @FXML
     private ToggleGroup toggleLevel;
     @FXML
@@ -24,18 +29,52 @@ public class LevelSelectController {
     @FXML
     private Label difficultyLabel;
 
-    public void initData(Mode mode, Difficulty difficulty) {
+    public void initData(SystemSettings settings, Mode mode, Difficulty difficulty) {
+        this.settings = settings;
         this.mode = mode;
         this.difficulty = difficulty;
 
         this.modeLabel.setText(mode.toString());
         this.difficultyLabel.setText(difficulty.toString());
+
+
+        this.applyLevelComplete();
+    }
+
+    private void applyLevelComplete() {
+        Integer[] levelData = this.settings.getLevelComplete(this.difficulty);
+        for (int i = 0; i < levelData.length; i++) {
+            ToggleButton levelButton = (ToggleButton)this.levels.getChildren().get(i);
+            // TODO: Maybe Make Style a bit prettier through css
+            switch (levelData[i]) {
+                case 0:
+                    levelButton.setStyle("-fx-background-color: black");
+                    // Paint Incomplete Level
+                    break;
+                case 1:
+                    levelButton.setStyle("-fx-background-color: #D1A163");
+                    break;
+                case 2:
+                    levelButton.setStyle("-fx-background-color: #D2D3D5");
+                    break;
+                case 3:
+                    levelButton.setStyle("-fx-background-color: #F3BA2F");
+                    break;
+            }
+            this.levels.getChildren().set(i, levelButton);
+        }
     }
 
     @FXML
     private void navToPlaySettings(ActionEvent event) throws Exception {
-        Parent playSettingsParent = FXMLLoader.load(getClass().getResource("PlaySettings.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("PlaySettings.fxml"));
+        Parent playSettingsParent = loader.load();
         Scene playSettingsScene = new Scene(playSettingsParent);
+
+        PlaySettingsController playSettingsController = loader.getController();
+        playSettingsController.initData(this.settings);
+
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(playSettingsScene);
     }
@@ -59,7 +98,7 @@ public class LevelSelectController {
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(this.mode, this.difficulty, selectedLevel);
+        gameController.initData(this.settings, this.mode, this.difficulty, selectedLevel);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
@@ -68,5 +107,10 @@ public class LevelSelectController {
     private Integer getLevel() {
         ToggleButton selectedLevel = (ToggleButton) toggleLevel.getSelectedToggle();
         return Integer.parseInt(selectedLevel.getText());
+    }
+
+    @FXML
+    private void playButtonPressSound() {
+        this.settings.playButtonPressSound();
     }
 }

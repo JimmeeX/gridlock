@@ -1,6 +1,7 @@
 package gridlock.view;
 
 import gridlock.model.Board;
+import gridlock.model.SystemSettings;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -18,6 +19,8 @@ public class MouseGestures {
         double x;
         double y;
     }
+
+    private SystemSettings settings;
 
     private Board board;
     private String id;
@@ -37,11 +40,12 @@ public class MouseGestures {
 
     private DragContext dragContext = new DragContext();
 
-    private MediaPlayer mediaPlayer;
+//    private MediaPlayer mediaPlayer;
 
-    public MouseGestures(String id, Board board, Pane pane,
+    public MouseGestures(SystemSettings settings, String id, Board board, Pane pane,
                          int gridX, int gridY, Boolean isHorizontal,
                             Node recNode, ArrayList<Node> recNodeL) {
+        this.settings = settings;
         this.id = id;
         this.board = board;
         this.pane = pane;
@@ -50,22 +54,6 @@ public class MouseGestures {
         this.isHorizontal = isHorizontal;
         this.currObject = recNode;
         this.enObjects = recNodeL;
-
-        // Initialise Sound
-        Media musicFile = new Media(new File("src/gridlock/static/audio/block_move_0.wav").toURI().toString());
-        mediaPlayer = new MediaPlayer(musicFile);
-        // TODO: Set Volume. How to get values from SettingsController in a nice way?
-//        mediaPlayer.setVolume();
-
-        mediaPlayer.setOnEndOfMedia(new Runnable() {
-            @Override
-            public void run() {
-                // Set audio back to the beginning.
-                mediaPlayer.stop();
-                mediaPlayer.seek(mediaPlayer.getStartTime());
-            }
-        });
-
     }
 
     public void makeDraggable(Node node) {
@@ -140,7 +128,7 @@ public class MouseGestures {
         this.board.updateNumMoves();
         this.board.checkGameOver();
 
-        mediaPlayer.play();
+        this.settings.playMoveBlockSound();
     };
 
     private boolean collisionCheck(double minX, double maxX, double minY, double maxY) {

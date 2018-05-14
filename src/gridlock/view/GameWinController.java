@@ -3,6 +3,7 @@ package gridlock.view;
 import gridlock.model.Board;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
+import gridlock.model.SystemSettings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +17,7 @@ import javafx.stage.Stage;
 import javax.swing.*;
 
 public class GameWinController {
+    private SystemSettings settings;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
@@ -28,7 +30,8 @@ public class GameWinController {
     @FXML
     private Button nextLevelButton;
 
-    public void initData(Mode mode, Difficulty difficulty, Integer level, Integer numMoves) {
+    public void initData(SystemSettings settings, Mode mode, Difficulty difficulty, Integer level, Integer numMoves) {
+        this.settings = settings;
         this.mode = mode;
         this.difficulty = difficulty;
         this.level = level;
@@ -54,7 +57,7 @@ public class GameWinController {
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(this.mode, this.difficulty, this.level + 1);
+        gameController.initData(this.settings, this.mode, this.difficulty, this.level + 1);
 
         Stage popupWindow = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Stage owner = (Stage)popupWindow.getOwner();
@@ -73,7 +76,7 @@ public class GameWinController {
         Scene levelSelectScene = new Scene(levelSelectParent);
 
         LevelSelectController levelSelectController = loader.getController();
-        levelSelectController.initData(this.mode, this.difficulty);
+        levelSelectController.initData(this.settings, this.mode, this.difficulty);
 
         Stage popupWindow = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Stage owner = (Stage)popupWindow.getOwner();
@@ -91,7 +94,7 @@ public class GameWinController {
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(this.mode, this.difficulty, this.level);
+        gameController.initData(this.settings, this.mode, this.difficulty, this.level);
 
         Stage popupWindow = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Stage owner = (Stage)popupWindow.getOwner();
@@ -103,14 +106,24 @@ public class GameWinController {
 
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
-        // On Owner stage, go back to menu
-        Parent menuParent = FXMLLoader.load(getClass().getResource("Menu.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("Menu.fxml"));
+        Parent menuParent = loader.load();
         Scene menuScene = new Scene(menuParent);
+
+        MenuController menuController = loader.getController();
+        menuController.initData(this.settings);
+
         Stage popupWindow = (Stage)((Node)event.getSource()).getScene().getWindow();
         Stage owner = (Stage)popupWindow.getOwner();
         owner.setScene(menuScene);
 
         // Close popup
         popupWindow.close();
+    }
+
+    @FXML
+    private void playButtonPressSound() {
+        this.settings.playButtonPressSound();
     }
 }
