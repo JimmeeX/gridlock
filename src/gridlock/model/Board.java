@@ -280,13 +280,7 @@ public class Board {
             }
         }
     }
-
-    /**
-     * Check whether the block is validly horizontally / vertically shifted to the new position
-     * @param thisBlock
-     * @param newStartPosition the new starting position of the block
-     * @return
-     */
+    
     /*
     private boolean validDirection(Block thisBlock, Integer[] newStartPosition) {
         return thisBlock.isHorizontal() ? newStartPosition[0].equals(thisBlock.getRow())
