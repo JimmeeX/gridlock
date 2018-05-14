@@ -1,6 +1,5 @@
 package gridlock;
 
-import gridlock.model.Board;
 import gridlock.model.SystemSettings;
 import gridlock.view.MenuController;
 import javafx.application.Application;
@@ -31,9 +30,8 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-        Board board = new Board();
-        board.process("src/gridlock/resources/easy/1.txt");
+        //BoardSimulation bs = new BoardSimulation();
+        //bs.playGame();
         launch(args);
     }
-
 }

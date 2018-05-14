@@ -63,7 +63,6 @@ public class Board {
                     }
                 }
             }
-            //playGame();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -85,48 +84,6 @@ public class Board {
      */
     public ArrayList<Block> getBlocks() {
         return this.blocks;
-    }
-
-    /**
-     * simulation of playing the game
-     */
-    private void playGame() {
-        printGrid();
-        makeMove("a", newPosition(0,1));
-        printGrid();
-        makeMove("c", newPosition(0,0));
-        printGrid();
-        makeMove("d", newPosition(3,0));
-        printGrid();
-        makeMove("g", newPosition(5,0));
-        printGrid();
-        makeMove("f", newPosition(4,1));
-        printGrid();
-        makeMove("e", newPosition(3,3));
-        printGrid();
-        makeMove("b", newPosition(3,5));
-        printGrid();
-        undoMove();
-        printGrid();
-        redoMove();
-        printGrid();
-        makeMove("z", newPosition(2,4));
-        printGrid();
-        restart();
-        printGrid();
-    }
-
-    /**
-     * helper method for playing game
-     * @param row the row position of the block
-     * @param col the col position of the block
-     * @return the array of position of the block (row,col)
-     */
-    private Integer[] newPosition(int row, int col) {
-        Integer[] newPosition = new Integer[2];
-        newPosition[0] = row;
-        newPosition[1] = col;
-        return newPosition;
     }
 
     public void setDifficulty(String diff) {
@@ -157,9 +114,6 @@ public class Board {
         return level;
     }
 
-    public int getNumOfMoves() {
-        return this.prevLocations.size();
-    }
 
     // Added by James :)
     public void updateNumMoves() {
@@ -175,6 +129,7 @@ public class Board {
     public IntegerProperty numMovesProperty() {
         return numMoves;
     }
+
 
     @Override
     public String toString() {
@@ -194,7 +149,7 @@ public class Board {
     public void initialiseGrid(int size) {
         this.grid = new ArrayList<>();
         for (int row = 0; row < size; row++) {
-            String[] newRow = new String[6];
+            String[] newRow = new String[size];
             for (int col = 0; col < size; col++) {
                 newRow[col] = "*";
             }
@@ -220,6 +175,8 @@ public class Board {
             }
             System.out.println();
         }
+        System.out.println("list of blocks:");
+        printBlock();
         System.out.println("nextLocation = " + this.nextLocations.size() + " prevLocation = "
                 + this.prevLocations.size() + " numOfMoves = " + this.prevLocations.size());
         System.out.println("prevLoc:");
@@ -282,33 +239,47 @@ public class Board {
     }
 
     /**
-     * move a block
+     * Two makeMove: public and private. To move a block
      * @param id the id of the block
      * @param newStartPosition the new start position after the move
+     * @param redoAutomatisation is the caller redo/undo
      * @pre the move is valid (within grid, according to the block direction)
      */
-    public void makeMove(String id, Integer[] newStartPosition) {
+    public void makeMove(String id, Integer[] newStartPosition, boolean redoAutomatisation) {
         for (Block block : this.blocks) {
             if (block.getID().equals(id)) {
-                if(!block.samePosition(newStartPosition) && !collide(block, newStartPosition)) {
+                if(!block.samePosition(newStartPosition)
+                        && !collide(block, newStartPosition)) {
                     Block oldBlock = new Block(id, block.getPosition().get(0)[0], block.getPosition().get(0)[1]);
                     this.prevLocations.add(oldBlock);
                     block.setNewPosition(newStartPosition);
+                    if (redoAutomatisation) nextLocations.clear();
                 }
             }
         }
     }
 
+    /**
+     * Check if the new position of a block collides with others and walls
+     * @param thisBlock
+     * @param newStartPosition
+     * @return
+     */
     private boolean collide(Block thisBlock, Integer[] newStartPosition) {
         for (Block block: this.blocks) {
             if (!block.getID().equals(thisBlock.getID())) {
                 for (Integer[] position : block.getPosition()) {
-                    if (position[0] == newStartPosition[0] && position[1] == newStartPosition[1]) {
-                        return true;
-                    }
+                    if (thisBlock.isHorizontal()
+                            ? position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize()-1 &&
+                            position[0] == newStartPosition[0]
+                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize()-1 &&
+                            position[1] == newStartPosition[1]) return true;
                 }
             }
         }
+        if (thisBlock.isHorizontal()
+            ? newStartPosition[1] + thisBlock.getSize()-1 > 6
+            : newStartPosition[0] + thisBlock.getSize()-1 > 6) return true;
         return false;
     }
 
@@ -347,14 +318,14 @@ public class Board {
         if (this.prevLocations.size() != 0) {
             Block copy = this.prevLocations.get(this.prevLocations.size() - 1);
             Block block = new Block(copy.getID(), copy.getPosition().get(0)[0], copy.getPosition().get(0)[1]);
-            this.prevLocations.remove(copy);
+            this.prevLocations.remove(this.prevLocations.size() - 1);
             for (Block oldBlock: this.blocks) {
                 if (oldBlock.getID().equals(block.getID())) {
                     Block toAdd = new Block(oldBlock.getID(), oldBlock.getPosition().get(0)[0], oldBlock.getPosition().get(0)[1]);
                     this.nextLocations.add(toAdd);
                 }
             }
-            makeMove(block.getID(), block.getPosition().get(0));
+            makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
     }
@@ -368,14 +339,14 @@ public class Board {
         if (this.nextLocations.size() != 0) {
             Block copy = this.nextLocations.get(this.nextLocations.size() - 1);
             Block block = new Block(copy.getID(), copy.getPosition().get(0)[0], copy.getPosition().get(0)[1]);
-            this.nextLocations.remove(copy);
+            this.nextLocations.remove(this.nextLocations.size()-1);
             for (Block oldBlock: this.blocks) {
                 if (oldBlock.getID().equals(block.getID())) {
                     Block toAdd = new Block(oldBlock.getID(), oldBlock.getPosition().get(0)[0], oldBlock.getPosition().get(0)[1]);
                     this.prevLocations.add(toAdd);
                 }
             }
-            makeMove(block.getID(), block.getPosition().get(0));
+            makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
     }
@@ -393,4 +364,15 @@ public class Board {
         this.prevLocations.clear();
         this.nextLocations.clear();
     }
+
+    public void generateLevel () {
+        /*
+        1. Trivial: 3-9 steps
+        2. Easy
+        3. Medium
+        4. Hard
+        5. extreme
+         */
+    }
+
 }
