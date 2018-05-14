@@ -157,9 +157,6 @@ public class Board {
         return level;
     }
 
-    public int getNumOfMoves() {
-        return this.prevLocations.size();
-    }
 
     // Added by James :)
     public void updateNumMoves() {
@@ -175,6 +172,7 @@ public class Board {
     public IntegerProperty numMovesProperty() {
         return numMoves;
     }
+
 
     @Override
     public String toString() {
