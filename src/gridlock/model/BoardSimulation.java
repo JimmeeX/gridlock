@@ -21,9 +21,8 @@ public class BoardSimulation {
         //board.printGrid();
         board.undoMove();
         board.undoMove();
-        board.makeMove("a", newPosition(1,0));
-        System.out.println(board.getBlocks().get(0).toString());
-        //board.redoMove();
+        board.makeMove("a", newPosition(0,0));
+        board.redoMove();
         //board.makeMove("z", newPosition(2,4));
         //board.restart();
     }

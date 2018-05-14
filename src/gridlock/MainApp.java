@@ -22,8 +22,8 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-        BoardSimulation bs = new BoardSimulation();
-        bs.playGame();
+        //BoardSimulation bs = new BoardSimulation();
+        //bs.playGame();
         launch(args);
     }
 }

@@ -189,6 +189,8 @@ public class Board {
         for (Block block: nextLocations) {
             System.out.println(block.toString());
         }
+        System.out.println("list of blocks");
+        for (int i = 0; i < getBlocks().size(); i++) System.out.println(getBlocks().get(i).toString());
         System.out.println();
     }
 
@@ -259,7 +261,7 @@ public class Board {
     private void makeMove(String id, Integer[] newStartPosition, boolean redoAutomatisation) {
         for (Block block : this.blocks) {
             if (block.getID().equals(id)) {
-                if(!block.samePosition(newStartPosition) && validDirection(block, newStartPosition)
+                if(!block.samePosition(newStartPosition)
                         && !collide(block, newStartPosition)) {
                     Block oldBlock = new Block(id, block.getPosition().get(0)[0], block.getPosition().get(0)[1]);
                     this.prevLocations.add(oldBlock);
@@ -281,16 +283,18 @@ public class Board {
         }
     }
 
+
     /**
      * Check whether the block is validly horizontally / vertically shifted to the new position
      * @param thisBlock
      * @param newStartPosition the new starting position of the block
      * @return
      */
+    /*
     private boolean validDirection(Block thisBlock, Integer[] newStartPosition) {
         return thisBlock.isHorizontal() ? newStartPosition[0].equals(thisBlock.getRow())
                 : newStartPosition[1].equals(thisBlock.getCol());
-    }
+    }*/
     /**
      * Check if the new position of a block collides with others and walls
      * @param thisBlock
@@ -303,10 +307,10 @@ public class Board {
                 for (Integer[] position : block.getPosition()) {
                     if (thisBlock.isHorizontal()) {
                         if (position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize()-1 &&
-                            position[0] == newStartPosition[0]) return true;
+                                position[0] == newStartPosition[0]) return true;
                     } else {
                         if (position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize()-1 &&
-                            position[1] == newStartPosition[1]) return true;
+                                position[1] == newStartPosition[1]) return true;
                     }
                 }
             }
