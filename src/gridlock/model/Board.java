@@ -305,21 +305,17 @@ public class Board {
         for (Block block: this.blocks) {
             if (!block.getID().equals(thisBlock.getID())) {
                 for (Integer[] position : block.getPosition()) {
-                    if (thisBlock.isHorizontal()) {
-                        if (position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize()-1 &&
-                                position[0] == newStartPosition[0]) return true;
-                    } else {
-                        if (position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize()-1 &&
-                                position[1] == newStartPosition[1]) return true;
-                    }
+                    if (thisBlock.isHorizontal()
+                            ? position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize()-1 &&
+                            position[0] == newStartPosition[0]
+                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize()-1 &&
+                            position[1] == newStartPosition[1]) return true;
                 }
             }
         }
-        if (thisBlock.isHorizontal()) {
-            if (newStartPosition[1] + thisBlock.getSize()-1 > 6) return true;
-        } else {
-            if (newStartPosition[0] + thisBlock.getSize()-1 > 6) return true;
-        }
+        if (thisBlock.isHorizontal()
+            ? newStartPosition[1] + thisBlock.getSize()-1 > 6
+            : newStartPosition[0] + thisBlock.getSize()-1 > 6) return true;
         return false;
     }
 
