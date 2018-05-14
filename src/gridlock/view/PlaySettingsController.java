@@ -3,18 +3,24 @@ package gridlock.view;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
 public class PlaySettingsController {
     private SystemSettings settings;
+    private Difficulty difficulty;
+    private Mode mode;
     @FXML
     private ToggleGroup toggleDifficulty;
     @FXML
@@ -22,6 +28,41 @@ public class PlaySettingsController {
 
     public void initData(SystemSettings settings) {
         this.settings = settings;
+
+        ToggleButton selectedDifficulty = (ToggleButton) this.toggleDifficulty.getSelectedToggle();
+        this.difficulty = Difficulty.valueOf(selectedDifficulty.getText().toUpperCase());
+
+        ToggleButton selectedMode = (ToggleButton) this.toggleGameMode.getSelectedToggle();
+        this.mode = Mode.valueOf(selectedMode.getText().toUpperCase());
+    }
+
+    @FXML
+    private void initialize() {
+        this.toggleDifficulty.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                if (toggleDifficulty.getSelectedToggle() == null) {
+                    oldValue.setSelected(true);
+                }
+                else {
+                    ToggleButton selectedDifficulty = (ToggleButton)toggleDifficulty.getSelectedToggle();
+                    difficulty = Difficulty.valueOf(selectedDifficulty.getText().toUpperCase());
+                }
+            }
+        });
+
+        this.toggleGameMode.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                if (toggleGameMode.getSelectedToggle() == null) {
+                    oldValue.setSelected(true);
+                }
+                else {
+                    ToggleButton selectedMode = (ToggleButton) toggleGameMode.getSelectedToggle();
+                    mode = Mode.valueOf(selectedMode.getText().toUpperCase());
+                }
+            }
+        });
     }
 
     @FXML
@@ -41,20 +82,11 @@ public class PlaySettingsController {
     @FXML
     private void playSettingsControl(ActionEvent event) throws Exception {
         // Get Toggle Button Values
-        try {
-            Mode selectedMode = this.getMode();
-            Difficulty selectedDifficulty = this.getDifficulty();
-
-            if (selectedMode == Mode.CAMPAIGN) {
-                navToLevelSelect(event, selectedMode, selectedDifficulty);
-            } else {
-                assert selectedMode == Mode.SANDBOX;
-                navToGame(event, selectedMode, selectedDifficulty);
-            }
-        }
-
-        catch (NullPointerException e) {
-            System.out.println("Please select a mode and difficulty!");
+        if (this.mode == Mode.CAMPAIGN) {
+            navToLevelSelect(event, this.mode, this.difficulty);
+        } else {
+            assert this.mode == Mode.SANDBOX;
+            navToGame(event, this.mode, this.difficulty);
         }
     }
 
@@ -83,16 +115,6 @@ public class PlaySettingsController {
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
-    }
-
-    private Mode getMode() {
-        ToggleButton selectedMode = (ToggleButton) toggleGameMode.getSelectedToggle();
-        return Mode.valueOf(selectedMode.getText().toUpperCase());
-    }
-
-    private Difficulty getDifficulty() {
-        ToggleButton selectedDifficulty = (ToggleButton) toggleDifficulty.getSelectedToggle();
-        return Difficulty.valueOf(selectedDifficulty.getText().toUpperCase());
     }
 
     @FXML
