@@ -396,7 +396,13 @@ public class Board {
     }
 
     public void generateLevel () {
-
+        /*
+        1. Trivial: 3-9 steps
+        2. Easy
+        3. Medium
+        4. Hard
+        5. extreme
+         */
     }
 
 }
