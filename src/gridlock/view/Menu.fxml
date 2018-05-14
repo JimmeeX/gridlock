@@ -7,50 +7,29 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
 <AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: black;" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.MenuController">
     <children>
-        <ImageView fx:id="boximage"
-                   disable="false"
-                   fitHeight="300.0" fitWidth="400.0"
-                   layoutX="200.0" layoutY="100.0"
-                   pickOnBounds="true"
-                   preserveRatio="true">
-            <image>
-                <Image url="@image/Gridlock_logo.png" />
-            </image>
-        </ImageView>
-        <ToggleButton id="button_controls" layoutX="300.0" layoutY="250.0" mnemonicParsing="false" onAction="#navToPlaySettings" prefHeight="100.0" prefWidth="200.0" style="-fx-font-size: 48;" text="" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" />
-            <ImageView fx:id="boximage"
-                       disable="false"
-                       fitHeight="100.0" fitWidth="100.0"
-                       layoutX="300.0" layoutY="250.0"
-                       pickOnBounds="true"
-                       preserveRatio="true">
-                <image>
-                    <Image url="@image/play button.png" />
-                </image>
-            </ImageView>
-      <HBox alignment="CENTER" layoutX="67.0" layoutY="325.0" prefHeight="99.0" prefWidth="740.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
-         <children>
-                <Button id="button_controls" layoutX="144.0" layoutY="309.0" mnemonicParsing="false" onAction="#navToSettings" prefHeight="40.0" prefWidth="200.0" text="Settings">
-               <HBox.margin>
-                  <Insets left="10.0" right="10.0" />
-               </HBox.margin></Button>
-                <Button id="button_controls" layoutX="240.0" layoutY="316.0" mnemonicParsing="false" onAction="#navToHelp" prefHeight="40.0" prefWidth="200.0" text="Help">
-               <HBox.margin>
-                  <Insets left="10.0" right="10.0" />
-               </HBox.margin></Button>
-                <Button id="button_controls" layoutX="297.0" layoutY="315.0" mnemonicParsing="false" onAction="#navToAbout" prefHeight="40.0" prefWidth="200.0" text="About">
-               <HBox.margin>
-                  <Insets left="10.0" right="10.0" />
-               </HBox.margin></Button>
-                <Button id="button_controls" layoutX="452.0" layoutY="328.0" mnemonicParsing="false" onAction="#quitGame" prefHeight="40.0" prefWidth="200.0" text="Quit">
-               <HBox.margin>
-                  <Insets left="10.0" right="10.0" />
-               </HBox.margin></Button>
-         </children>
-      </HBox>
+        <Label id="title" alignment="CENTER" contentDisplay="CENTER" layoutX="283.0" layoutY="57.0" text="Gridlock" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" />
+        <Button id="button_controls" layoutX="300.0" layoutY="250.0" mnemonicParsing="false" onAction="#navToPlaySettings" onMousePressed="#playButtonPressSound" prefHeight="100.0" prefWidth="200.0" style="-fx-font-size: 48;" text="Play" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" />
+        <HBox alignment="CENTER" layoutX="67.0" layoutY="325.0" prefHeight="99.0" prefWidth="740.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
+            <children>
+                <Button id="button_controls" layoutX="144.0" layoutY="309.0" mnemonicParsing="false" onAction="#navToSettings" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Settings">
+                    <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                    </HBox.margin></Button>
+                <Button id="button_controls" layoutX="240.0" layoutY="316.0" mnemonicParsing="false" onAction="#navToHelp" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Help">
+                    <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                    </HBox.margin></Button>
+                <Button id="button_controls" layoutX="297.0" layoutY="315.0" mnemonicParsing="false" onAction="#navToAbout" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="About">
+                    <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                    </HBox.margin></Button>
+                <Button id="button_controls" layoutX="452.0" layoutY="328.0" mnemonicParsing="false" onAction="#quitGame" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Quit">
+                    <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                    </HBox.margin></Button>
+            </children>
+        </HBox>
     </children>
 </AnchorPane>
