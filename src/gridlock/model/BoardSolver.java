@@ -19,11 +19,12 @@ public class BoardSolver {
 			
 			for (ArrayList<Block> blocks : getNextPossibleMoves(curr)) queue.add(blocks);
 		}
+		return null; // SOON
 	}
 	
 	public ArrayList<ArrayList<Block>> getNextPossibleMoves(ArrayList<Block> currState) {
 		ArrayList<ArrayList<Block>> possible = new ArrayList<>();
-		for (char id = 'a'; id < 'a' + numBlocks; id++) {
+		for (char id = 'a'; id < 'a' + currState.size(); id++) { //SOOON
 			
 		}
 		return possible;

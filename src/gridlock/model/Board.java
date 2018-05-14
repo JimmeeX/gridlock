@@ -193,7 +193,7 @@ public class Board {
         }
         System.out.println();
     }
-    /** debug gerid
+    /** Debug for grids
      *
      * @param title
      * @param movement
@@ -253,7 +253,7 @@ public class Board {
     }
 
     /**
-     * move a block
+     * Two makeMove: public and private. To move a block
      * @param id the id of the block
      * @param newStartPosition the new start position after the move
      * @pre the move is valid (within grid, according to the block direction)
@@ -280,7 +280,7 @@ public class Board {
             }
         }
     }
-    
+
     /*
     private boolean validDirection(Block thisBlock, Integer[] newStartPosition) {
         return thisBlock.isHorizontal() ? newStartPosition[0].equals(thisBlock.getRow())
