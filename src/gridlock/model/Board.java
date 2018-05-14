@@ -116,9 +116,6 @@ public class Board {
         return level;
     }
 
-    public int getNumOfMoves() {
-        return this.prevLocations.size();
-    }
 
     // Added by James :)
     public void updateNumMoves() {
@@ -134,6 +131,7 @@ public class Board {
     public IntegerProperty numMovesProperty() {
         return numMoves;
     }
+
 
     @Override
     public String toString() {
@@ -179,6 +177,7 @@ public class Board {
             }
             System.out.println();
         }
+        printBlock();
         System.out.println("nextLocation = " + this.nextLocations.size() + " prevLocation = "
                 + this.prevLocations.size() + " numOfMoves = " + this.prevLocations.size());
         System.out.println("prevLoc:");
@@ -249,9 +248,9 @@ public class Board {
      * @pre the move is valid (within grid, according to the block direction)
      */
     public void makeMove(String id, Integer[] newStartPosition) {
-        int oldNumOfMoves = getNumOfMoves();
+        int oldNumOfMoves = getNumMoves();
         makeMove (id, newStartPosition, true);
-        if (getNumOfMoves() != oldNumOfMoves) {
+        if (getNumMoves() != oldNumOfMoves) {
             System.out.println("DEBUG Normal movement");
             printGrid();
         } else {
@@ -282,7 +281,6 @@ public class Board {
             }
         }
     }
-
 
     /**
      * Check whether the block is validly horizontally / vertically shifted to the new position

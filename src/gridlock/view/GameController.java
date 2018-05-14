@@ -20,6 +20,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -188,10 +189,15 @@ public class GameController {
 
         // Add Image
         if (b.getID().equals("z")) {
-            rec.setFill(new ImagePattern(new Image("gridlock/static/block_6.jpg")));
+            //rec.setFill(new ImagePattern(new Image("gridlock/static/block_6.jpg")));
+            Color c = Color.ALICEBLUE;
+            rec.setFill(c);
         }
         else {
-            rec.setFill(new ImagePattern(new Image("gridlock/static/block_7.jpg")));
+            // TODO: How to rotate a texture?
+            //rec.setFill(new ImagePattern(new Image("gridlock/static/block_7.jpg")));
+            Color c = Color.CORAL;
+            rec.setFill(c);
         }
         rec.setEffect(new BoxBlur());
 
@@ -216,7 +222,7 @@ public class GameController {
 
         // Attach Controller
         GameWinController gameWinController = loader.getController();
-        gameWinController.initData(this.settings, this.mode, this.difficulty, this.level, this.board.getNumOfMoves());
+        gameWinController.initData(this.settings, this.mode, this.difficulty, this.level, this.board.getNumMoves());
 
         gameWinStage.setScene(gameWinScene);
         gameWinStage.show();
