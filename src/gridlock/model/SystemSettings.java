@@ -16,6 +16,7 @@ public class SystemSettings {
 
     private MediaPlayer moveBlockSound;
     private MediaPlayer buttonPressSound;
+    private MediaPlayer victorySound;
 
     private Integer[] easyLevels;
     private Integer[] mediumLevels;
@@ -37,6 +38,10 @@ public class SystemSettings {
         this.buttonPressSound = new MediaPlayer(buttonPressMedia);
         this.buttonPressSound.setVolume(this.soundVolume.getValue());
 
+        Media victoryMedia = new Media(new File("src/gridlock/static/audio/win_level_1.wav").toURI().toString());
+        this.victorySound = new MediaPlayer(victoryMedia);
+        this.victorySound.setVolume(this.soundVolume.getValue());
+
         // Initialise Volume Listeners
         this.soundVolume.addListener(new ChangeListener<Number>() {
             @Override
@@ -49,9 +54,7 @@ public class SystemSettings {
         this.easyLevels = new Integer[20];
         this.mediumLevels = new Integer[20];
         this.hardLevels = new Integer[20];
-        Arrays.fill(this.easyLevels, 0);
-        Arrays.fill(this.mediumLevels, 0);
-        Arrays.fill(this.hardLevels, 0);
+        this.resetProgress();
     }
 
     public void setLevelComplete(Difficulty difficulty, Integer level, Integer value) {
@@ -90,6 +93,12 @@ public class SystemSettings {
         }
     }
 
+    public void resetProgress() {
+        Arrays.fill(this.easyLevels, 0);
+        Arrays.fill(this.mediumLevels, 0);
+        Arrays.fill(this.hardLevels, 0);
+    }
+
     public double getSoundVolume() {
         return soundVolume.get();
     }
@@ -124,6 +133,11 @@ public class SystemSettings {
         this.buttonPressSound.play();
     }
 
+    public void playVictorySound() {
+        this.victorySound.seek(this.victorySound.getStartTime());
+        this.victorySound.play();
+    }
+
     public Integer[] getEasyLevels() {
         return easyLevels;
     }
@@ -151,6 +165,7 @@ public class SystemSettings {
     private void applySoundVolumes(Double volume) {
         this.buttonPressSound.setVolume(volume);
         this.moveBlockSound.setVolume(volume);
+        this.victorySound.setVolume(volume);
     }
 
     @Override

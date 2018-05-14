@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
 import javafx.stage.Stage;
 
@@ -17,7 +18,11 @@ public class SettingsController {
     @FXML
     Slider soundSlider;
     @FXML
+    ProgressBar soundProgressBar;
+    @FXML
     Slider musicSlider;
+    @FXML
+    ProgressBar musicProgressBar;
 
     public void initData(SystemSettings settings) {
         this.settings = settings;
@@ -30,12 +35,14 @@ public class SettingsController {
         this.soundSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                soundProgressBar.setProgress(newValue.doubleValue() / 100);
                 settings.setSoundVolume(soundSlider.getValue() / 100);
             }
         });
         this.musicSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                musicProgressBar.setProgress(newValue.doubleValue() / 100);
                 settings.setMusicVolume(musicSlider.getValue() / 100);
             }
         });
@@ -53,6 +60,11 @@ public class SettingsController {
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(menuScene);
+    }
+
+    @FXML
+    private void resetProgress(ActionEvent event) {
+        this.settings.resetProgress();
     }
 
     @FXML

@@ -210,6 +210,7 @@ public class GameController {
 
     @FXML
     private void showGameWin(ActionEvent event) throws Exception {
+        this.playVictorySound();
         // Initialise Popup Stage
         Stage gameWinStage = new Stage();
         gameWinStage.initStyle(StageStyle.UNDECORATED);
@@ -290,6 +291,11 @@ public class GameController {
     @FXML
     private void playButtonPressSound() {
         this.settings.playButtonPressSound();
+    }
+
+    @FXML
+    private void playVictorySound() {
+        this.settings.playVictorySound();
     }
 }
 
