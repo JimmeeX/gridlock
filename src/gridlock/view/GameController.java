@@ -261,6 +261,7 @@ public class GameController {
         this.board.undoMove();
         this.board.updateNumMoves();
         this.updateBoard();
+        this.board.printGrid();
     }
 
     @FXML
@@ -268,6 +269,7 @@ public class GameController {
         this.board.redoMove();
         this.board.updateNumMoves();
         this.updateBoard();
+        this.board.printGrid();
     }
 
     @FXML
@@ -275,6 +277,7 @@ public class GameController {
         this.board.restart();
         this.board.updateNumMoves();
         this.updateBoard();
+        this.board.printGrid();
     }
 
     @FXML

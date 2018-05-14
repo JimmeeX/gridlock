@@ -82,24 +82,20 @@ public class MouseGestures {
         double deltaX = dragContext.x + event.getSceneX();
         double deltaY = dragContext.y + event.getSceneY();
 
-        System.out.println("deltaX = " + deltaX + " initialMinX = " + initialMinX);
-
         double distMinX = deltaX + this.initialMinX;
         double distMaxX = deltaX + this.initialMaxX;
         double distMinY = deltaY + this.initialMinY;
         double distMaxY = deltaY + this.initialMaxY;
 
         if (this.isHorizontal) {
-            if ((distMinX < 0 || distMaxX > this.pane.getWidth())/* || collisionCheck(distMinX, distMaxX, distMinY, distMaxY)*/) {
-                System.out.println("DistMinX = " + distMinX + " DistMaxX = " + distMaxX + " PaneWidth = " + this.pane.getWidth());
+            if ((distMinX < 0 || distMaxX > this.pane.getWidth()) || collisionCheck(distMinX, distMaxX, distMinY, distMaxY)) {
                 return;
             }
             node.setTranslateX(deltaX);
         }
 
         else {
-            if (distMinY < 0 || distMaxY > this.pane.getHeight()/* || collisionCheck(distMinX, distMaxX, distMinY, distMaxY)*/) {
-                System.out.println("PaneHeight = " + this.pane.getHeight());
+            if (distMinY < 0 || distMaxY > this.pane.getHeight() || collisionCheck(distMinX, distMaxX, distMinY, distMaxY)) {
                 return;
             }
             node.setTranslateY(deltaY);
