@@ -30,6 +30,9 @@ public class Board {
     private BooleanProperty gameState;
     private IntegerProperty numMoves;
 
+    // Edwin: for debug
+    private boolean debugMode = false;
+
     /**
      * Board class constructor
      */
@@ -63,8 +66,7 @@ public class Board {
                     }
                 }
             }
-            System.out.println("DEBUG Zero movement");
-            printGrid();
+            debugGrid ("Zero", true);
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -177,6 +179,7 @@ public class Board {
             }
             System.out.println();
         }
+        System.out.println("list of blocks:");
         printBlock();
         System.out.println("nextLocation = " + this.nextLocations.size() + " prevLocation = "
                 + this.prevLocations.size() + " numOfMoves = " + this.prevLocations.size());
@@ -188,9 +191,17 @@ public class Board {
         for (Block block: nextLocations) {
             System.out.println(block.toString());
         }
-        System.out.println("list of blocks");
-        for (int i = 0; i < getBlocks().size(); i++) System.out.println(getBlocks().get(i).toString());
         System.out.println();
+    }
+    /** debug gerid
+     *
+     * @param title
+     * @param movement
+     */
+    private void debugGrid (String title, boolean movement) {
+        if (!debugMode) return;
+        System.out.println("DEBUG " + title);
+        if (movement) printGrid();
     }
 
     /**
@@ -248,13 +259,12 @@ public class Board {
      * @pre the move is valid (within grid, according to the block direction)
      */
     public void makeMove(String id, Integer[] newStartPosition) {
-        int oldNumOfMoves = getNumMoves();
+        int oldNumOfMoves = prevLocations.size();
         makeMove (id, newStartPosition, true);
-        if (getNumMoves() != oldNumOfMoves) {
-            System.out.println("DEBUG Normal movement");
-            printGrid();
+        if (prevLocations.size() != oldNumOfMoves) {
+            debugGrid ("Normal", true);
         } else {
-            System.out.println("DEBUG No movement\n");
+            debugGrid ("Normal", false);
         }
     }
     private void makeMove(String id, Integer[] newStartPosition, boolean redoAutomatisation) {
@@ -265,18 +275,7 @@ public class Board {
                     Block oldBlock = new Block(id, block.getPosition().get(0)[0], block.getPosition().get(0)[1]);
                     this.prevLocations.add(oldBlock);
                     block.setNewPosition(newStartPosition);
-                    if (redoAutomatisation && !nextLocations.isEmpty()) {
-                        // Decide redo availability: if the new step if equal to the
-                        //      redo step, the redo is maintained. Otherwise, redo options are deleted.
-                        Block problyDeletedBlock = nextLocations.get(nextLocations.size() - 1);
-                        if (block.getID().equals(problyDeletedBlock.getID())
-                                && block.getCol() == problyDeletedBlock.getCol()
-                                && block.getRow() == problyDeletedBlock.getRow()) {
-                            nextLocations.remove(nextLocations.size()-1);
-                        } else {
-                            nextLocations.clear();
-                        }
-                    }
+                    if (redoAutomatisation) nextLocations.clear();
                 }
             }
         }
@@ -362,8 +361,7 @@ public class Board {
             makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
-        System.out.println("DEBUG Undo movement:");
-        printGrid();
+        debugGrid("Undo_", true);
     }
 
     /**
@@ -385,8 +383,7 @@ public class Board {
             makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
-        System.out.println("DEBUG Redo movement:");
-        printGrid();
+        debugGrid("Redo_", true);
     }
 
     /**
@@ -401,8 +398,11 @@ public class Board {
         }
         this.prevLocations.clear();
         this.nextLocations.clear();
-        System.out.println("DEBUG Restart movement:");
-        printGrid();
+        debugGrid("Restart_", true);
+    }
+
+    public void generateLevel () {
+
     }
 
 }
