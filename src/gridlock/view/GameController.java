@@ -132,7 +132,6 @@ public class GameController {
             if (blockL.get(i).isHorizontal()) {
                 MouseGestures hmg = new MouseGestures(this.settings, blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, currNode, this.recNodeList);
                 hmg.makeDraggable(recNodeList.get(i));
-
             } else {
                 MouseGestures vmg = new MouseGestures(this.settings, blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, currNode, this.recNodeList);
                 vmg.makeDraggable(recNodeList.get(i));
@@ -151,6 +150,15 @@ public class GameController {
             Rectangle rec = (Rectangle) this.boardField.getChildren().get(i + 1);
             setBlocks(block, rec);
             this.boardField.getChildren().set(i + 1, rec);
+
+            // update mouse
+            if (block.isHorizontal()) {
+                MouseGestures hmg = new MouseGestures(this.settings, block.getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, this.recNodeList.get(i), this.recNodeList);
+                hmg.makeDraggable(recNodeList.get(i));
+            } else {
+                MouseGestures vmg = new MouseGestures(this.settings, block.getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, this.recNodeList.get(i), this.recNodeList);
+                vmg.makeDraggable(recNodeList.get(i));
+            }
         }
     }
 
