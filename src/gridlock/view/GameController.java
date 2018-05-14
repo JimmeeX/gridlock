@@ -20,6 +20,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -28,6 +29,7 @@ import javafx.stage.StageStyle;
 import java.util.ArrayList;
 
 public class GameController {
+    private SystemSettings settings;
     private Board board;
     private Mode mode;
     private Difficulty difficulty;
@@ -47,8 +49,9 @@ public class GameController {
     @FXML
     private Button nextButton;
 
-    public void initData(Mode mode, Difficulty difficulty, Integer level) {
+    public void initData(SystemSettings settings, Mode mode, Difficulty difficulty, Integer level) {
         // Initialise Variables
+        this.settings = settings;
         this.mode = mode;
         this.difficulty = difficulty;
         this.level = level;
@@ -62,14 +65,22 @@ public class GameController {
         String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
         this.initialiseBoard(levelName);
 
-        this.board.printGrid();
-
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
                     nextButton.setDisable(false);
+                    // TODO: These are just test numbers for 1,2,3 stars
+                    if (board.getNumMoves() <= 15) {
+                        settings.setLevelComplete(difficulty, level, 3);
+                    }
+                    else if (board.getNumMoves() <= 25) {
+                        settings.setLevelComplete(difficulty, level, 2);
+                    }
+                    else {
+                        settings.setLevelComplete(difficulty, level, 1);
+                    }
                     // Pop up Window
                     nextButton.fire();
                 }
@@ -97,6 +108,7 @@ public class GameController {
     private void initialiseBoard(String file) {
         this.board = new Board();
         this.board.process(file);
+        this.board.printGrid();
     }
 
     private void initialiseNodeList() {
@@ -120,11 +132,10 @@ public class GameController {
         for(int i = 0; i < blockL.size(); i++) {
             Node currNode = this.recNodeList.get(i);
             if (blockL.get(i).isHorizontal()) {
-                MouseGestures hmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, currNode, this.recNodeList);
+                MouseGestures hmg = new MouseGestures(this.settings, blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, currNode, this.recNodeList);
                 hmg.makeDraggable(recNodeList.get(i));
-
             } else {
-                MouseGestures vmg = new MouseGestures(blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, currNode, this.recNodeList);
+                MouseGestures vmg = new MouseGestures(this.settings, blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, currNode, this.recNodeList);
                 vmg.makeDraggable(recNodeList.get(i));
             }
             this.boardField.getChildren().addAll(this.recNodeList.get(i));
@@ -141,6 +152,15 @@ public class GameController {
             Rectangle rec = (Rectangle) this.boardField.getChildren().get(i + 1);
             setBlocks(block, rec);
             this.boardField.getChildren().set(i + 1, rec);
+
+            // update mouse
+            if (block.isHorizontal()) {
+                MouseGestures hmg = new MouseGestures(this.settings, block.getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, this.recNodeList.get(i), this.recNodeList);
+                hmg.makeDraggable(recNodeList.get(i));
+            } else {
+                MouseGestures vmg = new MouseGestures(this.settings, block.getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, this.recNodeList.get(i), this.recNodeList);
+                vmg.makeDraggable(recNodeList.get(i));
+            }
         }
     }
 
@@ -168,13 +188,18 @@ public class GameController {
         rec.setTranslateX(0);
         rec.setTranslateY(0);
 
+        // TODO: Fix up so loading level is faster
         // Add Image
         if (b.getID().equals("z")) {
-            rec.setFill(new ImagePattern(new Image("gridlock/static/block_6.jpg")));
+            //rec.setFill(new ImagePattern(new Image("gridlock/static/block_6.jpg")));
+            Color c = Color.ALICEBLUE;
+            rec.setFill(c);
         }
         else {
             // TODO: How to rotate a texture?
-            rec.setFill(new ImagePattern(new Image("gridlock/static/block_7.jpg")));
+            //rec.setFill(new ImagePattern(new Image("gridlock/static/block_7.jpg")));
+            Color c = Color.CORAL;
+            rec.setFill(c);
         }
         rec.setEffect(new BoxBlur());
 
@@ -185,6 +210,7 @@ public class GameController {
 
     @FXML
     private void showGameWin(ActionEvent event) throws Exception {
+        this.playVictorySound();
         // Initialise Popup Stage
         Stage gameWinStage = new Stage();
         gameWinStage.initStyle(StageStyle.UNDECORATED);
@@ -199,7 +225,7 @@ public class GameController {
 
         // Attach Controller
         GameWinController gameWinController = loader.getController();
-        gameWinController.initData(this.mode, this.difficulty, this.level, this.board.getNumOfMoves());
+        gameWinController.initData(this.settings, this.mode, this.difficulty, this.level, this.board.getNumMoves());
 
         gameWinStage.setScene(gameWinScene);
         gameWinStage.show();
@@ -213,7 +239,7 @@ public class GameController {
         Scene levelSelectScene = new Scene(levelSelectParent);
 
         LevelSelectController levelSelectController = loader.getController();
-        levelSelectController.initData(this.mode, this.difficulty);
+        levelSelectController.initData(this.settings, this.mode, this.difficulty);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(levelSelectScene);
@@ -221,15 +247,20 @@ public class GameController {
 
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
-        Parent menuParent = FXMLLoader.load(getClass().getResource("Menu.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("Menu.fxml"));
+        Parent menuParent = loader.load();
         Scene menuScene = new Scene(menuParent);
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+        MenuController menuController = loader.getController();
+        menuController.initData(this.settings);
+
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(menuScene);
     }
 
     @FXML
     private void undoMove(ActionEvent event) {
-        this.board.printGrid();
         this.board.undoMove();
         this.board.updateNumMoves();
         this.updateBoard();
@@ -238,7 +269,6 @@ public class GameController {
 
     @FXML
     private void redoMove(ActionEvent event) {
-        this.board.printGrid();
         this.board.redoMove();
         this.board.updateNumMoves();
         this.updateBoard();
@@ -247,7 +277,6 @@ public class GameController {
 
     @FXML
     private void resetBoard(ActionEvent event) {
-        this.board.printGrid();
         this.board.restart();
         this.board.updateNumMoves();
         this.updateBoard();
@@ -257,6 +286,16 @@ public class GameController {
     @FXML
     private void showHint(ActionEvent event) {
         // TODO
+    }
+
+    @FXML
+    private void playButtonPressSound() {
+        this.settings.playButtonPressSound();
+    }
+
+    @FXML
+    private void playVictorySound() {
+        this.settings.playVictorySound();
     }
 }
 

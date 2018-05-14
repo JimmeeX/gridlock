@@ -1,5 +1,6 @@
 package gridlock.view;
 
+import gridlock.model.SystemSettings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,11 +10,28 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class HelpController {
+    private SystemSettings settings;
+
+    public void initData(SystemSettings settings) {
+        this.settings = settings;
+    }
+
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
-        Parent menuParent = FXMLLoader.load(getClass().getResource("Menu.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("Menu.fxml"));
+        Parent menuParent = loader.load();
         Scene menuScene = new Scene(menuParent);
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+        MenuController menuController = loader.getController();
+        menuController.initData(this.settings);
+
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(menuScene);
+    }
+
+    @FXML
+    private void playButtonPressSound() {
+        this.settings.playButtonPressSound();
     }
 }

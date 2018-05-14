@@ -115,5 +115,13 @@
 }
 
 .slider .track {
-    -fx-background-color: #FEA62D;
+    -fx-background-color: null;
+}
+
+.progress-bar .bar {
+    -fx-background-color: orange;
+}
+
+.progress-bar .track {
+    -fx-background-color: black;
 }

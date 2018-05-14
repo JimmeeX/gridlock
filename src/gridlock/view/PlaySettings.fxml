@@ -13,10 +13,10 @@
 <AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: black;" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.PlaySettingsController">
     <children>
         <VBox alignment="CENTER" layoutX="264.0" layoutY="163.0" />
-        <Button id="button_controls" layoutX="300.0" layoutY="523.0" mnemonicParsing="false" onAction="#navToMenu" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" />
+        <Button id="button_controls" layoutX="300.0" layoutY="523.0" mnemonicParsing="false" onAction="#navToMenu" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" />
         <HBox layoutX="160.0" layoutY="163.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="160.0" AnchorPane.topAnchor="160.0">
             <children>
-                <ToggleButton mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" selected="true" text="Campaign">
+                <ToggleButton mnemonicParsing="false" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" selected="true" text="Campaign">
                     <toggleGroup>
                         <ToggleGroup fx:id="toggleGameMode" />
                     </toggleGroup>
@@ -24,7 +24,7 @@
                   <Insets left="20.0" right="20.0" />
                </HBox.margin>
                 </ToggleButton>
-                <ToggleButton mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Sandbox" toggleGroup="$toggleGameMode">
+                <ToggleButton mnemonicParsing="false" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Sandbox" toggleGroup="$toggleGameMode">
                <HBox.margin>
                   <Insets left="20.0" right="20.0" />
                </HBox.margin></ToggleButton>
@@ -32,7 +32,7 @@
         </HBox>
         <HBox layoutX="40.0" layoutY="288.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="280.0">
             <children>
-                <ToggleButton mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" selected="true" text="Easy">
+                <ToggleButton mnemonicParsing="false" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" selected="true" text="Easy">
                     <toggleGroup>
                         <ToggleGroup fx:id="toggleDifficulty" />
                     </toggleGroup>
@@ -40,17 +40,17 @@
                   <Insets left="20.0" right="20.0" />
                </HBox.margin>
                 </ToggleButton>
-                <ToggleButton mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Medium" toggleGroup="$toggleDifficulty">
+                <ToggleButton mnemonicParsing="false" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Medium" toggleGroup="$toggleDifficulty">
                <HBox.margin>
                   <Insets left="20.0" right="20.0" />
                </HBox.margin></ToggleButton>
-                <ToggleButton mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Hard" toggleGroup="$toggleDifficulty">
+                <ToggleButton mnemonicParsing="false" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Hard" toggleGroup="$toggleDifficulty">
                <HBox.margin>
                   <Insets left="20.0" right="20.0" />
                </HBox.margin></ToggleButton>
             </children>
         </HBox>
-        <Button id="button_controls" layoutX="300.0" layoutY="383.0" mnemonicParsing="false" onAction="#playSettingsControl" prefHeight="100.0" prefWidth="200.0" style="-fx-font-size: 48;" text="Play" AnchorPane.bottomAnchor="125.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" />
+        <Button id="button_controls" layoutX="300.0" layoutY="383.0" mnemonicParsing="false" onAction="#playSettingsControl" onMousePressed="#playButtonPressSound" prefHeight="100.0" prefWidth="200.0" style="-fx-font-size: 48;" text="Play" AnchorPane.bottomAnchor="125.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" />
       <HBox layoutX="14.0" layoutY="264.0" />
       <Label id="title" alignment="CENTER" layoutX="214.0" layoutY="27.0" text="Select Mode" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="30.0" />
     </children>
