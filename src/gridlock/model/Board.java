@@ -63,7 +63,6 @@ public class Board {
                     }
                 }
             }
-            //playGame();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -85,35 +84,6 @@ public class Board {
      */
     public ArrayList<Block> getBlocks() {
         return this.blocks;
-    }
-
-    /**
-     * simulation of playing the game
-     */
-    private void playGame() {
-        printGrid();
-        makeMove("a", newPosition(0,1));
-        printGrid();
-        makeMove("c", newPosition(0,0));
-        printGrid();
-        makeMove("d", newPosition(3,0));
-        printGrid();
-        makeMove("g", newPosition(5,0));
-        printGrid();
-        makeMove("f", newPosition(4,1));
-        printGrid();
-        makeMove("e", newPosition(3,3));
-        printGrid();
-        makeMove("b", newPosition(3,5));
-        printGrid();
-        undoMove();
-        printGrid();
-        redoMove();
-        printGrid();
-        makeMove("z", newPosition(2,4));
-        printGrid();
-        restart();
-        printGrid();
     }
 
     /**
@@ -206,7 +176,7 @@ public class Board {
      */
     public void printGrid() {
         initialiseGrid(6);
-        for (Block block: this.blocks) {
+        /*for (Block block: this.blocks) {
             ArrayList<Integer[]> positions = block.getPosition();
             for (Integer[] position : positions ) {
                 this.grid.get(position[0])[position[1]] = block.getID();
@@ -217,7 +187,8 @@ public class Board {
                 System.out.print(this.grid.get(row)[col] + " ");
             }
             System.out.println();
-        }
+        }*/
+        printBlock();
         System.out.println("nextLocation = " + this.nextLocations.size() + " prevLocation = "
                 + this.prevLocations.size() + " numOfMoves = " + this.prevLocations.size());
         System.out.println("prevLoc:");
@@ -285,27 +256,55 @@ public class Board {
      * @param newStartPosition the new start position after the move
      * @pre the move is valid (within grid, according to the block direction)
      */
-    public void makeMove(String id, Integer[] newStartPosition) {
+    public void makeMove(String id, Integer[] newStartPosition, boolean redoAutomatisation) {
         for (Block block : this.blocks) {
             if (block.getID().equals(id)) {
-                if(!block.samePosition(newStartPosition) && !collide(block, newStartPosition)) {
+                if(!block.samePosition(newStartPosition)
+                        && !collide(block, newStartPosition)) {
                     Block oldBlock = new Block(id, block.getPosition().get(0)[0], block.getPosition().get(0)[1]);
                     this.prevLocations.add(oldBlock);
                     block.setNewPosition(newStartPosition);
+                    if (redoAutomatisation && !nextLocations.isEmpty()) {
+                        // Decide redo availability: if the new step if equal to the
+                        //      redo step, the redo is maintained. Otherwise, redo options are deleted.
+                        Block problyDeletedBlock = nextLocations.get(nextLocations.size() - 1);
+                        if (block.getID().equals(problyDeletedBlock.getID())
+                                && block.getCol() == problyDeletedBlock.getCol()
+                                && block.getRow() == problyDeletedBlock.getRow()) {
+                            nextLocations.remove(nextLocations.size()-1);
+                        } else {
+                            nextLocations.clear();
+                        }
+                    }
                 }
             }
         }
     }
 
+    /**
+     * Check if the new position of a block collides with others and walls
+     * @param thisBlock
+     * @param newStartPosition
+     * @return
+     */
     private boolean collide(Block thisBlock, Integer[] newStartPosition) {
         for (Block block: this.blocks) {
             if (!block.getID().equals(thisBlock.getID())) {
                 for (Integer[] position : block.getPosition()) {
-                    if (position[0] == newStartPosition[0] && position[1] == newStartPosition[1]) {
-                        return true;
+                    if (thisBlock.isHorizontal()) {
+                        if (position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize()-1 &&
+                                position[0] == newStartPosition[0]) return true;
+                    } else {
+                        if (position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize()-1 &&
+                                position[1] == newStartPosition[1]) return true;
                     }
                 }
             }
+        }
+        if (thisBlock.isHorizontal()) {
+            if (newStartPosition[1] + thisBlock.getSize()-1 > 6) return true;
+        } else {
+            if (newStartPosition[0] + thisBlock.getSize()-1 > 6) return true;
         }
         return false;
     }
@@ -352,7 +351,7 @@ public class Board {
                     this.nextLocations.add(toAdd);
                 }
             }
-            makeMove(block.getID(), block.getPosition().get(0));
+            makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
     }
@@ -373,7 +372,7 @@ public class Board {
                     this.prevLocations.add(toAdd);
                 }
             }
-            makeMove(block.getID(), block.getPosition().get(0));
+            makeMove(block.getID(), block.getPosition().get(0), false);
             this.prevLocations.remove(this.prevLocations.size() - 1);
         }
     }
