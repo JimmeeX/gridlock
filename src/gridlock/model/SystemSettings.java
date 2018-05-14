@@ -32,25 +32,10 @@ public class SystemSettings {
         Media moveBlockMedia = new Media(new File("src/gridlock/static/audio/block_move_0.wav").toURI().toString());
         this.moveBlockSound = new MediaPlayer(moveBlockMedia);
         this.moveBlockSound.setVolume(this.soundVolume.getValue());
-        this.moveBlockSound.setOnEndOfMedia(new Runnable() {
-            @Override
-            public void run() {
-                // Set audio back to the beginning.
-                moveBlockSound.stop();
-                moveBlockSound.seek(moveBlockSound.getStartTime());
-            }
-        });
 
         Media buttonPressMedia = new Media(new File("src/gridlock/static/audio/button_press_0.wav").toURI().toString());
         this.buttonPressSound = new MediaPlayer(buttonPressMedia);
         this.buttonPressSound.setVolume(this.soundVolume.getValue());
-        this.buttonPressSound.setOnEndOfMedia(new Runnable() {
-            @Override
-            public void run() {
-                buttonPressSound.stop();
-                buttonPressSound.seek(buttonPressSound.getStartTime());
-            }
-        });
 
         // Initialise Volume Listeners
         this.soundVolume.addListener(new ChangeListener<Number>() {
@@ -130,10 +115,12 @@ public class SystemSettings {
     }
 
     public void playMoveBlockSound() {
+        this.moveBlockSound.seek(this.moveBlockSound.getStartTime());
         this.moveBlockSound.play();
     }
 
     public void playButtonPressSound() {
+        this.buttonPressSound.seek(this.buttonPressSound.getStartTime());
         this.buttonPressSound.play();
     }
 
