@@ -2,6 +2,7 @@ package gridlock.view;
 
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
+import gridlock.model.SystemSettings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,17 +14,30 @@ import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
 public class PlaySettingsController {
+    private SystemSettings settings;
     @FXML
     private ToggleGroup toggleDifficulty;
     @FXML
     private ToggleGroup toggleGameMode;
+
+    public void initData(SystemSettings settings) {
+        this.settings = settings;
+    }
+
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
-        Parent menuParent = FXMLLoader.load(getClass().getResource("Menu.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("Menu.fxml"));
+        Parent menuParent = loader.load();
         Scene menuScene = new Scene(menuParent);
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+        MenuController menuController = loader.getController();
+        menuController.initData(this.settings);
+
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(menuScene);
     }
+
     @FXML
     private void playSettingsControl(ActionEvent event) throws Exception {
         // Get Toggle Button Values
@@ -40,7 +54,6 @@ public class PlaySettingsController {
         }
 
         catch (NullPointerException e) {
-            //TODO: Or perhaps an alert
             System.out.println("Please select a mode and difficulty!");
         }
     }
@@ -52,7 +65,8 @@ public class PlaySettingsController {
         Scene levelSelectScene = new Scene(levelSelectParent);
 
         LevelSelectController levelSelectController = loader.getController();
-        levelSelectController.initData(selectedMode, selectedDifficulty);
+        System.out.println(this.settings);
+        levelSelectController.initData(this.settings, selectedMode, selectedDifficulty);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(levelSelectScene);
@@ -65,7 +79,7 @@ public class PlaySettingsController {
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(selectedMode, selectedDifficulty, 1);
+        gameController.initData(this.settings, selectedMode, selectedDifficulty, 1);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
@@ -79,5 +93,10 @@ public class PlaySettingsController {
     private Difficulty getDifficulty() {
         ToggleButton selectedDifficulty = (ToggleButton) toggleDifficulty.getSelectedToggle();
         return Difficulty.valueOf(selectedDifficulty.getText().toUpperCase());
+    }
+
+    @FXML
+    private void playButtonPressSound() {
+        this.settings.playButtonPressSound();
     }
 }

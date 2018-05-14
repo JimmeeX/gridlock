@@ -8,7 +8,7 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: black;" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.HelpController">
     <children>
-        <Button id="button_controls" layoutX="300.0" layoutY="530.0" mnemonicParsing="false" onAction="#navToMenu" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" />
+        <Button id="button_controls" layoutX="300.0" layoutY="530.0" mnemonicParsing="false" onAction="#navToMenu" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" />
       <VBox alignment="CENTER" layoutX="341.0" layoutY="165.0" AnchorPane.bottomAnchor="300.0" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="150.0">
          <children>
               <Label id="text" layoutX="243.0" layoutY="46.0" text="Step 1. Play the game" />
