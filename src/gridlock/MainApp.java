@@ -19,7 +19,7 @@ public class MainApp extends Application {
         Scene menuScene = new Scene(menuParent);
 
         // Initialise Settings
-        SystemSettings settings = new SystemSettings(0.5, 0.5);
+        SystemSettings settings = new SystemSettings(1.0, 1.0);
         MenuController menuController = loader.getController();
         menuController.initData(settings);
 

@@ -108,6 +108,7 @@ public class GameController {
     private void initialiseBoard(String file) {
         this.board = new Board();
         this.board.process(file);
+        this.board.printGrid();
     }
 
     private void initialiseNodeList() {
@@ -187,6 +188,7 @@ public class GameController {
         rec.setTranslateX(0);
         rec.setTranslateY(0);
 
+        // TODO: Fix up so loading level is faster
         // Add Image
         if (b.getID().equals("z")) {
             //rec.setFill(new ImagePattern(new Image("gridlock/static/block_6.jpg")));
@@ -208,6 +210,7 @@ public class GameController {
 
     @FXML
     private void showGameWin(ActionEvent event) throws Exception {
+        this.playVictorySound();
         // Initialise Popup Stage
         Stage gameWinStage = new Stage();
         gameWinStage.initStyle(StageStyle.UNDECORATED);
@@ -288,6 +291,11 @@ public class GameController {
     @FXML
     private void playButtonPressSound() {
         this.settings.playButtonPressSound();
+    }
+
+    @FXML
+    private void playVictorySound() {
+        this.settings.playVictorySound();
     }
 }
 

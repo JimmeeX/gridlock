@@ -18,9 +18,6 @@ import java.util.Scanner;
  * and other functionality of a board game (make move, undo move, etc)
  */
 public class Board {
-    private Difficulty difficulty;
-    private Mode mode;
-    private Integer level;
     private ArrayList<String[]> grid;
     private ArrayList<Block> blocks;
     private ArrayList<Block> prevLocations;
@@ -63,8 +60,6 @@ public class Board {
                     }
                 }
             }
-            System.out.println("DEBUG Zero movement");
-            printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -88,35 +83,6 @@ public class Board {
         return this.blocks;
     }
 
-    public void setDifficulty(String diff) {
-        this.difficulty = Difficulty.valueOf(diff.toUpperCase());
-    }
-
-    public void setMode(String gameMode) {
-        this.mode = Mode.valueOf(gameMode.toUpperCase());
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public ArrayList<String[]> getBoard() {
-        return this.grid;
-    }
-
-    public Difficulty getDifficulty() {
-        return difficulty;
-    }
-
-    public Mode getMode() {
-        return mode;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-
     // Added by James :)
     public void updateNumMoves() {
         this.numMoves.setValue(this.prevLocations.size());
@@ -130,17 +96,6 @@ public class Board {
     // Added by James :)
     public IntegerProperty numMovesProperty() {
         return numMoves;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Gridlock{" +
-                "board=" + this.grid +
-                ", difficulty=" + this.difficulty +
-                ", mode=" + this.mode +
-                ", level=" + this.level + ", numOfMoves=" + this.prevLocations.size()+
-                '}';
     }
 
     /**
@@ -177,6 +132,7 @@ public class Board {
             }
             System.out.println();
         }
+        System.out.println("list of blocks:");
         printBlock();
         System.out.println("nextLocation = " + this.nextLocations.size() + " prevLocation = "
                 + this.prevLocations.size() + " numOfMoves = " + this.prevLocations.size());
@@ -188,8 +144,6 @@ public class Board {
         for (Block block: nextLocations) {
             System.out.println(block.toString());
         }
-        System.out.println("list of blocks");
-        for (int i = 0; i < getBlocks().size(); i++) System.out.println(getBlocks().get(i).toString());
         System.out.println();
     }
 
@@ -242,13 +196,12 @@ public class Board {
     }
 
     /**
-     * move a block
+     * Two makeMove: public and private. To move a block
      * @param id the id of the block
      * @param newStartPosition the new start position after the move
      * @param redoAutomatisation is the caller redo/undo
      * @pre the move is valid (within grid, according to the block direction)
      */
-
     public void makeMove(String id, Integer[] newStartPosition, boolean redoAutomatisation) {
         for (Block block : this.blocks) {
             if (block.getID().equals(id)) {
@@ -301,11 +254,6 @@ public class Board {
                 }
             }
         }
-    }
-
-    // Added by James :)
-    public boolean isGameState() {
-        return gameState.get();
     }
 
     // Added by James :)
@@ -367,6 +315,16 @@ public class Board {
         }
         this.prevLocations.clear();
         this.nextLocations.clear();
+    }
+
+    public void generateLevel () {
+        /*
+        1. Trivial: 3-9 steps
+        2. Easy
+        3. Medium
+        4. Hard
+        5. extreme
+         */
     }
 
 }
