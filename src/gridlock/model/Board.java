@@ -1,7 +1,7 @@
 package gridlock.model;
 //do we really need an id for a block?
 //hmm I reckon the id is to look for the block
-//(say when we move a block, we refer to them by their idk) - Alina
+//(say when we move a block, we refer to them by their id) - Alina
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -38,38 +38,10 @@ public class Board {
         this.blocks = new ArrayList<>();
         this.prevLocations = new ArrayList<>();
         this.nextLocations = new ArrayList<>();
-
         // Added by James :)
         // Board starts off as unsolved (ie, false)
         this.gameState = new SimpleBooleanProperty(false);
         this.numMoves = new SimpleIntegerProperty(0);
-    }
-
-    /**
-     * process input txt file
-     * @param fileName the file name to be processed
-     */
-    public void process(String fileName) {
-        Scanner sc = null;
-        try {
-            sc = new Scanner(new File(fileName));
-            for (int row = 0; row < 6; row++) {
-                for (int col = 0; col < 6; col++) {
-                    String id = sc.next();
-                    if (!id.equals("*")) {
-                        int blockID = blockExist(id);
-                        if (blockID != -1) incrementSize(blockID, row, col);
-                        else addBlock(id, row, col);
-                    }
-                }
-            }
-            System.out.println("DEBUG Zero movement");
-            printGrid();
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            if (sc != null) sc.close();
-        }
     }
 
     /**
@@ -116,7 +88,6 @@ public class Board {
         return level;
     }
 
-
     // Added by James :)
     public void updateNumMoves() {
         this.numMoves.setValue(this.prevLocations.size());
@@ -131,7 +102,6 @@ public class Board {
     public IntegerProperty numMovesProperty() {
         return numMoves;
     }
-
 
     @Override
     public String toString() {
@@ -159,25 +129,54 @@ public class Board {
         }
     }
 
+    /**
+     * process input txt file
+     * @param fileName the file name to be processed
+     */
+    public void process(String fileName) {
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new File(fileName));
+            for (int row = 0; row < 6; row++) {
+                for (int col = 0; col < 6; col++) {
+                    String id = sc.next();
+                    if (!id.equals("*")) {
+                        int blockID = blockExist(id);
+                        if (blockID != -1) {
+                            incrementSize(blockID, row, col);
+                            this.grid.get(row)[col] = id;
+                        }
+                        else addBlock(id, row, col);
+                    }
+                }
+            }
+            printGrid();
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (sc != null) sc.close();
+        }
+    }
 
     /**
      * print the grid
      */
     public void printGrid() {
-        initialiseGrid(6);
+        /*initialiseGrid(6);
         for (Block block: this.blocks) {
             ArrayList<Integer[]> positions = block.getPosition();
             for (Integer[] position : positions ) {
                 this.grid.get(position[0])[position[1]] = block.getID();
             }
         }
+        */
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
                 System.out.print(this.grid.get(row)[col] + " ");
             }
             System.out.println();
         }
-        printBlock();
+        /*printBlock();
         System.out.println("nextLocation = " + this.nextLocations.size() + " prevLocation = "
                 + this.prevLocations.size() + " numOfMoves = " + this.prevLocations.size());
         System.out.println("prevLoc:");
@@ -190,7 +189,7 @@ public class Board {
         }
         System.out.println("list of blocks");
         for (int i = 0; i < getBlocks().size(); i++) System.out.println(getBlocks().get(i).toString());
-        System.out.println();
+        System.out.println();*/
     }
 
     /**
@@ -201,6 +200,7 @@ public class Board {
      */
     public void addBlock(String id, int row, int col){
         Block newBlock = new Block(id, row, col);
+        this.grid.get(row)[col] = id;
         this.blocks.add(newBlock);
     }
 
@@ -248,18 +248,31 @@ public class Board {
      * @param redoAutomatisation is the caller redo/undo
      * @pre the move is valid (within grid, according to the block direction)
      */
-
     public void makeMove(String id, Integer[] newStartPosition, boolean redoAutomatisation) {
         for (Block block : this.blocks) {
             if (block.getID().equals(id)) {
                 if(!block.samePosition(newStartPosition)
                         && !collide(block, newStartPosition)) {
                     Block oldBlock = new Block(id, block.getPosition().get(0)[0], block.getPosition().get(0)[1]);
+                    clearBlockID(block.getPosition());
                     this.prevLocations.add(oldBlock);
                     block.setNewPosition(newStartPosition);
+                    addBlockID(block);
                     if (redoAutomatisation) nextLocations.clear();
                 }
             }
+        }
+    }
+
+    public void addBlockID(Block block) {
+        for (Integer[] position :block.getPosition()) {
+            this.grid.get(position[0])[position[1]] = block.getID();
+        }
+    }
+
+    public void clearBlockID(ArrayList<Integer[]> positions) {
+        for (Integer[] position: positions) {
+            this.grid.get(position[0])[position[1]] = "*";
         }
     }
 
@@ -369,4 +382,33 @@ public class Board {
         this.nextLocations.clear();
     }
 
+    public Block getBlock(String name) {
+        Block thisBlock = null;
+        for (Block block: this.blocks) {
+            if (block.getID().equals(name)) thisBlock = block;
+        }
+        return thisBlock;
+    }
+
+    /*public ArrayList<Integer[]> possiblePosition(Block block) {
+        for (Block thisBlock: this.blocks) {
+            if (block.isHorizontal()) {
+
+            }
+            if (!block.getID().equals(thisBlock.getID())) {
+                for (Integer[] position : block.getPosition()) {
+                    if (thisBlock.isHorizontal() {
+                        if (position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize()-1 &&
+                            position[0] == newStartPosition[0]
+                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize()-1 &&
+                            position[1] == newStartPosition[1]) return true;
+                    }
+                }
+            }
+        }
+        if (thisBlock.isHorizontal()
+                ? newStartPosition[1] + thisBlock.getSize()-1 > 6
+                : newStartPosition[0] + thisBlock.getSize()-1 > 6) return true;
+        return false;
+    }*/
 }

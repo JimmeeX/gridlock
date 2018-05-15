@@ -87,7 +87,7 @@ public class LevelSelectController {
         }
 
         catch (NullPointerException e) {
-            System.out.println("Please selected a level");
+            System.out.println("Please select a level");
         }
     }
 
