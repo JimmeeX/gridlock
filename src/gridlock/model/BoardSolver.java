@@ -34,7 +34,7 @@ public class BoardSolver {
             }
 	        this.board.printGrid();
             System.out.println("");
-            search(7);
+            search(6);
             this.board.printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
@@ -43,15 +43,14 @@ public class BoardSolver {
         }
     }
 
-	private void search(int numOfMoves) {
+	private void search(int minMoves, int maxMoves) {
 		//set initial state
     	Block curBlock = this.board.getBlock("z");
+
     	//set ArrayList of possible moves
-		ArrayList<Integer[]> positions = new Position
-		if (movable(curBlock) == 0) return;
-		int density = calculateDensity();
-		System.out.println("density = " + density);
-		BoardState curBoardState = new BoardState(null, density, 0);
+		ArrayList<Integer[]> positions = new ArrayList<>();
+		if (movable(curBlock, positions) == 0) return;
+		BoardState curBoardState = new BoardState(null,0, curBlock, positions);
 
 		//initialise priority queue and first and end state
 		PriorityQueue<BoardState> stateQueue= new PriorityQueue<>();
@@ -64,24 +63,24 @@ public class BoardSolver {
 		//loop
 		while (!stateQueue.isEmpty()) {
 			BoardState curState = stateQueue.poll();
+			if (visited.contains(curState)) continue;
 			visited.add(curState);
 
 			//check if end condition is met
-			if (curState.getNMoves() == numOfMoves) {
+			if (curState.getNMoves() >= minMoves && curState.getNMoves() <= maxMoves) {
 				endState = curState;
 				//break;
 			}
 
-			for ()
-		}
-	}
+			Board board = curState.getBoard();
 
-	private int calculateDensity() {
-    	int count = 0;
-    	for (Block block: this.board.getBlocks()) {
-    		count = count + movable(block);
-	    }
-	    return count;
+			for (Integer[] position: positions) {
+				BoardState boardState = new BoardState(curState, curState.getNMoves() + 1, )
+				board.makeMove(curState.getBlock().getID(), position, true);
+
+			}
+		}
+
 	}
 
 	private void addPosition(ArrayList<Integer[]> list, int row, int col) {
