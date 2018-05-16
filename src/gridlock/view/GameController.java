@@ -7,6 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -187,7 +188,7 @@ public class GameController {
         rec.setY(startRow);
         rec.setTranslateX(0);
         rec.setTranslateY(0);
-
+        
         // TODO: Fix up so loading level is faster
         // Add Image
         if (b.getID().equals("z")) {
