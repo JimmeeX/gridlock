@@ -8,6 +8,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
+
 public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -30,9 +32,7 @@ public class MainApp extends Application {
     public static void main(String[] args) {
         long startTime = System.nanoTime();
         BoardGenerator bg = new BoardGenerator();
-        Board b = null;
-        while (b == null) b = bg.newWinBoard();
-        b.printGrid();
+        Board b = bg.generateOneBoard();
         long endTime = System.nanoTime();
         long duration = (endTime - startTime)/1000000;
         System.out.println("Duration " + duration + "/1000 seconds.");

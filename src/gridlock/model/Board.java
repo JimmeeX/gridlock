@@ -379,6 +379,16 @@ public class Board {
         return intv;
     }
 
+    // Added by Edwin
+    public Board duplicate() {
+        // Only need essentially grid and blocks w/ different reference
+        Board newBoard = new Board ();
+        newBoard.grid.clear();
+        for (String[] strArr : grid) newBoard.grid.add(strArr.clone());
+        for (Block block : blocks) newBoard.getBlocks().add(block.duplicate());
+        return newBoard;
+    }
+
     /**
      * print the grid
      */

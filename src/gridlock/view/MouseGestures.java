@@ -102,7 +102,6 @@ public class MouseGestures {
 
     private EventHandler<MouseEvent> onMouseDraggedEventHandler = event -> {
 
-
         Node node = ((Node) (event.getSource()));
         double deltaX = this.dragContext.x + event.getSceneX();
         double deltaY = this.dragContext.y + event.getSceneY();

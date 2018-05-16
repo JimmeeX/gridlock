@@ -34,7 +34,7 @@ public class BoardSolver {
             }
 	        this.board.printGrid();
             System.out.println("");
-            search(7);
+            //search(7);
             this.board.printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
@@ -42,7 +42,7 @@ public class BoardSolver {
             if (sc != null) sc.close();
         }
     }
-
+/*
 	private void search(int numOfMoves) {
 		//set initial state
     	Block curBlock = this.board.getBlock("z");
@@ -144,7 +144,7 @@ public class BoardSolver {
 	    System.out.println("count = " + count);
 	    return count;
 	}
-
+*/
 
 	public LinkedList<ArrayList<Block>> solvePuzzle(ArrayList<Block> startBoard) {
 		PriorityQueue<ArrayList<Block>> queue = new PriorityQueue<>();

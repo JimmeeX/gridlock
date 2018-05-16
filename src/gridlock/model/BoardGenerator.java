@@ -1,6 +1,7 @@
 package gridlock.model;
 
 import java.util.*;
+import java.io.*;
 
 public class BoardGenerator {
 
@@ -8,17 +9,19 @@ public class BoardGenerator {
         Board board;
         boolean isWin;
         List <Node> neighbors;
-        // boolean isVisited;
+        boolean djikIsVisited;
+        int djikDist;
+        Node djikPred;
 
         Node (Board board) {
             this.board = board;
-            this.isWin = (this.board.getBlocks("z") != null && );
+            Block zBlock = board.getBlock("z");
+            if (zBlock != null && Arrays.equals(zBlock.getPosition().get(0), new Integer[] {2, 4})) this.isWin = true;
+                else this.isWin = false;
             this.neighbors = new ArrayList<>();
-            // developo neigbor lists
-        }
-
-        void addOneNeighbor (Node n) {
-            this.neighbors.add(n);
+            this.djikIsVisited = false;
+            this.djikDist = 100; // so far there has not been puzzle with >= 100 moves
+            this.djikPred = null;
         }
 
         /**
@@ -29,18 +32,21 @@ public class BoardGenerator {
         @Override
         public boolean equals (Object obj) {
             // Assume for now there is no inheritance of Node
-            if (!obj.getClass().equals("Node")) return false;
+            if (!obj.getClass().equals(this.getClass())) return false;
             Node n = (Node) obj;
-            return isAllProper(n) && isAllSameRange(n);
+            return isAllSameRange(n);
         }
 
+        // This is not actually contributing much
         private boolean isAllProper (Node n) {
             for (Block thisBlock: this.board.getBlocks()) {
-                Block thatBlock = n.board.getBlock(thisBlock.getID());
-                if (thatBlock == null) return false;
-                boolean a = thisBlock.isHorizontal(); boolean b = thatBlock.isHorizontal();
+                Block thatBlockWithSameID = n.board.getBlock(thisBlock.getID());
+                if (thatBlockWithSameID == null) return false;
+                boolean a = thisBlock.isHorizontal();
+                boolean b = thatBlockWithSameID.isHorizontal();
                 if (a != b) return false;
-                if (!(a ? thisBlock.getRow() == thatBlock.getRow() : thisBlock.getCol() == thatBlock.getCol()))
+                if (!(a ? thisBlock.getRow() == thatBlockWithSameID.getRow()
+                        : thisBlock.getCol() == thatBlockWithSameID.getCol()))
                     return false;
             }
             return true;
@@ -49,36 +55,97 @@ public class BoardGenerator {
         private boolean isAllSameRange (Node n) {
             for (Block thisBlock: this.board.getBlocks()) {
                 String id = thisBlock.getID();
-                if (!this.board.blockRange(id).equals(n.board.blockRange(id))) return false;
+                Integer [] br1 = this.board.blockRange(id);
+                Integer [] br2 = n.board.blockRange(id);
+                if (br1 [0] != br2 [0] || br1 [1] != br2 [1]) return false;
             }
             return true;
         }
     }
 
-    private List <Node> winNodeList = new ArrayList<>();
-
     public Board generateOneBoard () {
-        Node initWinNode = new Node (newRandomWinBoard());
-        // BFS
-        PriorityQueue <Node> queue = new PriorityQueue<>();
-        ArrayList <Node> nodeList = new ArrayList<>(); // the visited nodes will soon be the node lists
+        Board winBoard = null;
+        while (winBoard == null) winBoard = process(); // newR.. ()
+        // BFS: use lots of NOde's equals function
+        Node initWinNode = new Node (winBoard);
+        Queue <Node> queue = new LinkedList<>();
+        List <Node> nodeList = new ArrayList<>(); // the visited nodes will soon be the node lists
         queue.add(initWinNode);
+        nodeList.add(initWinNode);
         while (!queue.isEmpty()) {
             Node curr = queue.poll();
-            if (nodeList.contains(curr)) continue;
-            nodeList.add(curr);
-            for (Node n : curr.neighbors) queue.add(n);
+            // The neighbor "ignoring reference and duplicates" constructions is done here. Otherwise it is gonna loop
+            for (Block b: curr.board.getBlocks()) {
+                // Consider all possibility of its new position (diff than currently), the new board is a neighbor
+                Integer[] intv =  curr.board.blockRange(b.getID());
+                if (b.isHorizontal()) {
+                    for (int i: intv) {
+                        if (i == b.getCol()) continue;
+                        Board duplicate = curr.board.duplicate();
+                        duplicate.makeMove(b.getID(), new Integer [] {b.getRow(),i}, true);
+                        curr.neighbors.add(new Node (duplicate));
+                    }
+                } else {
+                    for (int i: intv) {
+                        if (i == b.getRow()) continue;
+                        Board duplicate = curr.board.duplicate();
+                        duplicate.makeMove(b.getID(), new Integer [] {i,b.getCol()}, true);
+                        curr.neighbors.add(new Node (duplicate));
+                    }
+                }
+            }
+            // For Djikstra to work, eventually the node's neighbors should be reference based
+            // If the new found node exists in nodeList, use the existing one instead
+            // Update curr's neighbors
+            for (int i = 0; i < curr.neighbors.size(); i++) {
+                Node n = curr.neighbors.get(i);
+                int nIndex = nodeList.indexOf(n);
+                if (nIndex != -1) {
+                    // set curr's n reference to the similar NodeList
+                    curr.neighbors.remove(i);
+                    curr.neighbors.add(nodeList.get(nIndex));
+                } else {
+                    nodeList.add(n);
+                    queue.add(n);
+                }
+            }
         }
-        // We now have all nodeList
-        return null; // SOON
 
+        // We now have all nodeList
+        System.out.println("We have " + nodeList.size() + " nodes.");
+
+        // Currently BFS. If weight != 1, SOON: Djikstra.
+        // Only consider node as it is
+        for (Node n: nodeList) {
+            if (n.isWin) {
+                n.djikDist = 0;
+                queue.add(n);
+            }
+        }
+        while (!queue.isEmpty()) {
+            Node curr = queue.poll();
+            if (curr.djikIsVisited) continue; // Changed in Djikstra
+            curr.djikIsVisited = true;
+            for (Node neighbor: curr.neighbors) {
+                if (neighbor.djikIsVisited) continue; // Changed in Djikstra
+                neighbor.djikDist = curr.djikDist + 1;
+                neighbor.djikPred = curr;
+                queue.add(neighbor);
+            }
+        }
+
+        // Find maximal, print with max num of moves
+        Node maxNode = initWinNode;
+        for (Node n: nodeList) if (n.djikDist > maxNode.djikDist) maxNode = n;
+        Board oneBoard = maxNode.board;
+        oneBoard.printGrid(); System.out.println("Max move: " + maxNode.djikDist);
+        return oneBoard;
     }
 
-    private List <Board>
-
-    // -prvt
-    // Bare: sometimes working sometimes not
-    private Board newRandomWinBoard() {
+    /* -prvt
+    * Bare: sometimes working sometimes not
+    */
+    public Board newRandomWinBoard() {
         int currNumOfBlock = 0;
         Board b = new Board ();
         List <String []> grid = b.getGrid();
@@ -110,5 +177,31 @@ public class BoardGenerator {
     }
     private <E> E randomBinaryChoice (E item1, E item2, double probItem1) {
         return (Math.random() < probItem1) ? item1 : item2;
+    }
+
+    /* -prvt
+	 * process input txt file
+	 */
+    private Board process() {
+        Board board = new Board ();
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new File("src/gridlock/endGameState.txt"));
+            for (int row = 0; row < 6; row++) {
+                for (int col = 0; col < 6; col++) {
+                    String id = sc.next();
+                    if (!id.equals("*")) {
+                        int blockID = board.blockExist(id);
+                        if (blockID != -1) board.incrementSize(blockID, row, col);
+                        else board.addBlock(id, row, col);
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (sc != null) sc.close();
+        }
+        return board;
     }
 }
