@@ -2,10 +2,10 @@ package gridlock.model;
 
 import java.util.*;
 
-public class EndBoardGenerator {
+public class BoardGenWin {
 
     // Bare: sometimes working sometimes not
-    public Board newEndBoard () {
+    public Board newWinBoard () {
         int currNumOfBlock = 0;
         Board b = new Board ();
         List <String []> grid = b.getGrid();

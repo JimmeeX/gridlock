@@ -7,6 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -109,7 +110,6 @@ public class GameController {
         this.board = new Board();
         levelGenerator(this.difficulty);
         this.board.process(file);
-        this.board.printGrid();
     }
 
     private void levelGenerator(Difficulty difficulty) {
@@ -277,7 +277,6 @@ public class GameController {
         this.board.undoMove();
         this.board.updateNumMoves();
         this.updateBoard();
-        this.board.printGrid();
     }
 
     @FXML
@@ -285,7 +284,6 @@ public class GameController {
         this.board.redoMove();
         this.board.updateNumMoves();
         this.updateBoard();
-        this.board.printGrid();
     }
 
     @FXML
@@ -293,7 +291,6 @@ public class GameController {
         this.board.restart();
         this.board.updateNumMoves();
         this.updateBoard();
-        this.board.printGrid();
     }
 
     @FXML
