@@ -24,7 +24,7 @@ public class MainApp extends Application {
         SystemSettings settings;
         // Initialise Settings
         // Try Reading from Serialized Data
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("src/gridlock/resources/save/save.data")))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("src/gridlock/resources/save.data")))) {
             settings = (SystemSettings) ois.readObject();
             settings.initSounds(1.0, 1.0);
             System.out.println("Data successfully loaded.");
