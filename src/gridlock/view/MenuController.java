@@ -1,13 +1,24 @@
 package gridlock.view;
 
 import gridlock.model.SystemSettings;
+import javafx.animation.KeyValue;
+import javafx.animation.ScaleTransition;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 public class MenuController {
     private SystemSettings settings;
@@ -97,9 +108,44 @@ public class MenuController {
      * @param event Quit Button
      */
     @FXML
-    private void quitGame(ActionEvent event) {
+    private void quitGame(ActionEvent event) throws IOException {
+        // Save Data
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("src/gridlock/resources/save.data")))) {
+            oos.writeObject(this.settings);
+        }
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.close();
+    }
+
+    @FXML
+    private void buttonEnterAnimation(MouseEvent event) {
+        Node node = (Node)event.getSource();
+
+        // Increase the Size
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(250), node);
+        scaleTransition.setFromX(1);
+        scaleTransition.setFromY(1);
+        scaleTransition.setToX(1.1);
+        scaleTransition.setToY(1.1);
+        scaleTransition.playFromStart();
+
+        node.setCursor(Cursor.HAND);
+    }
+
+    @FXML
+    private void buttonExitAnimation(MouseEvent event) {
+        Node node = (Node)event.getSource();
+
+        // Decrease the Size
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(250), node);
+        scaleTransition.setFromX(1.1);
+        scaleTransition.setFromY(1.1);
+        scaleTransition.setToX(1);
+        scaleTransition.setToY(1);
+        scaleTransition.playFromStart();
+
+        node.setCursor(Cursor.DEFAULT);
     }
 
     @FXML
