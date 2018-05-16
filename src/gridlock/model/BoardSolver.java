@@ -145,7 +145,6 @@ public class BoardSolver {
 	    return count;
 	}
 
-
 	public LinkedList<ArrayList<Block>> solvePuzzle(ArrayList<Block> startBoard) {
 		PriorityQueue<ArrayList<Block>> queue = new PriorityQueue<>();
 		ArrayList<ArrayList<Block>> visited = new ArrayList<>();
