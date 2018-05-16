@@ -15,7 +15,7 @@ public class BoardSolver {
 		this.board = new Board();
 	}
 
-	/**
+	/*
 	 * process input txt file
 	 */
     public void process() {
@@ -41,35 +41,47 @@ public class BoardSolver {
         }
     }
 
-	private void search(int numOfBlock) {
+	private void search() {
 		Block curBlock = this.board.getBlock("z");
-		if (movable(curBlock) == 0) return generate {
-
-		}
+		if (movable(curBlock) == 0) return;
 	}
 
 	public int movable(Block block) {
     	int count = 0;
     	if (block.isHorizontal()) {
+    		int row = block.getPosition().get(0)[0];
     		int startCol = block.getPosition().get(0)[1];
     		int endCol = block.getPosition().get(block.getPosition().size() - 1)[1];
-    		for (startCol >= 0) {
-    			if (this.board.getGridRow(startCol).equals("*")) count++;
+    		while (startCol >= 0) {
+    			if (this.board.getGridRow(row)[startCol].equals("*")) {
+    				count++;
+    				startCol--;
+			    }
     			else break;
 		    }
-		    for (endCol <= 6) {
-    			if (this.board.getGridRow(endCol).equals("*")) count++;
+		    while(endCol <= 6) {
+    			if (this.board.getGridRow(row)[endCol].equals("*")) {
+    				count++;
+				    endCol++;
+			    }
     			else break;
 		    }
 	    } else {
+    		int col = block.getPosition().get(0)[1];
 		    int startRow = block.getPosition().get(0)[0];
 		    int endRow = block.getPosition().get(block.getPosition().size() - 1)[0];
-		    for (startRow >= 0) {
-			    if (this.board.getGridRow(startRow).equals("*")) count++;
+		    while (startRow >= 0) {
+			    if (this.board.getGridRow(startRow)[col].equals("*")) {
+			    	count++;
+			    	startRow--;
+			    }
 			    else break;
 		    }
-		    for (endRow <= 6) {
-			    if (this.board.getGridRow(endRow).equals("*")) count++;
+		    while (endRow <= 6) {
+			    if (this.board.getGridRow(endRow)[col].equals("*")) {
+			    	count++;
+				    endRow++;
+			    }
 			    else break;
 		    }
 	    }
