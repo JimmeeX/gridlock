@@ -45,6 +45,8 @@
     -fx-pref-width: 50;
     -fx-background-radius: 50;
     -fx-border-radius: 50;
+    -fx-border-color: black;
+    -fx-border-width: 2px;
 }
 
 #obstacles {

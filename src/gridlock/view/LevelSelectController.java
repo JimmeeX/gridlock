@@ -36,6 +36,8 @@ public class LevelSelectController {
     private Label modeLabel;
     @FXML
     private Label difficultyLabel;
+    @FXML
+    private Label levelLabel;
 
     public void initData(SystemSettings settings, Mode mode, Difficulty difficulty) {
         this.settings = settings;
@@ -47,6 +49,7 @@ public class LevelSelectController {
 
         ToggleButton selectedLevel = (ToggleButton) this.toggleLevel.getSelectedToggle();
         this.level = Integer.parseInt(selectedLevel.getText());
+        this.levelLabel.setText(selectedLevel.getText());
 
         this.applyLevelComplete();
     }
@@ -62,6 +65,7 @@ public class LevelSelectController {
                 else {
                     ToggleButton selectedLevel = (ToggleButton) toggleLevel.getSelectedToggle();
                     level = Integer.parseInt(selectedLevel.getText());
+                    levelLabel.setText(selectedLevel.getText());
                 }
             }
         });
@@ -78,13 +82,13 @@ public class LevelSelectController {
                     // Paint Incomplete Level
                     break;
                 case 1:
-                    levelButton.setStyle("-fx-background-color: #D1A163");
+                    levelButton.setStyle("-fx-background-color: linear-gradient(to bottom right, #e8a069 0%, #edbc91 22%, #f7f4f0 43%, #e07430); -fx-text-fill: black");
                     break;
                 case 2:
-                    levelButton.setStyle("-fx-background-color: #D2D3D5");
+                    levelButton.setStyle("-fx-background-color: linear-gradient(to bottom right, #bdbdc2 0%, #c8c8cc 22%, #fbfbfb 43%, #98979e); -fx-text-fill: black");
                     break;
                 case 3:
-                    levelButton.setStyle("-fx-background-color: #F3BA2F");
+                    levelButton.setStyle("-fx-background-color: linear-gradient(to bottom right, #ffe263 0%, #ffefaf 22%, #fffcf1 43%, #fdb307); -fx-text-fill: black");
                     break;
             }
             this.levels.getChildren().set(i, levelButton);
@@ -117,6 +121,18 @@ public class LevelSelectController {
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
+    }
+
+    @FXML
+    private void levelEnter(MouseEvent event) {
+        Node node = (Node)event.getSource();
+        node.setCursor(Cursor.HAND);
+    }
+
+    @FXML
+    private void levelExit(MouseEvent event) {
+        Node node = (Node)event.getSource();
+        node.setCursor(Cursor.DEFAULT);
     }
 
     @FXML

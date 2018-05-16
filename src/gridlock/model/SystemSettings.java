@@ -19,6 +19,7 @@ public class SystemSettings implements Serializable {
     private transient MediaPlayer buttonPressSound;
     private transient MediaPlayer victorySound;
 
+    // TODO: Do highscore instead of 0,1,2,3
     private Integer[] easyLevels;
     private Integer[] mediumLevels;
     private Integer[] hardLevels;

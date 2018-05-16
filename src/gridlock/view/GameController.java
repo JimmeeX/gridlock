@@ -193,16 +193,7 @@ public class GameController {
         rec.setY(startRow);
         rec.setTranslateX(0);
         rec.setTranslateY(0);
-
-//        // TODO: Fix up so loading level is faster
-//        // Add Image
-//        if (b.getID().equals("z")) {
-//            //rec.setFill(new ImagePattern(new Image("gridlock/static/block_6.jpg")));
-//        }
-//        else {
-//            // TODO: How to rotate a texture?
-//            //rec.setFill(new ImagePattern(new Image("gridlock/static/block_7.jpg")));
-//        }
+        
         setEffects(rec);
     }
 
