@@ -83,8 +83,6 @@ public class Board {
             System.out.println(e.getMessage());
         } finally {
             if (sc != null) sc.close();
-        }
-    }
 
     public Block getBlock(String id) {
         for (Block block: this.blocks) {
@@ -97,18 +95,69 @@ public class Board {
         return this.grid.get(row);
     }
 
+    /** -prvt
+     * initialise the grid (size x size)
+     * @param size the length of the grid (square)
+     * @post this.grid.size() >= 0
+     */
+    private void initialiseGrid(int size) {
+        this.grid = new ArrayList<>();
+        for (int row = 0; row < size; row++) {
+            String[] newRow = new String[size];
+            for (int col = 0; col < size; col++) {
+                newRow[col] = "*";
+            }
+            this.grid.add(newRow);
+        }
+        return null;
+    }
+
+
+    public String[] getGridRow(int row) {
+        return this.grid.get(row);
+
+    /**
+     * process input txt file
+     * @param fileName the file name to be processed
+     */
+    public void process(String fileName) {
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new File(fileName));
+            for (int row = 0; row < 6; row++) {
+                for (int col = 0; col < 6; col++) {
+                    String id = sc.next();
+                    if (!id.equals("*")) {
+                        int blockID = blockExist(id);
+                        if (blockID != -1) {
+                            incrementSize(blockID, row, col);
+                            this.grid.get(row)[col] = id;
+                        }
+                        else addBlock(id, row, col);
+                    }
+                }
+            }
+            printGrid();
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (sc != null) sc.close();
+        }
+    }
+
     /**
      * add a new block to the grid
      * @param id the block's id
      * @param row the row position of the block
      * @param col the col position of the block
      */
+    /*
     public void addBlock(String id, int row, int col){
         Block newBlock = new Block(id, row, col);
         this.grid.get(row)[col] = id;
         this.blocks.add(newBlock);
     }
-
+    */
     /**
      * check if the block has been initialised
      * @param id the id of the block (in String)
@@ -159,6 +208,54 @@ public class Board {
      */
     public ArrayList<Block> getBlocks() {
         return this.blocks;
+    }
+
+    // Added by James :)
+    public int getNumMoves() {
+        return numMoves.get();
+    }
+
+    // Added by James :)
+    public IntegerProperty numMovesProperty() {
+        return numMoves;
+    }
+
+    // Added by James :)
+    public void updateNumMoves() {
+        this.numMoves.setValue(this.prevLocations.size());
+    }
+
+    // Added by Edwin
+    public boolean addBlock(String id, int row, int col, int size, boolean isHorizontal) {
+        if (blockExist(id) != -1
+                || (size == 2 && (row > 4 || col > 4))
+                || (size == 3 && (row > 3 || col > 3))
+                || row < 0 || col < 0
+                || !this.grid.get(row)[col].equals("*")) return false;
+        // put scenario: check if the grid unit is empty
+        addBlock(id, row, col);
+        int idx = blockExist(id);
+        Block b = blocks.get(idx);
+        if (isHorizontal) {
+            for (int i = 1; i < size; i++) {
+                if (!this.grid.get(row)[col+i].equals("*")) {
+                    clearBlockIDFromGrid(b);
+                    blocks.remove(b);
+                    return false;
+                }
+                incrementSize(idx, row, col+i);
+            }
+        } else {
+            for (int i = 1; i < size; i++) {
+                if (!this.grid.get(row+i)[col].equals("*")) {
+                    clearBlockIDFromGrid(b);
+                    blocks.remove(b);
+                    return false;
+                }
+                incrementSize(idx, row+i, col);
+            }
+        }
+        return true;
     }
 
     /**
@@ -277,75 +374,6 @@ public class Board {
         this.nextLocations.clear();
     }
 
-    // Added by James :)
-    public int getNumMoves() {
-        return numMoves.get();
-    }
-
-    // Added by James :)
-    public IntegerProperty numMovesProperty() {
-        return numMoves;
-    }
-
-    // Added by James :)
-    public void updateNumMoves() {
-        this.numMoves.setValue(this.prevLocations.size());
-    }
-
-    // Added by James :)
-    public BooleanProperty gameStateProperty() {
-        return gameState;
-    }
-
-    /**
-     * Check if the game is over (the "z" car is by the exit)
-     * Will send "true" to "gameState" if game is over
-     */
-    // Added by James :)
-    public void checkGameOver() {
-        this.gameState.setValue(false);
-        for (Block block: this.blocks) {
-            if (block.getID().equals("z")) {
-                if (block.getPosition().get(0)[1] == 4) {
-                    this.gameState.setValue(true);
-                }
-            }
-        }
-    }
-
-    // Added by Edwin
-    public boolean addBlock(String id, int row, int col, int size, boolean isHorizontal) {
-        if (blockExist(id) != -1
-                || (size == 2 && (row > 4 || col > 4))
-                || (size == 3 && (row > 3 || col > 3))
-                || row < 0 || col < 0
-                || !this.grid.get(row)[col].equals("*")) return false;
-        // put scenario: check if the grid unit is empty
-        addBlock(id, row, col);
-        int idx = blockExist(id);
-        Block b = blocks.get(idx);
-        if (isHorizontal) {
-            for (int i = 1; i < size; i++) {
-                if (!this.grid.get(row)[col+i].equals("*")) {
-                    clearBlockIDFromGrid(b);
-                    blocks.remove(b);
-                    return false;
-                }
-                incrementSize(idx, row, col+i);
-            }
-        } else {
-            for (int i = 1; i < size; i++) {
-                if (!this.grid.get(row+i)[col].equals("*")) {
-                    clearBlockIDFromGrid(b);
-                    blocks.remove(b);
-                    return false;
-                }
-                incrementSize(idx, row+i, col);
-            }
-        }
-        return true;
-    }
-
     /**
      * Let blockRange be an interval of the leftest/uppest and the rightest/downest
      * possible block starting column/row when only that particular block is moved
@@ -387,6 +415,21 @@ public class Board {
         for (String[] strArr : grid) newBoard.grid.add(strArr.clone());
         for (Block block : blocks) newBoard.getBlocks().add(block.duplicate());
         return newBoard;
+      
+    /**
+     * Check if the game is over (the "z" car is by the exit)
+     * Will send "true" to "gameState" if game is over
+     */
+    // Added by James :)
+    public void checkGameOver() {
+        this.gameState.setValue(false);
+        for (Block block: this.blocks) {
+            if (block.getID().equals("z")) {
+                if (block.getPosition().get(0)[1] == 4) {
+                    this.gameState.setValue(true);
+                }
+            }
+        }
     }
 
     /**
