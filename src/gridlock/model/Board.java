@@ -57,6 +57,17 @@ public class Board {
         return this.blocks;
     }
 
+    public Block getBlock(String id) {
+        for (Block block: this.blocks) {
+            if (block.getID().equals(id)) return block;
+        }
+        return null;
+    }
+
+    public String[] getGridRow(int row) {
+        return this.grid.get(row);
+    }
+
     // Added by James :)
     public void updateNumMoves() {
         this.numMoves.setValue(this.prevLocations.size());

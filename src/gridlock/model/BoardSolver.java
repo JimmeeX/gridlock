@@ -32,7 +32,7 @@ public class BoardSolver {
                     }
                 }
             }
-            //search();
+            search();
             this.board.printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
@@ -41,12 +41,40 @@ public class BoardSolver {
         }
     }
 
-	/*private void search() {
+	private void search(int numOfBlock) {
 		Block curBlock = this.board.getBlock("z");
-		if (curBlock.movable) {
+		if (movable(curBlock) == 0) return generate {
 
 		}
-	}*/
+	}
+
+	public int movable(Block block) {
+    	int count = 0;
+    	if (block.isHorizontal()) {
+    		int startCol = block.getPosition().get(0)[1];
+    		int endCol = block.getPosition().get(block.getPosition().size() - 1)[1];
+    		for (startCol >= 0) {
+    			if (this.board.getGridRow(startCol).equals("*")) count++;
+    			else break;
+		    }
+		    for (endCol <= 6) {
+    			if (this.board.getGridRow(endCol).equals("*")) count++;
+    			else break;
+		    }
+	    } else {
+		    int startRow = block.getPosition().get(0)[0];
+		    int endRow = block.getPosition().get(block.getPosition().size() - 1)[0];
+		    for (startRow >= 0) {
+			    if (this.board.getGridRow(startRow).equals("*")) count++;
+			    else break;
+		    }
+		    for (endRow <= 6) {
+			    if (this.board.getGridRow(endRow).equals("*")) count++;
+			    else break;
+		    }
+	    }
+	    return count;
+	}
 
 
 	public LinkedList<ArrayList<Block>> solvePuzzle(ArrayList<Block> startBoard) {
