@@ -1,12 +1,15 @@
 package gridlock.view;
 
 import gridlock.model.*;
-import javafx.animation.AnimationTimer;
+import javafx.animation.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -17,6 +20,8 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -25,6 +30,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 
@@ -44,6 +50,8 @@ public class GameController {
     private Label levelLabel;
     @FXML
     private Label movesLabel;
+    @FXML
+    private AnchorPane primaryField;
     @FXML
     private Pane boardField;
     @FXML
@@ -81,8 +89,7 @@ public class GameController {
                     else {
                         settings.setLevelComplete(difficulty, level, 1);
                     }
-                    // Pop up Window
-                    nextButton.fire();
+                    animateWinSequence();
                 }
                 else {
                     nextButton.setDisable(true);
@@ -109,7 +116,6 @@ public class GameController {
         this.board = new Board();
         levelGenerator(this.difficulty);
         this.board.process(file);
-        this.board.printGrid();
     }
 
     private void levelGenerator(Difficulty difficulty) {
@@ -200,25 +206,47 @@ public class GameController {
         rec.setY(startRow);
         rec.setTranslateX(0);
         rec.setTranslateY(0);
+        
+        setEffects(rec);
+    }
 
-        // TODO: Fix up so loading level is faster
-        // Add Image
-        if (b.getID().equals("z")) {
-            //rec.setFill(new ImagePattern(new Image("gridlock/static/block_6.jpg")));
-            Color c = Color.ALICEBLUE;
-            rec.setFill(c);
-        }
-        else {
-            // TODO: How to rotate a texture?
-            //rec.setFill(new ImagePattern(new Image("gridlock/static/block_7.jpg")));
-            Color c = Color.CORAL;
-            rec.setFill(c);
-        }
+    private void setEffects(Rectangle rec) {
         rec.setEffect(new BoxBlur());
 
         // Add Effects
         InnerShadow effect = new InnerShadow();
         rec.setEffect(effect);
+    }
+
+    private void animateWinSequence() {
+        // Get the player node
+        for (Node node:this.recNodeList) {
+            if (node.getUserData().equals("z")) {
+                // Make BoardField Object Invisible
+                node.setVisible(false);
+
+                Bounds bounds = node.localToScene(node.getBoundsInLocal());
+                // Create Identical Rectangle but in the primary Stage.
+                Rectangle animatedRectangle = new Rectangle(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+                animatedRectangle.setId("player");
+                setEffects(animatedRectangle);
+                this.primaryField.getChildren().add(animatedRectangle);
+
+                // Animation Sequence
+                final Timeline timeline = new Timeline();
+                timeline.setCycleCount(1);
+                final KeyValue kv = new KeyValue(animatedRectangle.xProperty(), this.primaryField.getWidth());
+                final KeyFrame kf = new KeyFrame(Duration.millis(1000), kv);
+                timeline.getKeyFrames().add(kf);
+                timeline.play();
+                timeline.setOnFinished(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        nextButton.fire();
+                    }
+                });
+            }
+        }
     }
 
     @FXML
@@ -277,7 +305,6 @@ public class GameController {
         this.board.undoMove();
         this.board.updateNumMoves();
         this.updateBoard();
-        this.board.printGrid();
     }
 
     @FXML
@@ -285,7 +312,6 @@ public class GameController {
         this.board.redoMove();
         this.board.updateNumMoves();
         this.updateBoard();
-        this.board.printGrid();
     }
 
     @FXML
@@ -293,12 +319,41 @@ public class GameController {
         this.board.restart();
         this.board.updateNumMoves();
         this.updateBoard();
-        this.board.printGrid();
     }
 
     @FXML
     private void showHint(ActionEvent event) {
         // TODO
+    }
+
+    @FXML
+    private void buttonEnterAnimation(MouseEvent event) {
+        Node node = (Node)event.getSource();
+
+        // Increase the Size
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(250), node);
+        scaleTransition.setFromX(1);
+        scaleTransition.setFromY(1);
+        scaleTransition.setToX(1.1);
+        scaleTransition.setToY(1.1);
+        scaleTransition.playFromStart();
+
+        node.setCursor(Cursor.HAND);
+    }
+
+    @FXML
+    private void buttonExitAnimation(MouseEvent event) {
+        Node node = (Node)event.getSource();
+
+        // Decrease the Size
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(250), node);
+        scaleTransition.setFromX(1.1);
+        scaleTransition.setFromY(1.1);
+        scaleTransition.setToX(1);
+        scaleTransition.setToY(1);
+        scaleTransition.playFromStart();
+
+        node.setCursor(Cursor.DEFAULT);
     }
 
     @FXML

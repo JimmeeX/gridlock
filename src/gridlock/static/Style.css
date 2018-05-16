@@ -45,12 +45,14 @@
     -fx-pref-width: 50;
     -fx-background-radius: 50;
     -fx-border-radius: 50;
+    -fx-border-color: black;
+    -fx-border-width: 2px;
 }
 
 #obstacles {
     -fx-arc-width: 0;
     -fx-arc-height: 0;
-    /*-fx-fill: transparent;*/
+    -fx-fill: #FF7F50;
     /*-fx-stroke: red;*/
     /*-fx-effect: dropshadow(gaussian, red, 25, 0, 0, 0);*/
 }
@@ -58,7 +60,7 @@
 #player {
     -fx-arc-width: 0;
     -fx-arc-height: 0;
-    /*-fx-fill: transparent;*/
+    -fx-fill: #F0F8FF;
     /*-fx-stroke: white;*/
     /*-fx-effect: dropshadow(gaussian, white, 25, 0, 0, 0);*/
 }
@@ -94,6 +96,11 @@
     -fx-effect: dropshadow(gaussian, orange, 5, 0, 0, 0);
 }
 
+.button:pressed {
+    -fx-text-fill: #fff2c7;;
+    -fx-translate-y: 3px;
+}
+
 .toggle-button {
     -fx-font-size: 20;
     -fx-text-fill: white;
@@ -104,8 +111,12 @@
 
 .toggle-button:hover {
     -fx-font-weight: bold;
-    -fx-border-color: orange;
     -fx-effect: dropshadow(gaussian, orange, 5, 0, 0, 0);
+}
+
+.toggle-button:pressed {
+    -fx-text-fill: #fff2c7;;
+    -fx-translate-y: 3px;
 }
 
 .toggle-button:selected {
