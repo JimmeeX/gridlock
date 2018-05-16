@@ -18,9 +18,6 @@ import java.util.Scanner;
  * and other functionality of a board game (make move, undo move, etc)
  */
 public class Board {
-    private Difficulty difficulty;
-    private Mode mode;
-    private Integer level;
     private ArrayList<String[]> grid;
     private ArrayList<Block> blocks;
     private ArrayList<Block> prevLocations;
@@ -86,35 +83,6 @@ public class Board {
         return this.blocks;
     }
 
-    public void setDifficulty(String diff) {
-        this.difficulty = Difficulty.valueOf(diff.toUpperCase());
-    }
-
-    public void setMode(String gameMode) {
-        this.mode = Mode.valueOf(gameMode.toUpperCase());
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public ArrayList<String[]> getBoard() {
-        return this.grid;
-    }
-
-    public Difficulty getDifficulty() {
-        return difficulty;
-    }
-
-    public Mode getMode() {
-        return mode;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-
     // Added by James :)
     public void updateNumMoves() {
         this.numMoves.setValue(this.prevLocations.size());
@@ -128,17 +96,6 @@ public class Board {
     // Added by James :)
     public IntegerProperty numMovesProperty() {
         return numMoves;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Gridlock{" +
-                "board=" + this.grid +
-                ", difficulty=" + this.difficulty +
-                ", mode=" + this.mode +
-                ", level=" + this.level + ", numOfMoves=" + this.prevLocations.size()+
-                '}';
     }
 
     /**
@@ -297,11 +254,6 @@ public class Board {
                 }
             }
         }
-    }
-
-    // Added by James :)
-    public boolean isGameState() {
-        return gameState.get();
     }
 
     // Added by James :)
