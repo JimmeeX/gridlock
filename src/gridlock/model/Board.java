@@ -11,6 +11,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 /**
@@ -265,7 +266,7 @@ public class Board {
      * @param newStartPosition
      * @return
      */
-    private boolean collide(Block thisBlock, Integer[] newStartPosition) {
+    public boolean collide(Block thisBlock, Integer[] newStartPosition) {
         for (Block block: this.blocks) {
             if (!block.getID().equals(thisBlock.getID())) {
                 for (Integer[] position : block.getPosition()) {
@@ -365,14 +366,178 @@ public class Board {
         this.nextLocations.clear();
     }
 
+    /** For hints (?)
+     *
+     * @return
+     */
+    public boolean solvePuzzle() {
+        LinkedList<ArrayList<Block>> queue = new LinkedList<>();
+        ArrayList<ArrayList<Block>> visited = new ArrayList<>();
+        ArrayList<Block> blocksCopy = new ArrayList<>();
+        for (Block b : this.blocks) blocksCopy.add(b);
+        queue.add(blocksCopy);
+        while (!queue.isEmpty()) {
+            ArrayList<Block> curr = queue.poll();
+            for (Block block : curr) {
+                if (block.getID().equals("z")) {
+                    if (block.getPosition().get(0)[1] == 6 - block.getSize()) return true;
+                }
+            }
+            if (visited.contains(curr)) continue;
+
+            visited.add(curr);
+
+            ArrayList<ArrayList<Block>> nextPossible = new ArrayList<>();
+            nextPossible = getNextPossibleMoves(curr);
+            for (int i = 0; i < nextPossible.size(); i++) {
+                ArrayList<Block> newBlock = new ArrayList<>();
+                newBlock = nextPossible.get(i);
+                queue.add(newBlock);
+            }
+        }
+        return false;
+    }
+
+    /** Helper function for solvePuzzle()
+     *
+     * @param currState
+     * @return
+     */
+    public ArrayList<ArrayList<Block>> getNextPossibleMoves(ArrayList<Block> currState) {
+        ArrayList<ArrayList<Block>> possible = new ArrayList<>();
+        for (Block b : currState) {
+            if (b.isHorizontal()) {
+                int row = b.getRow();
+                int col = b.getCol();
+                if (col > 0 && (this.grid.get(col - 1)[row].equals("*"))) {
+                    int newCol = col;
+                    while (newCol > 0 && this.grid.get(newCol - 1)[row].equals("*")) {
+                        newCol--;
+                    }
+
+                    ArrayList<Block> newBlocks = new ArrayList<>();
+                    for (Block block : currState) {
+                        if (block.getID().equals(b.getID())) {
+                            Block newBlock = new Block(block.getID(), row, newCol);
+                            for (int i = 1; i < block.getSize(); i++) {
+                                Integer[] newPosition = new Integer[2];
+                                newPosition[0] = row;
+                                newPosition[1] = newCol + i;
+                                newBlock.addPosition(newPosition);
+                            }
+                            newBlocks.add(newBlock);
+                        } else {
+                            newBlocks.add(block.duplicate());
+                        }
+                    }
+                    possible.add(newBlocks);
+                }
+
+                if (col + b.getSize() < 6 && (this.grid.get(col + b.getSize())[row].equals("*"))) {
+                    int newCol = col;
+                    while (newCol < 6 - b.getSize() && this.grid.get(newCol)[row].equals("*")) {
+                        newCol++;
+                    }
+
+                    ArrayList<Block> newBlocks = new ArrayList<>();
+                    for (Block block : currState) {
+                        if (block.getID().equals(b.getID())) {
+                            Block newBlock = new Block(block.getID(), row, newCol);
+                            for (int i = 1; i < block.getSize(); i++) {
+                                Integer[] newPosition = new Integer[2];
+                                newPosition[0] = row;
+                                newPosition[1] = newCol + i;
+                                newBlock.addPosition(newPosition);
+                            }
+                            newBlocks.add(newBlock);
+                        } else {
+                            newBlocks.add(block.duplicate());
+                        }
+                    }
+                    possible.add(newBlocks);
+                }
+            } else {
+                int row = b.getRow();
+                int col = b.getCol();
+                if (row > 0 && (this.grid.get(col)[row - 1].equals("*"))) {
+                    int newRow = row;
+                    while (newRow > 0 && this.grid.get(col)[newRow - 1].equals("*")) {
+                        newRow--;
+                    }
+
+                    ArrayList<Block> newBlocks = new ArrayList<>();
+                    for (Block block : currState) {
+                        if (block.getID().equals(b.getID())) {
+                            Block newBlock = new Block(block.getID(), newRow, col);
+                            for (int i = 1; i < block.getSize(); i++) {
+                                Integer[] newPosition = new Integer[2];
+                                newPosition[0] = newRow + i;
+                                newPosition[1] = col;
+                                newBlock.addPosition(newPosition);
+                            }
+                            newBlocks.add(newBlock);
+                        } else {
+                            newBlocks.add(block.duplicate());
+                        }
+                    }
+                    possible.add(newBlocks);
+                }
+
+                if (row + b.getSize() < 6 && (this.grid.get(col)[row + b.getSize()].equals("*"))) {
+                    int newRow = row;
+                    while (newRow < 6 - b.getSize() && this.grid.get(col)[newRow + b.getSize()].equals("*")) {
+                        newRow++;
+                    }
+
+                    ArrayList<Block> newBlocks = new ArrayList<>();
+                    for (Block block : currState) {
+                        if (block.getID().equals(b.getID())) {
+                            Block newBlock = new Block(block.getID(), newRow, col);
+                            for (int i = 1; i < block.getSize(); i++) {
+                                Integer[] newPosition = new Integer[2];
+                                newPosition[0] = newRow + i;
+                                newPosition[1] = col;
+                                newBlock.addPosition(newPosition);
+                            }
+                            newBlocks.add(newBlock);
+                        } else {
+                            newBlocks.add(block.duplicate());
+                        }
+                    }
+                    possible.add(newBlocks);
+                }
+            }
+        }
+        return possible;
+    }
+
+    /**
+     * If possible, use the algorithm to generate for Campaigns, too. The sandbox is a live performance
+     *
+     * Might be changed:
+        Difficulty metrics:
+        * num of steps
+        * num of occupyingBoxes
+        * num of red block moves
+        * num of notMaximalMoves
+        Initial expectation:
+        1. Trivial: 3-9 steps, >= 14 empty boxes for block-moving spaces (<= 22 occboxes)
+        2. Easy: 10-14 steps, >= 14 empties
+                   15-19 steps, >= 14 empties
+        3. Medium: 15-19 steps, <= 13 empties
+                   20-29 steps
+        4. Hard: 30-39 steps
+        5. Extreme: 40+
+     */
     public void generateLevel () {
         /*
-        1. Trivial: 3-9 steps
-        2. Easy
-        3. Medium
-        4. Hard
-        5. extreme
-         */
+         Alternative 1: Put random boxes one per one, calculate the shortest path.
+                        Pick the longest one, repeat. (Inspired: https://github.com/Unknowncmbk/unblock-me-generator)
+                        Chance based, maybe long.
+         Alternative 2: BFS, restriction for connection
+                           * do not move same block twice
+                           * do not move s.t. the ranges of blocks do not differ
+        */
     }
 
 }
