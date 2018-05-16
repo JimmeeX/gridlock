@@ -32,7 +32,9 @@ public class BoardSolver {
                     }
                 }
             }
-            search();
+	        this.board.printGrid();
+            System.out.println("");
+            search(7);
             this.board.printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
@@ -41,25 +43,43 @@ public class BoardSolver {
         }
     }
 
-	private void search() {
-		Block curBlock = this.board.getBlock("z");
+	private void search(int numOfMoves) {
+		//set initial state
+    	Block curBlock = this.board.getBlock("z");
 		if (movable(curBlock) == 0) return;
+		int density = calculateDensity();
+		System.out.println("density = " + density);
+		BoardState boardState = new BoardState(density);
+		//initialise priority queue and first state
+
+	}
+
+	private int calculateDensity() {
+    	int count = 0;
+    	for (Block block: this.board.getBlocks()) {
+    		count = count + movable(block);
+	    }
+	    return count;
 	}
 
 	public int movable(Block block) {
     	int count = 0;
     	if (block.isHorizontal()) {
     		int row = block.getPosition().get(0)[0];
-    		int startCol = block.getPosition().get(0)[1];
-    		int endCol = block.getPosition().get(block.getPosition().size() - 1)[1];
+    		int startCol = block.getPosition().get(0)[1] - 1;
+    		int endCol = block.getPosition().get(block.getPosition().size() - 1)[1] + 1;
+    		System.out.println("row = " + row + " startCol = " + startCol + " endCol = " + endCol);
     		while (startCol >= 0) {
-    			if (this.board.getGridRow(row)[startCol].equals("*")) {
+			    System.out.println("left neighbor = " + this.board.getGridRow(row)[startCol]);
+			    System.out.println("COUNT BECOMES = " + count + " STARTCOL = " + startCol);
+			    if (this.board.getGridRow(row)[startCol].equals("*")) {
     				count++;
     				startCol--;
 			    }
     			else break;
 		    }
-		    while(endCol <= 6) {
+		    while(endCol < 6) {
+			    System.out.println("COUNT BECOMES = " + count + " ENDCOL = " + endCol);
     			if (this.board.getGridRow(row)[endCol].equals("*")) {
     				count++;
 				    endCol++;
@@ -68,16 +88,19 @@ public class BoardSolver {
 		    }
 	    } else {
     		int col = block.getPosition().get(0)[1];
-		    int startRow = block.getPosition().get(0)[0];
-		    int endRow = block.getPosition().get(block.getPosition().size() - 1)[0];
+		    int startRow = block.getPosition().get(0)[0] - 1;
+		    int endRow = block.getPosition().get(block.getPosition().size() - 1)[0] + 1;
+		    System.out.println("col = " + col + " startRow = " + startRow + " endRow = " + endRow);
 		    while (startRow >= 0) {
+			    System.out.println("COUNT BECOMES = " + count + " STARTROW = " + startRow);
 			    if (this.board.getGridRow(startRow)[col].equals("*")) {
 			    	count++;
 			    	startRow--;
 			    }
 			    else break;
 		    }
-		    while (endRow <= 6) {
+		    while (endRow < 6) {
+			    System.out.println("COUNT BECOMES = " + count + " ENDROW = " + endRow);
 			    if (this.board.getGridRow(endRow)[col].equals("*")) {
 			    	count++;
 				    endRow++;
@@ -85,6 +108,7 @@ public class BoardSolver {
 			    else break;
 		    }
 	    }
+	    System.out.println("count = " + count);
 	    return count;
 	}
 
