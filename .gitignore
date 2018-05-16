@@ -1,6 +1,7 @@
 .*
 .idea/
 .class
+*.data
 Junk/
 out/
 comp2511.iml
