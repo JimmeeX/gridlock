@@ -15,7 +15,7 @@ public class BoardSolver {
 		this.board = new Board();
 	}
 
-	/**
+	/*
 	 * process input txt file
 	 */
     public void process() {
@@ -41,7 +41,8 @@ public class BoardSolver {
         }
     }
 
-	/*private void search() {
+    /*
+	private void search() {
 		Block curBlock = this.board.getBlock("z");
 		if (curBlock.movable) {
 
