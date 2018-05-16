@@ -8,16 +8,18 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class SystemSettings {
-    private DoubleProperty soundVolume;
-    private DoubleProperty musicVolume;
+public class SystemSettings implements Serializable {
+    private transient DoubleProperty soundVolume;
+    private transient DoubleProperty musicVolume;
 
-    private MediaPlayer moveBlockSound;
-    private MediaPlayer buttonPressSound;
-    private MediaPlayer victorySound;
+    private transient MediaPlayer moveBlockSound;
+    private transient MediaPlayer buttonPressSound;
+    private transient MediaPlayer victorySound;
 
+    // TODO: Do highscore instead of 0,1,2,3
     private Integer[] easyLevels;
     private Integer[] mediumLevels;
     private Integer[] hardLevels;
@@ -55,6 +57,35 @@ public class SystemSettings {
         this.mediumLevels = new Integer[20];
         this.hardLevels = new Integer[20];
         this.resetProgress();
+    }
+
+    public void initSounds(Double soundVolume, Double musicVolume) {
+        this.soundVolume = new SimpleDoubleProperty();
+        this.musicVolume = new SimpleDoubleProperty();
+
+        this.soundVolume.setValue(soundVolume);
+        this.musicVolume.setValue(musicVolume);
+
+        // Initialise Sounds
+        Media moveBlockMedia = new Media(new File("src/gridlock/static/audio/block_move_0.wav").toURI().toString());
+        this.moveBlockSound = new MediaPlayer(moveBlockMedia);
+        this.moveBlockSound.setVolume(this.soundVolume.getValue());
+
+        Media buttonPressMedia = new Media(new File("src/gridlock/static/audio/button_press_0.wav").toURI().toString());
+        this.buttonPressSound = new MediaPlayer(buttonPressMedia);
+        this.buttonPressSound.setVolume(this.soundVolume.getValue());
+
+        Media victoryMedia = new Media(new File("src/gridlock/static/audio/win_level_1.wav").toURI().toString());
+        this.victorySound = new MediaPlayer(victoryMedia);
+        this.victorySound.setVolume(this.soundVolume.getValue());
+
+        // Initialise Volume Listeners
+        this.soundVolume.addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                applySoundVolumes(newValue.doubleValue());
+            }
+        });
     }
 
     public void setLevelComplete(Difficulty difficulty, Integer level, Integer value) {
@@ -136,30 +167,6 @@ public class SystemSettings {
     public void playVictorySound() {
         this.victorySound.seek(this.victorySound.getStartTime());
         this.victorySound.play();
-    }
-
-    public Integer[] getEasyLevels() {
-        return easyLevels;
-    }
-
-    public void setEasyLevels(Integer[] easyLevels) {
-        this.easyLevels = easyLevels;
-    }
-
-    public Integer[] getMediumLevels() {
-        return mediumLevels;
-    }
-
-    public void setMediumLevels(Integer[] mediumLevels) {
-        this.mediumLevels = mediumLevels;
-    }
-
-    public Integer[] getHardLevels() {
-        return hardLevels;
-    }
-
-    public void setHardLevels(Integer[] hardLevels) {
-        this.hardLevels = hardLevels;
     }
 
     private void applySoundVolumes(Double volume) {
