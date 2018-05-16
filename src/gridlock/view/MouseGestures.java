@@ -8,12 +8,8 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Rectangle;
-import javafx.util.Duration;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class MouseGestures {
@@ -116,7 +112,6 @@ public class MouseGestures {
         double distMinY = deltaY + this.initialMinY;
         double distMaxY = deltaY + this.initialMaxY;
 
-        System.out.println(-dragContext.x + this.initialTranslateX);
         if (this.isHorizontal) {
             this.handleBlockCollisionX(distMinX, distMaxX);
             deltaX = this.computeDeltaX(deltaX);
@@ -193,7 +188,6 @@ public class MouseGestures {
                 }
                 // Collision from the Bottom
                 else if (mouseY >= enObjectBound.getMinY() && this.translateMinY == -this.initialMinY) {
-                    System.out.println(enObjectBound.getMinY());
                     this.translateMinY = enObjectBound.getMaxY() - this.initialMinY;
                 }
             }

@@ -109,7 +109,6 @@ public class GameController {
     private void initialiseBoard(String file) {
         this.board = new Board();
         this.board.process(file);
-        this.board.printGrid();
     }
 
     private void initialiseNodeList() {
@@ -188,7 +187,7 @@ public class GameController {
         rec.setY(startRow);
         rec.setTranslateX(0);
         rec.setTranslateY(0);
-        
+
         // TODO: Fix up so loading level is faster
         // Add Image
         if (b.getID().equals("z")) {
@@ -265,7 +264,6 @@ public class GameController {
         this.board.undoMove();
         this.board.updateNumMoves();
         this.updateBoard();
-        this.board.printGrid();
     }
 
     @FXML
@@ -273,7 +271,6 @@ public class GameController {
         this.board.redoMove();
         this.board.updateNumMoves();
         this.updateBoard();
-        this.board.printGrid();
     }
 
     @FXML
@@ -281,7 +278,6 @@ public class GameController {
         this.board.restart();
         this.board.updateNumMoves();
         this.updateBoard();
-        this.board.printGrid();
     }
 
     @FXML
