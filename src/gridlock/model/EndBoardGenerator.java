@@ -4,36 +4,39 @@ import java.util.*;
 
 public class EndBoardGenerator {
 
-    private int randomInclusive (int lower, int upper) {
-        return lower + (int) Math.floor (Math.random() * (upper+1-lower));
-    }
-
-    // LEVEL GENERATION
-    // Do it in background
-    /* Search tree of one Solution
-        Djikstra
-     */
+    // Bare: sometimes working sometimes not
     public Board newEndBoard () {
-        int numSize3 = 4;
-        int numSize2 = 4;
+        int currNumOfBlock = 0;
         Board b = new Board ();
-        b.addBlock("z", 2, 4);
-        b.incrementSize(b.blockExist("z"), 2, 5);
-        numSize2--;
+        List <String []> grid = b.getGrid();
+        if (b.addBlock("z", 2, 4, 2, true)) currNumOfBlock++;
+        // cheat
+        grid.get(2)[3] = "-";
 
-        int newCol; int newRow; boolean newIsHorizontal; List <Boolean> isHorizontalArr = new ArrayList <> (true, false);
-        for (int i = 0; i < numSize3; i++) {
-            newRow = randomInclusive(0, 5);
-            newCol = randomInclusive(0, 5);
-            newIsHorizontal = isHorizontalArr.get(randomInclusive(0, 1));
-            b.addBlock("b" + i, newRow, newCol, 3, newIsHorizontal);
-        }
-
-        for (int i = 0; i < numSize2; i++) {
-            while (true) {
-                newCol = randomInclusive(0, 5);
-                newRow = randomInclusive(0, 5);//SOON
+        for (int i = 0; i < grid.size(); i++) {
+            if (i == 2) continue;
+            for (int j = 0; j < grid.size(); j++) {
+                if (!grid.get(i)[j].equals("*")) continue;
+                String fillOrNot = randomBinaryChoice("yes", "no", 0.6);
+                if (fillOrNot.equals("no")) continue;
+                String id = Character.toString((char)(96 + currNumOfBlock));
+                boolean [] isHorizontal = {false, true};
+                int [] size = {2, 3};
+                int isHorizontalIdx = randomBinaryChoice(0, 1, 0.55);
+                int sizeIdx = randomBinaryChoice(0, 1, 0.51);
+                currNumOfBlock++;
+                if (b.addBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
+                if (b.addBlock(id, i, j, size[sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
+                if (b.addBlock(id, i, j, size[1-sizeIdx], isHorizontal[isHorizontalIdx])) continue;
+                if (b.addBlock(id, i, j, size[1-sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
+                currNumOfBlock--;
             }
         }
+        grid.get(2)[3] = "*";
+        return (currNumOfBlock > 7 && currNumOfBlock < 12) ? b : null;
+    }
+
+    private <E> E randomBinaryChoice (E item1, E item2, double probItem1) {
+        return (Math.random() < probItem1) ? item1 : item2;
     }
 }
