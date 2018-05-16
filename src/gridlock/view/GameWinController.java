@@ -4,15 +4,19 @@ import gridlock.model.Board;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
+import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import javax.swing.*;
 
@@ -120,6 +124,36 @@ public class GameWinController {
 
         // Close popup
         popupWindow.close();
+    }
+
+    @FXML
+    private void buttonEnterAnimation(MouseEvent event) {
+        Node node = (Node)event.getSource();
+
+        // Increase the Size
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(250), node);
+        scaleTransition.setFromX(1);
+        scaleTransition.setFromY(1);
+        scaleTransition.setToX(1.1);
+        scaleTransition.setToY(1.1);
+        scaleTransition.playFromStart();
+
+        node.setCursor(Cursor.HAND);
+    }
+
+    @FXML
+    private void buttonExitAnimation(MouseEvent event) {
+        Node node = (Node)event.getSource();
+
+        // Decrease the Size
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(250), node);
+        scaleTransition.setFromX(1.1);
+        scaleTransition.setFromY(1.1);
+        scaleTransition.setToX(1);
+        scaleTransition.setToY(1);
+        scaleTransition.playFromStart();
+
+        node.setCursor(Cursor.DEFAULT);
     }
 
     @FXML
