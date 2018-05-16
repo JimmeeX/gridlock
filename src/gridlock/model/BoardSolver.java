@@ -46,12 +46,34 @@ public class BoardSolver {
 	private void search(int numOfMoves) {
 		//set initial state
     	Block curBlock = this.board.getBlock("z");
+    	//set ArrayList of possible moves
+		ArrayList<Integer[]> positions = new Position
 		if (movable(curBlock) == 0) return;
 		int density = calculateDensity();
 		System.out.println("density = " + density);
-		BoardState boardState = new BoardState(density);
-		//initialise priority queue and first state
+		BoardState curBoardState = new BoardState(null, density, 0);
 
+		//initialise priority queue and first and end state
+		PriorityQueue<BoardState> stateQueue= new PriorityQueue<>();
+		stateQueue.add(curBoardState);
+		BoardState endState = null;
+
+		//initialise visited array
+		ArrayList<BoardState> visited = new ArrayList<>();
+
+		//loop
+		while (!stateQueue.isEmpty()) {
+			BoardState curState = stateQueue.poll();
+			visited.add(curState);
+
+			//check if end condition is met
+			if (curState.getNMoves() == numOfMoves) {
+				endState = curState;
+				//break;
+			}
+
+			for ()
+		}
 	}
 
 	private int calculateDensity() {
@@ -62,7 +84,14 @@ public class BoardSolver {
 	    return count;
 	}
 
-	public int movable(Block block) {
+	private void addPosition(ArrayList<Integer[]> list, int row, int col) {
+    	Integer[] position = new Integer[2];
+    	position[0] = row;
+    	position[1] = col;
+    	list.add(position);
+	}
+
+	public int movable(Block block, ArrayList<Integer[]> positions) {
     	int count = 0;
     	if (block.isHorizontal()) {
     		int row = block.getPosition().get(0)[0];
@@ -73,6 +102,7 @@ public class BoardSolver {
 			    System.out.println("left neighbor = " + this.board.getGridRow(row)[startCol]);
 			    System.out.println("COUNT BECOMES = " + count + " STARTCOL = " + startCol);
 			    if (this.board.getGridRow(row)[startCol].equals("*")) {
+			    	addPosition(positions, row, startCol);
     				count++;
     				startCol--;
 			    }
@@ -81,6 +111,7 @@ public class BoardSolver {
 		    while(endCol < 6) {
 			    System.out.println("COUNT BECOMES = " + count + " ENDCOL = " + endCol);
     			if (this.board.getGridRow(row)[endCol].equals("*")) {
+    				addPosition(positions, row, endCol);
     				count++;
 				    endCol++;
 			    }
@@ -94,6 +125,7 @@ public class BoardSolver {
 		    while (startRow >= 0) {
 			    System.out.println("COUNT BECOMES = " + count + " STARTROW = " + startRow);
 			    if (this.board.getGridRow(startRow)[col].equals("*")) {
+			    	addPosition(positions, startRow, col);
 			    	count++;
 			    	startRow--;
 			    }
@@ -102,6 +134,7 @@ public class BoardSolver {
 		    while (endRow < 6) {
 			    System.out.println("COUNT BECOMES = " + count + " ENDROW = " + endRow);
 			    if (this.board.getGridRow(endRow)[col].equals("*")) {
+			    	addPosition(positions, endRow, col);
 			    	count++;
 				    endRow++;
 			    }
