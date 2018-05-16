@@ -41,17 +41,6 @@ public class Board {
         this.numMoves = new SimpleIntegerProperty(0);
     }
 
-    public Block getBlock(String id) {
-        for (Block block: this.blocks) {
-            if (block.getID().equals(id)) return block;
-        }
-        return null;
-    }
-
-    public String[] getGridRow(int row) {
-        return this.grid.get(row);
-    }
-
     /** -prvt
      * initialise the grid (size x size)
      * @param size the length of the grid (square)
@@ -95,6 +84,17 @@ public class Board {
         } finally {
             if (sc != null) sc.close();
         }
+    }
+
+    public Block getBlock(String id) {
+        for (Block block: this.blocks) {
+            if (block.getID().equals(id)) return block;
+        }
+        return null;
+    }
+
+    public String[] getGridRow(int row) {
+        return this.grid.get(row);
     }
 
     /**
@@ -159,54 +159,6 @@ public class Board {
      */
     public ArrayList<Block> getBlocks() {
         return this.blocks;
-    }
-
-    // Added by James :)
-    public int getNumMoves() {
-        return numMoves.get();
-    }
-
-    // Added by James :)
-    public IntegerProperty numMovesProperty() {
-        return numMoves;
-    }
-
-    // Added by James :)
-    public void updateNumMoves() {
-        this.numMoves.setValue(this.prevLocations.size());
-    }
-
-    // Added by Edwin
-    public boolean addBlock(String id, int row, int col, int size, boolean isHorizontal) {
-        if (blockExist(id) != -1
-                || (size == 2 && (row > 4 || col > 4))
-                || (size == 3 && (row > 3 || col > 3))
-                || row < 0 || col < 0
-                || !this.grid.get(row)[col].equals("*")) return false;
-        // put scenario: check if the grid unit is empty
-        addBlock(id, row, col);
-        int idx = blockExist(id);
-        Block b = blocks.get(idx);
-        if (isHorizontal) {
-            for (int i = 1; i < size; i++) {
-                if (!this.grid.get(row)[col+i].equals("*")) {
-                    clearBlockIDFromGrid(b);
-                    blocks.remove(b);
-                    return false;
-                }
-                incrementSize(idx, row, col+i);
-            }
-        } else {
-            for (int i = 1; i < size; i++) {
-                if (!this.grid.get(row+i)[col].equals("*")) {
-                    clearBlockIDFromGrid(b);
-                    blocks.remove(b);
-                    return false;
-                }
-                incrementSize(idx, row+i, col);
-            }
-        }
-        return true;
     }
 
     /**
@@ -326,6 +278,21 @@ public class Board {
     }
 
     // Added by James :)
+    public int getNumMoves() {
+        return numMoves.get();
+    }
+
+    // Added by James :)
+    public IntegerProperty numMovesProperty() {
+        return numMoves;
+    }
+
+    // Added by James :)
+    public void updateNumMoves() {
+        this.numMoves.setValue(this.prevLocations.size());
+    }
+
+    // Added by James :)
     public BooleanProperty gameStateProperty() {
         return gameState;
     }
@@ -344,6 +311,72 @@ public class Board {
                 }
             }
         }
+    }
+
+    // Added by Edwin
+    public boolean addBlock(String id, int row, int col, int size, boolean isHorizontal) {
+        if (blockExist(id) != -1
+                || (size == 2 && (row > 4 || col > 4))
+                || (size == 3 && (row > 3 || col > 3))
+                || row < 0 || col < 0
+                || !this.grid.get(row)[col].equals("*")) return false;
+        // put scenario: check if the grid unit is empty
+        addBlock(id, row, col);
+        int idx = blockExist(id);
+        Block b = blocks.get(idx);
+        if (isHorizontal) {
+            for (int i = 1; i < size; i++) {
+                if (!this.grid.get(row)[col+i].equals("*")) {
+                    clearBlockIDFromGrid(b);
+                    blocks.remove(b);
+                    return false;
+                }
+                incrementSize(idx, row, col+i);
+            }
+        } else {
+            for (int i = 1; i < size; i++) {
+                if (!this.grid.get(row+i)[col].equals("*")) {
+                    clearBlockIDFromGrid(b);
+                    blocks.remove(b);
+                    return false;
+                }
+                incrementSize(idx, row+i, col);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Let blockRange be an interval of the leftest/uppest and the rightest/downest
+     * possible block starting column/row when only that particular block is moved
+     * E.g. in endGameState.txt file:
+     * |* * * a a a
+     * |* * * * * *
+     * |* * b * z z
+     * |c c b * d e
+     * |f * b * d e
+     * |f * g g g e
+     * blockrange(z:horznt) = [3,4], blockrange (b: vert) = [0,2]
+     * @param id
+     * @return
+     */
+    // Added by Edwin
+    public Integer[] blockRange(String id) {
+        int idx = blockExist(id);
+        if (idx == -1) return null;
+        Block b = blocks.get(idx);
+        int size = b.getSize();
+        Integer[] intv = new Integer[2];
+        if (b.isHorizontal()) {
+            intv[0] = b.getCol(); intv[1] = b.getCol();
+            while (intv[0] > 0 && grid.get(b.getRow())[intv[0]-1].equals("*")) intv[0]--;
+            while (intv[1]+size- 1 < 5 && grid.get(b.getRow())[intv[1]+size].equals("*")) intv[1]++;
+        } else {
+            intv[0] = b.getRow(); intv[1] = b.getRow();
+            while (intv[0] > 0 && grid.get(intv[0]-1)[b.getCol()].equals("*")) intv[0]--;
+            while (intv[1]+size- 1 < 5 && grid.get(intv[1]+size)[b.getCol()].equals("*")) intv[1]++;
+        }
+        return intv;
     }
 
     /**
