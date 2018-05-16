@@ -34,7 +34,7 @@ public class BoardSolver {
             }
 	        this.board.printGrid();
             System.out.println("");
-            search(6);
+            search(3,9);
             this.board.printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
@@ -75,8 +75,9 @@ public class BoardSolver {
 			Board board = curState.getBoard();
 
 			for (Integer[] position: positions) {
-				BoardState boardState = new BoardState(curState, curState.getNMoves() + 1, )
 				board.makeMove(curState.getBlock().getID(), position, true);
+
+				//BoardState boardState = new BoardState(curState, curState.getNMoves() + 1, );
 
 			}
 		}
