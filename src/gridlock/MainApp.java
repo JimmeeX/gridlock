@@ -1,6 +1,6 @@
 package gridlock;
 
-import gridlock.model.SystemSettings;
+import gridlock.model.*;
 import gridlock.view.MenuController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -30,8 +30,10 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-        //BoardSimulation bs = new BoardSimulation();
-        //bs.playGame();
+        EndBoardGenerator ebg = new EndBoardGenerator();
+        Board b = null;
+        while (b == null) b = ebg.newEndBoard();
+        b.printGrid();
         launch(args);
     }
 }

@@ -102,6 +102,7 @@ public class LevelSelectController {
     }
 
     @FXML
+
     private void navToGame(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("Game.fxml"));

@@ -108,7 +108,20 @@ public class GameController {
 
     private void initialiseBoard(String file) {
         this.board = new Board();
+        levelGenerator(this.difficulty);
         this.board.process(file);
+    }
+
+    private void levelGenerator(Difficulty difficulty) {
+        BoardSolver levGen = new BoardSolver();
+        levGen.process();
+        if (difficulty.equals("EASY")) {
+            levGen.process();
+        } else if (difficulty.equals("MEDIUM")) {
+
+        } else {
+
+        }
     }
 
     private void initialiseNodeList() {

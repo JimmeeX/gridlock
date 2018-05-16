@@ -113,4 +113,20 @@ public class Block {
         return toRet;
     }
 
+    /** Helper function for BFS
+     *
+     * @return
+     */
+    public Block duplicate() {
+        int row = this.position.get(0)[0];
+        int col = this.position.get(0)[1];
+        Block newBlock = new Block(this.id, row, col);
+        for (int i = 1; i < this.position.size(); i++) {
+            Integer[] newPosition = new Integer[2];
+            newPosition[0] = this.position.get(i)[0];
+            newPosition[1] = this.position.get(i)[1];
+            newBlock.addPosition(newPosition);
+        }
+        return newBlock;
+    }
 }

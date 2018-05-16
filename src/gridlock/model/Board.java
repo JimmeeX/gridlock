@@ -1,7 +1,7 @@
 package gridlock.model;
 //do we really need an id for a block?
 //hmm I reckon the id is to look for the block
-//(say when we move a block, we refer to them by their idk) - Alina
+//(say when we move a block, we refer to them by their id) - Alina
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -35,11 +35,25 @@ public class Board {
         this.blocks = new ArrayList<>();
         this.prevLocations = new ArrayList<>();
         this.nextLocations = new ArrayList<>();
-
         // Added by James :)
         // Board starts off as unsolved (ie, false)
         this.gameState = new SimpleBooleanProperty(false);
         this.numMoves = new SimpleIntegerProperty(0);
+    }
+    /** -prvt
+     * initialise the grid (size x size)
+     * @param size the length of the grid (square)
+     * @post this.grid.size() >= 0
+     */
+    private void initialiseGrid(int size) {
+        this.grid = new ArrayList<>();
+        for (int row = 0; row < size; row++) {
+            String[] newRow = new String[size];
+            for (int col = 0; col < size; col++) {
+                newRow[col] = "*";
+            }
+            this.grid.add(newRow);
+        }
     }
 
     /**
@@ -55,16 +69,68 @@ public class Board {
                     String id = sc.next();
                     if (!id.equals("*")) {
                         int blockID = blockExist(id);
-                        if (blockID != -1) incrementSize(blockID, row, col);
+                        if (blockID != -1) {
+                            incrementSize(blockID, row, col);
+                            this.grid.get(row)[col] = id;
+                        }
                         else addBlock(id, row, col);
                     }
                 }
             }
+            printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } finally {
             if (sc != null) sc.close();
         }
+    }
+
+    /**
+     * add a new block to the grid
+     * @param id the block's id
+     * @param row the row position of the block
+     * @param col the col position of the block
+     */
+    public void addBlock(String id, int row, int col){
+        Block newBlock = new Block(id, row, col);
+        this.grid.get(row)[col] = id;
+        this.blocks.add(newBlock);
+    }
+
+    /**
+     * check if the block has been initialised
+     * @param id the id of the block (in String)
+     * @return -1 if the block doesn't exist
+     * @return the block index if the block exists
+     */
+    public int blockExist(String id) {
+        for (int block = 0; block < this.blocks.size(); block++) {
+            if (this.blocks.get(block).getID().equals(id)) return block;
+        }
+        return -1;
+    }
+
+    /**
+     * increment the size of initialised blocks
+     * @param idx the index of the block in blocks
+     * @param row the row position of the block
+     * @param col the col position of the block
+     * @post the block's size will increase by 1
+     */
+    public void incrementSize(int idx, int row, int col) {
+        Block thisBlock = this.blocks.get(idx);
+        Integer[] newPosition = new Integer[2];
+        newPosition[0] = row;
+        newPosition[1] = col;
+        thisBlock.addPosition(newPosition);
+        this.grid.get(row)[col] = thisBlock.getID();
+    }
+
+    /**
+     * get the grid
+     */
+    public ArrayList<String[]> getGrid () {
+        return this.grid;
     }
 
     /**
@@ -84,11 +150,6 @@ public class Board {
     }
 
     // Added by James :)
-    public void updateNumMoves() {
-        this.numMoves.setValue(this.prevLocations.size());
-    }
-
-    // Added by James :)
     public int getNumMoves() {
         return numMoves.get();
     }
@@ -98,101 +159,42 @@ public class Board {
         return numMoves;
     }
 
-    /**
-     * initialise the grid (size x size)
-     * @param size the length of the grid (square)
-     * @post this.grid.size() >= 0
-     */
-    public void initialiseGrid(int size) {
-        this.grid = new ArrayList<>();
-        for (int row = 0; row < size; row++) {
-            String[] newRow = new String[size];
-            for (int col = 0; col < size; col++) {
-                newRow[col] = "*";
+    // Added by James :)
+    public void updateNumMoves() {
+        this.numMoves.setValue(this.prevLocations.size());
+    }
+
+    // Added by Edwin
+    public boolean addBlock(String id, int row, int col, int size, boolean isHorizontal) {
+        if (blockExist(id) != -1
+                || (size == 2 && (row > 4 || col > 4))
+                || (size == 3 && (row > 3 || col > 3))
+                || row < 0 || col < 0
+                || !this.grid.get(row)[col].equals("*")) return false;
+        // put scenario: check if the grid unit is empty
+        addBlock(id, row, col);
+        int idx = blockExist(id);
+        Block b = blocks.get(idx);
+        if (isHorizontal) {
+            for (int i = 1; i < size; i++) {
+                if (!this.grid.get(row)[col+i].equals("*")) {
+                    clearBlockIDFromGrid(b);
+                    blocks.remove(b);
+                    return false;
+                }
+                incrementSize(idx, row, col+i);
             }
-            this.grid.add(newRow);
-        }
-    }
-
-
-    /**
-     * print the grid
-     */
-    public void printGrid() {
-        initialiseGrid(6);
-        for (Block block: this.blocks) {
-            ArrayList<Integer[]> positions = block.getPosition();
-            for (Integer[] position : positions ) {
-                this.grid.get(position[0])[position[1]] = block.getID();
+        } else {
+            for (int i = 1; i < size; i++) {
+                if (!this.grid.get(row+i)[col].equals("*")) {
+                    clearBlockIDFromGrid(b);
+                    blocks.remove(b);
+                    return false;
+                }
+                incrementSize(idx, row+i, col);
             }
         }
-        for (int row = 0; row < 6; row++) {
-            for (int col = 0; col < 6; col++) {
-                System.out.print(this.grid.get(row)[col] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println("list of blocks:");
-        printBlock();
-        System.out.println("nextLocation = " + this.nextLocations.size() + " prevLocation = "
-                + this.prevLocations.size() + " numOfMoves = " + this.prevLocations.size());
-        System.out.println("prevLoc:");
-        for (Block block: prevLocations) {
-            System.out.println(block.toString());
-        }
-        System.out.println("nextLoc:");
-        for (Block block: nextLocations) {
-            System.out.println(block.toString());
-        }
-        System.out.println();
-    }
-
-    /**
-     * add a new block to the grid
-     * @param id the block's id
-     * @param row the row position of the block
-     * @param col the col position of the block
-     */
-    public void addBlock(String id, int row, int col){
-        Block newBlock = new Block(id, row, col);
-        this.blocks.add(newBlock);
-    }
-
-    /**
-     * check if the block has been initialised
-     * @param id the id of the block (in String)
-     * @return -1 if the block doesn't exist
-     * @return the block id if the block exists
-     */
-    public int blockExist(String id) {
-        for (int block = 0; block < this.blocks.size(); block++) {
-            if (this.blocks.get(block).getID().equals(id)) return block;
-        }
-        return -1;
-    }
-
-    /**
-     * increment the size of initialised blocks
-     * @param id the index of the block in blocks
-     * @param row the row position of the block
-     * @param col the col position of the block
-     * @post the block's size will increase by 1
-     */
-    public void incrementSize(int id, int row, int col) {
-        Block thisBlock = this.blocks.get(id);
-        Integer[] newPosition = new Integer[2];
-        newPosition[0] = row;
-        newPosition[1] = col;
-        thisBlock.addPosition(newPosition);
-    }
-
-    /**
-     * print all blocks' details
-     */
-    public void printBlock() {
-        for (Block block: this.blocks) {
-            System.out.println(block.toString());
-        }
+        return true;
     }
 
     /**
@@ -208,57 +210,51 @@ public class Board {
                 if(!block.samePosition(newStartPosition)
                         && !collide(block, newStartPosition)) {
                     Block oldBlock = new Block(id, block.getPosition().get(0)[0], block.getPosition().get(0)[1]);
+                    clearBlockIDFromGrid(block);
                     this.prevLocations.add(oldBlock);
                     block.setNewPosition(newStartPosition);
+                    addBlockIDToGrid(block);
                     if (redoAutomatisation) nextLocations.clear();
                 }
             }
         }
     }
-
-    /**
+    /** -prvt
      * Check if the new position of a block collides with others and walls
      * @param thisBlock
      * @param newStartPosition
      * @return
      */
     private boolean collide(Block thisBlock, Integer[] newStartPosition) {
-        for (Block block: this.blocks) {
+        for (Block block : this.blocks) {
             if (!block.getID().equals(thisBlock.getID())) {
                 for (Integer[] position : block.getPosition()) {
                     if (thisBlock.isHorizontal()
-                            ? position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize()-1 &&
+                            ? position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize() - 1 &&
                             position[0] == newStartPosition[0]
-                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize()-1 &&
+                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize() - 1 &&
                             position[1] == newStartPosition[1]) return true;
                 }
             }
         }
         if (thisBlock.isHorizontal()
-            ? newStartPosition[1] + thisBlock.getSize()-1 > 6
-            : newStartPosition[0] + thisBlock.getSize()-1 > 6) return true;
+                ? newStartPosition[1] + thisBlock.getSize() - 1 > 6
+                : newStartPosition[0] + thisBlock.getSize() - 1 > 6) return true;
         return false;
     }
-
-    /**
-     * Check if the game is over (the "z" car is by the exit)
-     * Will send "true" to "gameState" if game is over
+    /** -prvt
      */
-    // Added by James :)
-    public void checkGameOver() {
-        this.gameState.setValue(false);
-        for (Block block: this.blocks) {
-            if (block.getID().equals("z")) {
-                if (block.getPosition().get(0)[1] == 4) {
-                    this.gameState.setValue(true);
-                }
-            }
+    private void clearBlockIDFromGrid(Block block) {
+        for (Integer[] position: block.getPosition()) {
+            this.grid.get(position[0])[position[1]] = "*";
         }
     }
-
-    // Added by James :)
-    public BooleanProperty gameStateProperty() {
-        return gameState;
+    /** -prvt
+     */
+    private void addBlockIDToGrid(Block block) {
+        for (Integer[] position :block.getPosition()) {
+            this.grid.get(position[0])[position[1]] = block.getID();
+        }
     }
 
     /**
@@ -317,14 +313,59 @@ public class Board {
         this.nextLocations.clear();
     }
 
-    public void generateLevel () {
-        /*
-        1. Trivial: 3-9 steps
-        2. Easy
-        3. Medium
-        4. Hard
-        5. extreme
-         */
+    // Added by James :)
+    public BooleanProperty gameStateProperty() {
+        return gameState;
     }
 
+    /**
+     * Check if the game is over (the "z" car is by the exit)
+     * Will send "true" to "gameState" if game is over
+     */
+    // Added by James :)
+    public void checkGameOver() {
+        this.gameState.setValue(false);
+        for (Block block: this.blocks) {
+            if (block.getID().equals("z")) {
+                if (block.getPosition().get(0)[1] == 4) {
+                    this.gameState.setValue(true);
+                }
+            }
+        }
+    }
+
+    /**
+     * print the grid
+     */
+    public void printGrid() {
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 6; col++) {
+                System.out.print(this.grid.get(row)[col] + " ");
+            }
+            System.out.println();
+        }
+    }
+    /**
+     * Print all blocks' details
+     */
+    public void printBlocks() {
+        for (Block block: this.blocks) {
+            System.out.println(block.toString());
+        }
+    }
+    /**
+     * Print all next-prev loc details
+     */
+    public void printNextPrevLocations() {
+        System.out.println("nextLocation = " + this.nextLocations.size() + " prevLocation = "
+                + this.prevLocations.size() + " numOfMoves = " + this.prevLocations.size());
+        System.out.println("prevLoc:");
+        for (Block block: prevLocations) {
+            System.out.println(block.toString());
+        }
+        System.out.println("nextLoc:");
+        for (Block block: nextLocations) {
+            System.out.println(block.toString());
+        }
+    }
 }
