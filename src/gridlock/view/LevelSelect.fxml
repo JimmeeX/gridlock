@@ -51,8 +51,8 @@
             <ToggleButton id="level" mnemonicParsing="false" onMousePressed="#playButtonPressSound" text="20" toggleGroup="$toggleLevel" GridPane.columnIndex="4" GridPane.rowIndex="3" />
          </children>
       </GridPane>
-      <Button id="button_controls" layoutX="100.0" layoutY="526.0" mnemonicParsing="false" onAction="#navToPlaySettings" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="500.0" />
-      <Button id="button_controls" layoutX="500.0" layoutY="526.0" mnemonicParsing="false" onAction="#navToGame" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Start" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="100.0" />
+      <Button id="button_controls" layoutX="100.0" layoutY="526.0" mnemonicParsing="false" onAction="#navToPlaySettings" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="500.0" />
+      <Button id="button_controls" layoutX="500.0" layoutY="526.0" mnemonicParsing="false" onAction="#navToGame" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Start" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="100.0" />
       <Label id="subtitle" fx:id="modeLabel" alignment="CENTER" layoutX="217.0" layoutY="104.0" text="Label" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="125.0" />
       <Label id="subtitle" fx:id="difficultyLabel" alignment="CENTER" layoutX="544.0" layoutY="122.0" text="Label" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="125.0" />
       <Label id="title" alignment="CENTER" layoutX="315.0" layoutY="28.0" text="Levels" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="30.0" />
