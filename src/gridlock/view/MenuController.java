@@ -15,6 +15,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 public class MenuController {
     private SystemSettings settings;
 
@@ -103,7 +108,12 @@ public class MenuController {
      * @param event Quit Button
      */
     @FXML
-    private void quitGame(ActionEvent event) {
+    private void quitGame(ActionEvent event) throws IOException {
+        // Save Data
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("src/gridlock/resources/save/save.data")))) {
+            oos.writeObject(this.settings);
+        }
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.close();
     }
