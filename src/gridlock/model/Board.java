@@ -1,7 +1,7 @@
 package gridlock.model;
 //do we really need an id for a block?
 //hmm I reckon the id is to look for the block
-//(say when we move a block, we refer to them by their idk) - Alina
+//(say when we move a block, we refer to them by their id) - Alina
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -19,9 +19,6 @@ import java.util.Scanner;
  * and other functionality of a board game (make move, undo move, etc)
  */
 public class Board {
-    private Difficulty difficulty;
-    private Mode mode;
-    private Integer level;
     private ArrayList<String[]> grid;
     private ArrayList<Block> blocks;
     private ArrayList<Block> prevLocations;
@@ -39,7 +36,6 @@ public class Board {
         this.blocks = new ArrayList<>();
         this.prevLocations = new ArrayList<>();
         this.nextLocations = new ArrayList<>();
-
         // Added by James :)
         // Board starts off as unsolved (ie, false)
         this.gameState = new SimpleBooleanProperty(false);
@@ -47,27 +43,18 @@ public class Board {
     }
 
     /**
-     * process input txt file
-     * @param fileName the file name to be processed
+     * initialise the grid (size x size)
+     * @param size the length of the grid (square)
+     * @post this.grid.size() >= 0
      */
-    public void process(String fileName) {
-        Scanner sc = null;
-        try {
-            sc = new Scanner(new File(fileName));
-            for (int row = 0; row < 6; row++) {
-                for (int col = 0; col < 6; col++) {
-                    String id = sc.next();
-                    if (!id.equals("*")) {
-                        int blockID = blockExist(id);
-                        if (blockID != -1) incrementSize(blockID, row, col);
-                        else addBlock(id, row, col);
-                    }
-                }
+    public void initialiseGrid(int size) {
+        this.grid = new ArrayList<>();
+        for (int row = 0; row < size; row++) {
+            String[] newRow = new String[size];
+            for (int col = 0; col < size; col++) {
+                newRow[col] = "*";
             }
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            if (sc != null) sc.close();
+            this.grid.add(newRow);
         }
     }
 
@@ -87,35 +74,6 @@ public class Board {
         return this.blocks;
     }
 
-    public void setDifficulty(String diff) {
-        this.difficulty = Difficulty.valueOf(diff.toUpperCase());
-    }
-
-    public void setMode(String gameMode) {
-        this.mode = Mode.valueOf(gameMode.toUpperCase());
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public ArrayList<String[]> getBoard() {
-        return this.grid;
-    }
-
-    public Difficulty getDifficulty() {
-        return difficulty;
-    }
-
-    public Mode getMode() {
-        return mode;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-
     // Added by James :)
     public void updateNumMoves() {
         this.numMoves.setValue(this.prevLocations.size());
@@ -131,53 +89,58 @@ public class Board {
         return numMoves;
     }
 
-
-    @Override
-    public String toString() {
-        return "Gridlock{" +
-                "board=" + this.grid +
-                ", difficulty=" + this.difficulty +
-                ", mode=" + this.mode +
-                ", level=" + this.level + ", numOfMoves=" + this.prevLocations.size()+
-                '}';
-    }
-
     /**
-     * initialise the grid (size x size)
-     * @param size the length of the grid (square)
-     * @post this.grid.size() >= 0
+     * process input txt file
+     * @param fileName the file name to be processed
      */
-    public void initialiseGrid(int size) {
-        this.grid = new ArrayList<>();
-        for (int row = 0; row < size; row++) {
-            String[] newRow = new String[size];
-            for (int col = 0; col < size; col++) {
-                newRow[col] = "*";
+    public void process(String fileName) {
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new File(fileName));
+            for (int row = 0; row < 6; row++) {
+                for (int col = 0; col < 6; col++) {
+                    String id = sc.next();
+                    if (!id.equals("*")) {
+                        int blockID = blockExist(id);
+                        if (blockID != -1) {
+                            incrementSize(blockID, row, col);
+                            this.grid.get(row)[col] = id;
+                        }
+                        else addBlock(id, row, col);
+                    }
+                }
             }
-            this.grid.add(newRow);
+            printGrid();
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (sc != null) sc.close();
         }
     }
-
 
     /**
      * print the grid
      */
     public void printGrid() {
-        initialiseGrid(6);
-        for (Block block: this.blocks) {
-            ArrayList<Integer[]> positions = block.getPosition();
-            for (Integer[] position : positions ) {
-                this.grid.get(position[0])[position[1]] = block.getID();
-            }
-        }
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
                 System.out.print(this.grid.get(row)[col] + " ");
             }
             System.out.println();
         }
-        System.out.println("list of blocks:");
-        printBlock();
+    }
+    /**
+     * Print all blocks' details
+     */
+    public void printBlocks() {
+        for (Block block: this.blocks) {
+            System.out.println(block.toString());
+        }
+    }
+    /**
+     * Print all next-prev loc details
+     */
+    public void printNextPrevLocations() {
         System.out.println("nextLocation = " + this.nextLocations.size() + " prevLocation = "
                 + this.prevLocations.size() + " numOfMoves = " + this.prevLocations.size());
         System.out.println("prevLoc:");
@@ -188,7 +151,6 @@ public class Board {
         for (Block block: nextLocations) {
             System.out.println(block.toString());
         }
-        System.out.println();
     }
 
     /**
@@ -199,20 +161,8 @@ public class Board {
      */
     public void addBlock(String id, int row, int col){
         Block newBlock = new Block(id, row, col);
+        this.grid.get(row)[col] = id;
         this.blocks.add(newBlock);
-    }
-
-    /**
-     * check if the block has been initialised
-     * @param id the id of the block (in String)
-     * @return -1 if the block doesn't exist
-     * @return the block id if the block exists
-     */
-    public int blockExist(String id) {
-        for (int block = 0; block < this.blocks.size(); block++) {
-            if (this.blocks.get(block).getID().equals(id)) return block;
-        }
-        return -1;
     }
 
     /**
@@ -231,11 +181,27 @@ public class Board {
     }
 
     /**
-     * print all blocks' details
+     * check if the block has been initialised
+     * @param id the id of the block (in String)
+     * @return -1 if the block doesn't exist
+     * @return the block id if the block exists
      */
-    public void printBlock() {
-        for (Block block: this.blocks) {
-            System.out.println(block.toString());
+    public int blockExist(String id) {
+        for (int block = 0; block < this.blocks.size(); block++) {
+            if (this.blocks.get(block).getID().equals(id)) return block;
+        }
+        return -1;
+    }
+
+    public void addBlockID(Block block) {
+        for (Integer[] position :block.getPosition()) {
+            this.grid.get(position[0])[position[1]] = block.getID();
+        }
+    }
+
+    public void clearBlockID(ArrayList<Integer[]> positions) {
+        for (Integer[] position: positions) {
+            this.grid.get(position[0])[position[1]] = "*";
         }
     }
 
@@ -252,8 +218,10 @@ public class Board {
                 if(!block.samePosition(newStartPosition)
                         && !collide(block, newStartPosition)) {
                     Block oldBlock = new Block(id, block.getPosition().get(0)[0], block.getPosition().get(0)[1]);
+                    clearBlockID(block.getPosition());
                     this.prevLocations.add(oldBlock);
                     block.setNewPosition(newStartPosition);
+                    addBlockID(block);
                     if (redoAutomatisation) nextLocations.clear();
                 }
             }
@@ -282,32 +250,6 @@ public class Board {
             ? newStartPosition[1] + thisBlock.getSize()-1 > 6
             : newStartPosition[0] + thisBlock.getSize()-1 > 6) return true;
         return false;
-    }
-
-    /**
-     * Check if the game is over (the "z" car is by the exit)
-     * Will send "true" to "gameState" if game is over
-     */
-    // Added by James :)
-    public void checkGameOver() {
-        this.gameState.setValue(false);
-        for (Block block: this.blocks) {
-            if (block.getID().equals("z")) {
-                if (block.getPosition().get(0)[1] == 4) {
-                    this.gameState.setValue(true);
-                }
-            }
-        }
-    }
-
-    // Added by James :)
-    public boolean isGameState() {
-        return gameState.get();
-    }
-
-    // Added by James :)
-    public BooleanProperty gameStateProperty() {
-        return gameState;
     }
 
     /**
@@ -366,178 +308,24 @@ public class Board {
         this.nextLocations.clear();
     }
 
-    /** For hints (?)
-     *
-     * @return
-     */
-    public boolean solvePuzzle() {
-        LinkedList<ArrayList<Block>> queue = new LinkedList<>();
-        ArrayList<ArrayList<Block>> visited = new ArrayList<>();
-        ArrayList<Block> blocksCopy = new ArrayList<>();
-        for (Block b : this.blocks) blocksCopy.add(b);
-        queue.add(blocksCopy);
-        while (!queue.isEmpty()) {
-            ArrayList<Block> curr = queue.poll();
-            for (Block block : curr) {
-                if (block.getID().equals("z")) {
-                    if (block.getPosition().get(0)[1] == 6 - block.getSize()) return true;
-                }
-            }
-            if (visited.contains(curr)) continue;
-
-            visited.add(curr);
-
-            ArrayList<ArrayList<Block>> nextPossible = new ArrayList<>();
-            nextPossible = getNextPossibleMoves(curr);
-            for (int i = 0; i < nextPossible.size(); i++) {
-                ArrayList<Block> newBlock = new ArrayList<>();
-                newBlock = nextPossible.get(i);
-                queue.add(newBlock);
-            }
-        }
-        return false;
-    }
-
-    /** Helper function for solvePuzzle()
-     *
-     * @param currState
-     * @return
-     */
-    public ArrayList<ArrayList<Block>> getNextPossibleMoves(ArrayList<Block> currState) {
-        ArrayList<ArrayList<Block>> possible = new ArrayList<>();
-        for (Block b : currState) {
-            if (b.isHorizontal()) {
-                int row = b.getRow();
-                int col = b.getCol();
-                if (col > 0 && (this.grid.get(col - 1)[row].equals("*"))) {
-                    int newCol = col;
-                    while (newCol > 0 && this.grid.get(newCol - 1)[row].equals("*")) {
-                        newCol--;
-                    }
-
-                    ArrayList<Block> newBlocks = new ArrayList<>();
-                    for (Block block : currState) {
-                        if (block.getID().equals(b.getID())) {
-                            Block newBlock = new Block(block.getID(), row, newCol);
-                            for (int i = 1; i < block.getSize(); i++) {
-                                Integer[] newPosition = new Integer[2];
-                                newPosition[0] = row;
-                                newPosition[1] = newCol + i;
-                                newBlock.addPosition(newPosition);
-                            }
-                            newBlocks.add(newBlock);
-                        } else {
-                            newBlocks.add(block.duplicate());
-                        }
-                    }
-                    possible.add(newBlocks);
-                }
-
-                if (col + b.getSize() < 6 && (this.grid.get(col + b.getSize())[row].equals("*"))) {
-                    int newCol = col;
-                    while (newCol < 6 - b.getSize() && this.grid.get(newCol)[row].equals("*")) {
-                        newCol++;
-                    }
-
-                    ArrayList<Block> newBlocks = new ArrayList<>();
-                    for (Block block : currState) {
-                        if (block.getID().equals(b.getID())) {
-                            Block newBlock = new Block(block.getID(), row, newCol);
-                            for (int i = 1; i < block.getSize(); i++) {
-                                Integer[] newPosition = new Integer[2];
-                                newPosition[0] = row;
-                                newPosition[1] = newCol + i;
-                                newBlock.addPosition(newPosition);
-                            }
-                            newBlocks.add(newBlock);
-                        } else {
-                            newBlocks.add(block.duplicate());
-                        }
-                    }
-                    possible.add(newBlocks);
-                }
-            } else {
-                int row = b.getRow();
-                int col = b.getCol();
-                if (row > 0 && (this.grid.get(col)[row - 1].equals("*"))) {
-                    int newRow = row;
-                    while (newRow > 0 && this.grid.get(col)[newRow - 1].equals("*")) {
-                        newRow--;
-                    }
-
-                    ArrayList<Block> newBlocks = new ArrayList<>();
-                    for (Block block : currState) {
-                        if (block.getID().equals(b.getID())) {
-                            Block newBlock = new Block(block.getID(), newRow, col);
-                            for (int i = 1; i < block.getSize(); i++) {
-                                Integer[] newPosition = new Integer[2];
-                                newPosition[0] = newRow + i;
-                                newPosition[1] = col;
-                                newBlock.addPosition(newPosition);
-                            }
-                            newBlocks.add(newBlock);
-                        } else {
-                            newBlocks.add(block.duplicate());
-                        }
-                    }
-                    possible.add(newBlocks);
-                }
-
-                if (row + b.getSize() < 6 && (this.grid.get(col)[row + b.getSize()].equals("*"))) {
-                    int newRow = row;
-                    while (newRow < 6 - b.getSize() && this.grid.get(col)[newRow + b.getSize()].equals("*")) {
-                        newRow++;
-                    }
-
-                    ArrayList<Block> newBlocks = new ArrayList<>();
-                    for (Block block : currState) {
-                        if (block.getID().equals(b.getID())) {
-                            Block newBlock = new Block(block.getID(), newRow, col);
-                            for (int i = 1; i < block.getSize(); i++) {
-                                Integer[] newPosition = new Integer[2];
-                                newPosition[0] = newRow + i;
-                                newPosition[1] = col;
-                                newBlock.addPosition(newPosition);
-                            }
-                            newBlocks.add(newBlock);
-                        } else {
-                            newBlocks.add(block.duplicate());
-                        }
-                    }
-                    possible.add(newBlocks);
-                }
-            }
-        }
-        return possible;
+    // Added by James :)
+    public BooleanProperty gameStateProperty() {
+        return gameState;
     }
 
     /**
-     * If possible, use the algorithm to generate for Campaigns, too. The sandbox is a live performance
-     *
-     * Might be changed:
-        Difficulty metrics:
-        * num of steps
-        * num of occupyingBoxes
-        * num of red block moves
-        * num of notMaximalMoves
-        Initial expectation:
-        1. Trivial: 3-9 steps, >= 14 empty boxes for block-moving spaces (<= 22 occboxes)
-        2. Easy: 10-14 steps, >= 14 empties
-                   15-19 steps, >= 14 empties
-        3. Medium: 15-19 steps, <= 13 empties
-                   20-29 steps
-        4. Hard: 30-39 steps
-        5. Extreme: 40+
+     * Check if the game is over (the "z" car is by the exit)
+     * Will send "true" to "gameState" if game is over
      */
-    public void generateLevel () {
-        /*
-         Alternative 1: Put random boxes one per one, calculate the shortest path.
-                        Pick the longest one, repeat. (Inspired: https://github.com/Unknowncmbk/unblock-me-generator)
-                        Chance based, maybe long.
-         Alternative 2: BFS, restriction for connection
-                           * do not move same block twice
-                           * do not move s.t. the ranges of blocks do not differ
-        */
+    // Added by James :)
+    public void checkGameOver() {
+        this.gameState.setValue(false);
+        for (Block block: this.blocks) {
+            if (block.getID().equals("z")) {
+                if (block.getPosition().get(0)[1] == 4) {
+                    this.gameState.setValue(true);
+                }
+            }
+        }
     }
-
 }

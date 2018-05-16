@@ -3,6 +3,8 @@ package gridlock.view;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
@@ -19,6 +22,7 @@ public class LevelSelectController {
     private SystemSettings settings;
     private Mode mode;
     private Difficulty difficulty;
+    private Integer level;
 
     @FXML
     private GridPane levels;
@@ -37,8 +41,26 @@ public class LevelSelectController {
         this.modeLabel.setText(mode.toString());
         this.difficultyLabel.setText(difficulty.toString());
 
+        ToggleButton selectedLevel = (ToggleButton) this.toggleLevel.getSelectedToggle();
+        this.level = Integer.parseInt(selectedLevel.getText());
 
         this.applyLevelComplete();
+    }
+
+    @FXML
+    private void initialize() {
+        this.toggleLevel.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                if (toggleLevel.getSelectedToggle() == null) {
+                    oldValue.setSelected(true);
+                }
+                else {
+                    ToggleButton selectedLevel = (ToggleButton) toggleLevel.getSelectedToggle();
+                    level = Integer.parseInt(selectedLevel.getText());
+                }
+            }
+        });
     }
 
     private void applyLevelComplete() {
@@ -80,33 +102,18 @@ public class LevelSelectController {
     }
 
     @FXML
-    private void levelSelectControls(ActionEvent event) throws Exception {
-        try {
-        Integer selectedLevel = this.getLevel();
-        this.navToGame(event, selectedLevel);
-        }
 
-        catch (NullPointerException e) {
-            System.out.println("Please selected a level");
-        }
-    }
-
-    private void navToGame(ActionEvent event, Integer selectedLevel) throws Exception {
+    private void navToGame(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("Game.fxml"));
         Parent gameParent = loader.load();
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(this.settings, this.mode, this.difficulty, selectedLevel);
+        gameController.initData(this.settings, this.mode, this.difficulty, this.level);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
-    }
-
-    private Integer getLevel() {
-        ToggleButton selectedLevel = (ToggleButton) toggleLevel.getSelectedToggle();
-        return Integer.parseInt(selectedLevel.getText());
     }
 
     @FXML
