@@ -134,7 +134,7 @@ public class BoardGenerator {
         List <Node> nodeList = new ArrayList<>(); // the visited nodes will soon be the node lists
         queue.add(initWinNode);
         nodeList.add(initWinNode);
-        while (!queue.isEmpty() && nodeList.size() < 20) {
+        while (!queue.isEmpty()) {
             Node curr = queue.poll();
             //System.out.println ("Node list index " + (int)(nodeList.size() - queue.size()) + " out of " + nodeList.size()+ "\n");
             int j =0; if (nodeList.size() >= 1 && curr == nodeList.get(0)) j=1; //debug
@@ -290,7 +290,7 @@ public class BoardGenerator {
         Board board = new Board ();
         Scanner sc = null;
         try {
-            sc = new Scanner(new File("src/gridlock/endGameState2.txt"));
+            sc = new Scanner(new File("src/gridlock/endGameState.txt"));
             for (int row = 0; row < 6; row++) {
                 for (int col = 0; col < 6; col++) {
                     String id = sc.next();
