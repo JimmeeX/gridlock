@@ -313,7 +313,7 @@ public class BoardGenerator {
         Board board = new Board ();
         Scanner sc = null;
         try {
-            sc = new Scanner(new File("src/gridlock/endGameState.txt"));
+            sc = new Scanner(new File("src/gridlock/endGameState2.txt"));
             for (int row = 0; row < 6; row++) {
                 for (int col = 0; col < 6; col++) {
                     String id = sc.next();
