@@ -28,13 +28,13 @@ public class BoardSolver {
                     if (!id.equals("*")) {
                         int blockID = this.board.blockExist(id);
                         if (blockID != -1) this.board.incrementSize(blockID, row, col);
-                        else this.board.addBlock(id, row, col);
+                        else this.board.setBlock(id, row, col);
                     }
                 }
             }
 	        this.board.printGrid();
             System.out.println("");
-            search(7);
+            //search(7);
             this.board.printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
@@ -42,7 +42,7 @@ public class BoardSolver {
             if (sc != null) sc.close();
         }
     }
-
+/*
 	private void search(int numOfMoves) {
 		//set initial state
     	Block curBlock = this.board.getBlock("z");
@@ -75,7 +75,7 @@ public class BoardSolver {
 			for ()
 		}
 	}
-
+*/
 	private int calculateDensity() {
     	int count = 0;
     	for (Block block: this.board.getBlocks()) {

@@ -26,6 +26,8 @@ public class BoardGenerator {
 
         /**
          * Two nodes are equal, iff each block (with same id)'s range is exactly equal
+         * AND for each block id A, and for every other blocks with diff orientation, A in both nodes
+         * are in same hemispheres
          * @param obj
          * @return
          */
@@ -34,30 +36,38 @@ public class BoardGenerator {
             // Assume for now there is no inheritance of Node
             if (!obj.getClass().equals(this.getClass())) return false;
             Node n = (Node) obj;
-            return isAllSameRange(n);
-        }
 
-        // This is not actually contributing much
-        private boolean isAllProper (Node n) {
             for (Block thisBlock: this.board.getBlocks()) {
-                Block thatBlockWithSameID = n.board.getBlock(thisBlock.getID());
+                // Checking if the ID exists
+                String id = thisBlock.getID();
+                Block thatBlockWithSameID = n.board.getBlock(id);
                 if (thatBlockWithSameID == null) return false;
+
                 boolean a = thisBlock.isHorizontal();
                 boolean b = thatBlockWithSameID.isHorizontal();
+                int thisRow = thisBlock.getRow();
+                int thisCol = thisBlock.getCol();
+                int thatRow = thatBlockWithSameID.getRow();
+                int thatCol = thatBlockWithSameID.getCol();
+                // Checking if the block has same fixed row/column
                 if (a != b) return false;
-                if (!(a ? thisBlock.getRow() == thatBlockWithSameID.getRow()
-                        : thisBlock.getCol() == thatBlockWithSameID.getCol()))
+                if (!(a ? thisRow == thatRow : thisCol == thatCol))
                     return false;
-            }
-            return true;
-        }
 
-        private boolean isAllSameRange (Node n) {
-            for (Block thisBlock: this.board.getBlocks()) {
-                String id = thisBlock.getID();
+                // Comparing range
                 Integer [] br1 = this.board.blockRange(id);
                 Integer [] br2 = n.board.blockRange(id);
                 if (br1 [0] != br2 [0] || br1 [1] != br2 [1]) return false;
+
+                // Comparing hemisphere
+                for (Block otherOrientationBlock : this.board.getBlocks()) {
+                    boolean c = otherOrientationBlock.isHorizontal();
+                    if (a == c) continue;
+                    int otherRow = otherOrientationBlock.getRow();
+                    int otherCol = otherOrientationBlock.getCol();
+                    if (!(a ? (thisCol-otherCol)*(thatCol-otherCol) > 0
+                            : (thisRow-otherRow)*(thatRow-otherRow) > 0)) return false;
+                }
             }
             return true;
         }
@@ -149,7 +159,7 @@ public class BoardGenerator {
         int currNumOfBlock = 0;
         Board b = new Board ();
         List <String []> grid = b.getGrid();
-        if (b.addBlock("z", 2, 4, 2, true)) currNumOfBlock++;
+        if (b.setBlock("z", 2, 4, 2, true)) currNumOfBlock++;
         // cheat
         grid.get(2)[3] = "-";
 
@@ -165,10 +175,10 @@ public class BoardGenerator {
                 int isHorizontalIdx = randomBinaryChoice(0, 1, 0.55);
                 int sizeIdx = randomBinaryChoice(0, 1, 0.51);
                 currNumOfBlock++;
-                if (b.addBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
-                if (b.addBlock(id, i, j, size[sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
-                if (b.addBlock(id, i, j, size[1-sizeIdx], isHorizontal[isHorizontalIdx])) continue;
-                if (b.addBlock(id, i, j, size[1-sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[1-sizeIdx], isHorizontal[isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[1-sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
                 currNumOfBlock--;
             }
         }
@@ -186,14 +196,14 @@ public class BoardGenerator {
         Board board = new Board ();
         Scanner sc = null;
         try {
-            sc = new Scanner(new File("src/gridlock/endGameState.txt"));
+            sc = new Scanner(new File("src/gridlock/endGameState2.txt"));
             for (int row = 0; row < 6; row++) {
                 for (int col = 0; col < 6; col++) {
                     String id = sc.next();
                     if (!id.equals("*")) {
                         int blockID = board.blockExist(id);
                         if (blockID != -1) board.incrementSize(blockID, row, col);
-                        else board.addBlock(id, row, col);
+                        else board.setBlock(id, row, col);
                     }
                 }
             }
