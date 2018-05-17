@@ -42,11 +42,8 @@ public class BoardGenerator {
             // Assume for now there is no inheritance of Node
             if (!obj.getClass().equals(this.getClass())) return false;
             Node n = (Node) obj;
-            if (isAllProper(n) && isPassingWinCriteria(n) && isSameRange(n) && isSameHemisphere(n)) {
-                //System.out.println("YEASSS");
-                return true;
-            }//System.out.println("NOOOO");
-            return false;
+            //return (isAllProper(n) && isExactPlaceofBlock(n));
+            return (isAllProper(n) && isPassingWinCriteria(n) && isSameRange(n) && isSameHemisphere(n));
         }
 
         private boolean isAllProper (Node n) {
@@ -60,6 +57,17 @@ public class BoardGenerator {
                 if (!(thisBlock.isHorizontal()
                         ? thisBlock.getRow() == thatBlockWithSameID.getRow()
                         : thisBlock.getCol() == thatBlockWithSameID.getCol())) return false;
+            }
+            return true;
+        }
+
+        private boolean isExactPlaceofBlock (Node n) {
+            for (Block thisBlock: this.board.getBlocks()) {
+                String id = thisBlock.getID();
+                Block thatBlockWithSameID = n.board.getBlock(id);
+                if (!(thisBlock.isHorizontal()
+                        ? thisBlock.getCol() == thatBlockWithSameID.getCol()
+                        : thisBlock.getRow() == thatBlockWithSameID.getRow())) return false;
             }
             return true;
         }
@@ -305,7 +313,7 @@ public class BoardGenerator {
         Board board = new Board ();
         Scanner sc = null;
         try {
-            sc = new Scanner(new File("src/gridlock/endGameStateTemp.txt"));
+            sc = new Scanner(new File("src/gridlock/endGameState.txt"));
             for (int row = 0; row < 6; row++) {
                 for (int col = 0; col < 6; col++) {
                     String id = sc.next();
