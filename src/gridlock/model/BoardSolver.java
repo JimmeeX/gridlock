@@ -79,7 +79,7 @@ public class BoardSolver {
 	private int calculateDensity() {
     	int count = 0;
     	for (Block block: this.board.getBlocks()) {
-    		count = count + movable(block);
+    		count = count + movable(block, new ArrayList<>());
 	    }
 	    return count;
 	}

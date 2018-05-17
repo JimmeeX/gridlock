@@ -63,10 +63,6 @@ public class MainApp extends Application {
         long endTime = System.nanoTime();
         long duration = (endTime - startTime)/1000000;
         System.out.println("Duration " + duration + "/1000 seconds.");
-        EndBoardGenerator ebg = new EndBoardGenerator();
-        Board b = null;
-        while (b == null) b = ebg.newEndBoard();
-        b.printGrid();
         launch(args);
     }
 }
