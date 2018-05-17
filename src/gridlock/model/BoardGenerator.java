@@ -126,8 +126,14 @@ public class BoardGenerator {
     }
 
     public Board generateOneBoard () {
+        long startTime = System.nanoTime();
         Board winBoard = null;
-        while (winBoard == null) winBoard = process(); // newR.. ()
+        while (winBoard == null) winBoard = process(); //newRandomWinBoard();
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime)/1000000;
+        System.out.println("Duration " + duration + "/1000 seconds.");
+
+        startTime = System.nanoTime();
         // BFS: use lots of Node's equals function
         Node initWinNode = new Node (winBoard);
         Queue <Node> queue = new LinkedList<>();
@@ -145,9 +151,27 @@ public class BoardGenerator {
                 if (b.isHorizontal()) {
                     for (int i = intv[0]; i <= intv[1]; i++) {
                         if (i == b.getCol()) continue;
+
+                        // For Djikstra to work, eventually the node's neighbors should be reference based
+                        // Hence every neighbor should be referenced equivalently to a node in nodeList,
+                        // the premises would be that the nodeList will contain all sufficient nodes
+                        // to cover all actual neighbors, and all neighbors will never be inserted
+                        // something not in nodeList.
+                        // Thus we want to change every neigbor that can be substituted with one n \in nodelist
+                        // then substitute it with n instead.
                         Board duplicate = curr.board.duplicate();
                         duplicate.makeMove(b.getID(), new Integer [] {b.getRow(),i}, true);
-                        curr.neighbors.add(new Node (duplicate));
+                        Node newNode = new Node (duplicate);
+                        int nIndex = nodeList.indexOf(newNode);
+                        if (nIndex != -1) {
+                            // Time to alter
+                            Node existingNode = nodeList.get(nIndex);
+                            if (!(containsRef (curr.neighbors, existingNode))) curr.neighbors.add(existingNode);
+                        } else {
+                            nodeList.add(newNode);
+                            queue.add(newNode);
+                            curr.neighbors.add(newNode);
+                        }
                         //if (j==1) System.out.println("Duplicates:"); duplicate.printGrid();
                     }
                 } else {
@@ -155,47 +179,24 @@ public class BoardGenerator {
                         if (i == b.getRow()) continue;
                         Board duplicate = curr.board.duplicate();
                         duplicate.makeMove(b.getID(), new Integer [] {i,b.getCol()}, true);
-                        curr.neighbors.add(new Node (duplicate));
+                        Node newNode = new Node (duplicate);
+                        int nIndex = nodeList.indexOf(newNode);
+                        if (nIndex != -1) {
+                            Node existingNode = nodeList.get(nIndex);
+                            if (!(containsRef (curr.neighbors, existingNode))) curr.neighbors.add(existingNode);
+                        } else {
+                            nodeList.add(newNode);
+                            queue.add(newNode);
+                            curr.neighbors.add(newNode);
+                        }
                         //if (j==1) System.out.println("Duplicates:"); duplicate.printGrid();
                     }
                 }
             }
-
-            // For Djikstra to work, eventually the node's neighbors should be reference based
-            // Hence every neighbor should be referenced equivalently to a node in nodeList,
-            // the premises would be that the nodeList will contain all sufficient nodes
-            // to cover all actual neighbors.
-            // Thus we want to delete all neighbors that can be substituted with one n \in nodelist
-            // then substitute it with n instead.
-            // Now updating curr's neighbors...
-            Map <Node, List <Node>> neighborToChangeData = new HashMap<>();
-            for (Node n: curr.neighbors) {
-                //System.out.println("Curr's potential neigbor size " + curr.neighbors.size());
-                int nIndex = nodeList.indexOf(n);
-                //System.out.println("the equal neigbor in nIndex " + nIndex); System.out.println();
-                if (nIndex != -1) {
-                    // Save the exact neighbor reference to be replaced by existingNode
-                    Node existingNode = nodeList.get(nIndex);
-                    List<Node> recentNeighborEquivList = neighborToChangeData.get(existingNode);
-                    if (recentNeighborEquivList == null) {
-                        recentNeighborEquivList = new ArrayList<>();
-                        recentNeighborEquivList.add(n);
-                        neighborToChangeData.put(existingNode, recentNeighborEquivList);
-                    } else {
-                        recentNeighborEquivList.add(n);
-                    }
-                } else {
-                    nodeList.add(n);
-                    queue.add(n);
-                    //System.out.println("Result:"); n.board.printGrid(); System.out.println();
-                }
-            }
-            // BECAREFUL WHEN REMOVING!!!
-            for (Node existingNode: neighborToChangeData.keySet()) {
-                for (Node n: neighborToChangeData.get(existingNode)) curr.neighbors.remove(n);
-                curr.neighbors.add(existingNode);
-            }
         }
+        endTime = System.nanoTime();
+        duration = (endTime - startTime)/1000000;
+        System.out.println("Duration " + duration + "/1000 seconds.");
 
         // We now have all nodeList
         System.out.println("We have " + nodeList.size() + " nodes.");
@@ -213,6 +214,8 @@ public class BoardGenerator {
 
         // Currently BFS. If weight != 1, SOON: Djikstra (using PQ)
         // Only consider node as it is
+
+        startTime = System.nanoTime();
         for (Node n: nodeList) {
             if (n.isWin) {
                 n.djikDist = 0;
@@ -243,7 +246,19 @@ public class BoardGenerator {
         for (Node n: nodeList) if (n.djikDist > maxNode.djikDist) maxNode = n;
         Board oneBoard = maxNode.board;
         oneBoard.printGrid(); System.out.println("Max move: " + maxNode.djikDist);
+        endTime = System.nanoTime();
+        duration = (endTime - startTime)/1000000;
+        System.out.println("Duration " + duration + "/1000 seconds.");
         return oneBoard;
+    }
+
+    /* -prvt
+     *
+     */
+    private boolean containsRef (List <Node> nl, Node n) {
+        if (n == null) return (this == null);
+        for (Node x: nl) if (x == n) return true;
+        return false;
     }
 
     /* -prvt
@@ -261,13 +276,13 @@ public class BoardGenerator {
             if (i == 2) continue;
             for (int j = 0; j < grid.size(); j++) {
                 if (!grid.get(i)[j].equals("*")) continue;
-                String fillOrNot = randomBinaryChoice("yes", "no", 0.6);
+                String fillOrNot = randomBinaryChoice("yes", "no", 0.5);
                 if (fillOrNot.equals("no")) continue;
                 String id = Character.toString((char)(96 + currNumOfBlock));
                 boolean [] isHorizontal = {false, true};
                 int [] size = {2, 3};
-                int isHorizontalIdx = randomBinaryChoice(0, 1, 0.55);
-                int sizeIdx = randomBinaryChoice(0, 1, 0.51);
+                int isHorizontalIdx = randomBinaryChoice(0, 1, 0.6);
+                int sizeIdx = randomBinaryChoice(0, 1, 0.5);
                 currNumOfBlock++;
                 if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
                 if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
@@ -290,7 +305,7 @@ public class BoardGenerator {
         Board board = new Board ();
         Scanner sc = null;
         try {
-            sc = new Scanner(new File("src/gridlock/endGameState.txt"));
+            sc = new Scanner(new File("src/gridlock/endGameStateTemp.txt"));
             for (int row = 0; row < 6; row++) {
                 for (int col = 0; col < 6; col++) {
                     String id = sc.next();
