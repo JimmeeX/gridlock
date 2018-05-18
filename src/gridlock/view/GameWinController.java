@@ -4,6 +4,7 @@ import gridlock.model.Board;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
+import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,10 +16,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import javax.swing.*;
 
 public class GameWinController {
     private SystemSettings settings;
@@ -27,6 +27,8 @@ public class GameWinController {
     private Integer level;
 
     // Temp
+    @FXML
+    private AnchorPane wrapper;
     @FXML
     private Label starsLabel;
     @FXML
@@ -50,6 +52,40 @@ public class GameWinController {
             nextLevelButton.setDisable(true);
         }
     }
+
+    @FXML
+    private void initialize() {
+        this.wrapper.setOpacity(0);
+        this.performFadeIn(this.wrapper);
+    }
+
+    @FXML
+    private void changeSceneControl(ActionEvent event) {
+        FadeTransition ft = this.performFadeOut(this.wrapper);
+        ft.setOnFinished (fadeEvent -> {
+            try {
+                Button button = (Button) event.getSource();
+                switch (button.getText()) {
+                    case "Restart":
+                        this.restartLevel(event);
+                        break;
+                    case "Next Level":
+                        this.navToNextLevel(event);
+                        break;
+                    case "Back":
+                        this.navToMenu(event);
+                        break;
+                    case "Level Select":
+                        this.navToLevelSelect(event);
+                        break;
+                }
+            }
+            catch (Exception e) {
+                System.out.println("Scene Transition Failed");
+            }
+        });
+    }
+
 
     @FXML
     private void navToNextLevel(ActionEvent event) throws Exception {
@@ -124,6 +160,22 @@ public class GameWinController {
 
         // Close popup
         popupWindow.close();
+    }
+
+    private FadeTransition performFadeOut(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(1);
+        ft.setToValue(0);
+        ft.play();
+        return ft;
+    }
+
+    private FadeTransition performFadeIn(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.play();
+        return ft;
     }
 
     @FXML
