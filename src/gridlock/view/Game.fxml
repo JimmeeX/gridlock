@@ -96,7 +96,7 @@
                </children>
             </VBox>
             <Rectangle id="goal" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="75.0" layoutX="575.0" layoutY="225.0" stroke="BLACK" strokeType="INSIDE" width="175.0" AnchorPane.bottomAnchor="300.0" AnchorPane.leftAnchor="625.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="225.0" />
-            <Polygon id="goal_arrow" fill="DODGERBLUE" layoutX="775.0" layoutY="273.0" rotate="90.0" scaleX="0.5" scaleY="0.5" stroke="BLACK" strokeType="INSIDE" AnchorPane.rightAnchor="-25.0">
+             <Polygon id="goal_arrow" fx:id="goalArrow" fill="DODGERBLUE" layoutX="775.0" layoutY="273.0" rotate="90.0" scaleX="0.5" scaleY="0.5" stroke="#f9d77e" strokeType="INSIDE" AnchorPane.rightAnchor="-10.0">
               <points>
                 <Double fx:value="-50.0" />
                 <Double fx:value="40.0" />
