@@ -9,7 +9,7 @@ public class EndBoardGenerator {
         int currNumOfBlock = 0;
         Board b = new Board ();
         List <String []> grid = b.getGrid();
-        if (b.addBlock("z", 2, 4, 2, true)) currNumOfBlock++;
+        if (b.setBlock("z", 2, 4, 2, true)) currNumOfBlock++;
         // cheat
         grid.get(2)[3] = "-";
 
@@ -25,10 +25,10 @@ public class EndBoardGenerator {
                 int isHorizontalIdx = randomBinaryChoice(0, 1, 0.55);
                 int sizeIdx = randomBinaryChoice(0, 1, 0.51);
                 currNumOfBlock++;
-                if (b.addBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
-                if (b.addBlock(id, i, j, size[sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
-                if (b.addBlock(id, i, j, size[1-sizeIdx], isHorizontal[isHorizontalIdx])) continue;
-                if (b.addBlock(id, i, j, size[1-sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[1-sizeIdx], isHorizontal[isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[1-sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
                 currNumOfBlock--;
             }
         }

@@ -1,5 +1,7 @@
 package gridlock.model;
 
+import sun.java2d.pipe.AAShapePipe;
+
 import java.util.*;
 import java.io.*;
 
@@ -26,47 +28,97 @@ public class BoardGenerator {
 
         /**
          * Two nodes are equal, iff each block (with same id)'s range is exactly equal
+         * AND for each block id A, and for every other blocks with diff orientation whose range
+         * intersects A, A in both nodes are in same hemispheres
+         * Execption holds when a node is a win node. In this case if the z block is located differently,
+         * assume they are different.
          * @param obj
          * @return
          */
         @Override
         public boolean equals (Object obj) {
+            if (this == obj) return true;
             // Assume for now there is no inheritance of Node
             if (!obj.getClass().equals(this.getClass())) return false;
             Node n = (Node) obj;
-            return isAllSameRange(n);
-        }
-
-        // This is not actually contributing much
-        private boolean isAllProper (Node n) {
-            for (Block thisBlock: this.board.getBlocks()) {
-                Block thatBlockWithSameID = n.board.getBlock(thisBlock.getID());
-                if (thatBlockWithSameID == null) return false;
-                boolean a = thisBlock.isHorizontal();
-                boolean b = thatBlockWithSameID.isHorizontal();
-                if (a != b) return false;
-                if (!(a ? thisBlock.getRow() == thatBlockWithSameID.getRow()
-                        : thisBlock.getCol() == thatBlockWithSameID.getCol()))
-                    return false;
+            for (int i = 0; i < 6; i++) {
+                for (int j = 0; j < 6; j++) {
+                    if (!(this.board.getGrid().get(i)[j].equals(n.board.getGrid().get(i)[j]))) return false;
+                }
             }
             return true;
         }
 
-        private boolean isAllSameRange (Node n) {
-            for (Block thisBlock: this.board.getBlocks()) {
+        private boolean isBothYesorNoWinCriteria (Node n) {
+            // false only if one is winning and the other is not
+            return ((this.isWin && n.isWin) || (!this.isWin && !n.isWin));
+        }
+
+        private boolean isSameRange (Node n) {
+            // After ensuring n is "proper", comparing range
+            for (Block thisBlock : this.board.getBlocks()) {
                 String id = thisBlock.getID();
+                Block thatBlock = n.board.getBlock(id);
+                int thisRow = thisBlock.getRow();
+                int thisCol = thisBlock.getCol();
+                int thatRow = thatBlock.getRow();
+                int thatCol = thatBlock.getCol();
                 Integer [] br1 = this.board.blockRange(id);
                 Integer [] br2 = n.board.blockRange(id);
+                //System.out.println("id " + id + " br1 " + Arrays.toString(br1) + " br2 " + Arrays.toString(br2));
+                //System.out.println("loc1 " + thisRow + thisCol + " loc2 " + thatRow + thatCol);
                 if (br1 [0] != br2 [0] || br1 [1] != br2 [1]) return false;
+                //System.out.println("pass range");
+            }
+            return true;
+        }
+
+        private boolean isSameHemisphere (Node n) {
+            // After ensuring n is same ranges, comparing hemisphere
+            for (Block thisBlock : this.board.getBlocks()) {
+                String id = thisBlock.getID();
+                Block thatBlock = n.board.getBlock(id);
+                int thisRow = thisBlock.getRow();
+                int thisCol = thisBlock.getCol();
+                int thatRow = thatBlock.getRow();
+                int thatCol = thatBlock.getCol();
+                //System.out.println("id " + id + " this pos " + thisRow + thisCol + " that pos " + thatRow + thatCol);
+                for (Block otherOrientationBlock : this.board.getBlocks()) {
+                    boolean a = thisBlock.isHorizontal();
+                    // To reduce nodes: otherOri should "intersect thisBlock's range"
+                    if (a == otherOrientationBlock.isHorizontal()) continue;
+                    int otherRow = otherOrientationBlock.getRow();
+                    int otherCol = otherOrientationBlock.getCol();
+                    Integer [] thisBr = this.board.blockRange(id);
+                    Integer [] otherBr = this.board.blockRange(otherOrientationBlock.getID());
+                    //System.out.println("id-other " + otherOrientationBlock.getID() + " other position " + otherRow + otherCol);
+                    //System.out.println("thisbr " + Arrays.toString(thisBr) + " otherbr " + Arrays.toString(otherBr));
+                    //System.out.println("thisblock itself is horizontal: " + String.valueOf(a));
+                    if (a) {
+                        if (thisBr[0] <= otherCol && thisBr[1] >= otherCol
+                                && otherBr[0] <= thisRow && otherBr[1] >= thisRow
+                                && (thisCol-otherCol)*(thatCol-otherCol) <= 0) return false;
+                    } else {
+                        if (thisBr[0] <= otherRow && thisBr[1] >= otherRow
+                                && otherBr[0] <= thisCol && otherBr[1] >= thisCol
+                                && (thisRow-otherRow)*(thatRow-otherRow) <= 0) return false;
+                    }
+                }
+                //System.out.println("pass hemi");
             }
             return true;
         }
     }
 
     public Board generateOneBoard () {
-        Board winBoard = null;
-        while (winBoard == null) winBoard = process(); // newR.. ()
-        // BFS: use lots of NOde's equals function
+        return generateOneBoard ("src/gridlock/endGameState.txt");
+    }
+
+    public Board generateOneBoard (String file) {
+        long startTime = System.nanoTime();
+        Board winBoard = process(file);
+
+        // BFS: use lots of Node's equals function
         Node initWinNode = new Node (winBoard);
         Queue <Node> queue = new LinkedList<>();
         List <Node> nodeList = new ArrayList<>(); // the visited nodes will soon be the node lists
@@ -74,126 +126,131 @@ public class BoardGenerator {
         nodeList.add(initWinNode);
         while (!queue.isEmpty()) {
             Node curr = queue.poll();
+            //System.out.println ("Node list index " + (int)(nodeList.size() - queue.size()) + " out of " + nodeList.size()+ "\n");
+            int j =0; if (nodeList.size() >= 1 && curr == nodeList.get(0)) j=1; //debug
             // The neighbor "ignoring reference and duplicates" constructions is done here. Otherwise it is gonna loop
             for (Block b: curr.board.getBlocks()) {
                 // Consider all possibility of its new position (diff than currently), the new board is a neighbor
-                Integer[] intv =  curr.board.blockRange(b.getID());
-                if (b.isHorizontal()) {
-                    for (int i: intv) {
+                Integer[] intv = curr.board.blockRange(b.getID());
+                for (int i = intv[0]; i <= intv[1]; i++) {
+                    Board duplicate = curr.board.duplicate();
+                    if (b.isHorizontal()) {
                         if (i == b.getCol()) continue;
-                        Board duplicate = curr.board.duplicate();
-                        duplicate.makeMove(b.getID(), new Integer [] {b.getRow(),i}, true);
-                        curr.neighbors.add(new Node (duplicate));
-                    }
-                } else {
-                    for (int i: intv) {
+                        duplicate.makeMove(b.getID(), new Integer[]{b.getRow(), i}, true);
+                    } else {
                         if (i == b.getRow()) continue;
-                        Board duplicate = curr.board.duplicate();
-                        duplicate.makeMove(b.getID(), new Integer [] {i,b.getCol()}, true);
-                        curr.neighbors.add(new Node (duplicate));
+                        duplicate.makeMove(b.getID(), new Integer[]{i, b.getCol()}, true);
                     }
-                }
-            }
-            // For Djikstra to work, eventually the node's neighbors should be reference based
-            // If the new found node exists in nodeList, use the existing one instead
-            // Update curr's neighbors
-            for (int i = 0; i < curr.neighbors.size(); i++) {
-                Node n = curr.neighbors.get(i);
-                int nIndex = nodeList.indexOf(n);
-                if (nIndex != -1) {
-                    // set curr's n reference to the similar NodeList
-                    curr.neighbors.remove(i);
-                    curr.neighbors.add(nodeList.get(nIndex));
-                } else {
-                    nodeList.add(n);
-                    queue.add(n);
+                    // For Djikstra to work, eventually the node's neighbors should be reference based
+                    // Hence every neighbor should be referenced equivalently to a node in nodeList,
+                    // the premises would be that the nodeList will contain all sufficient nodes
+                    // to cover all actual neighbors, and all neighbors will never be inserted
+                    // something not in nodeList.
+                    // Thus we want to change every neigbhor that can be substituted with one n \in nodelist
+                    // then substitute it with n instead.
+                    Node newNode = new Node(duplicate);
+                    // Decide if n is a neighbor:
+                    // * Must be ranged differently
+                    // * Must be not both win/not yet
+                    // * Must be in diff hemisphere
+                    if (curr.isSameRange(newNode) && curr.isBothYesorNoWinCriteria(newNode)
+                            && curr.isSameHemisphere(newNode)) continue;
+                    // Check if there is some prev reference in nodeList
+                    int nIndex = nodeList.indexOf(newNode);
+                    if (nIndex != -1) {
+                        Node existingNode = nodeList.get(nIndex);
+                        if (!(containsRef(curr.neighbors, existingNode))) curr.neighbors.add(existingNode);
+                    } else {
+                        nodeList.add(newNode);
+                        queue.add(newNode);
+                        curr.neighbors.add(newNode);
+                    }
+                    //if (j==1) System.out.println("Duplicates:"); duplicate.printGrid();
                 }
             }
         }
-
-        // We now have all nodeList
         System.out.println("We have " + nodeList.size() + " nodes.");
 
-        // Currently BFS. If weight != 1, SOON: Djikstra.
+        // Graph content
+        /*for (int i = 0; i < nodeList.size(); i++) {
+            System.out.println("NOde ke - " + i);
+            nodeList.get(i).board.printGrid();
+        }
+        for (int i = 0; i < nodeList.size(); i++) {
+            for (int j = 0; j < nodeList.size(); j++) {
+                if (nodeList.get(i).neighbors.contains(nodeList.get(j))) System.out.print("1 ");
+                else System.out.print("0 ");
+            }
+            System.out.println();
+        }*/
+
+        // Currently BFS. If weight != 1, SOON: Djikstra (using PQ)
         // Only consider node as it is
         for (Node n: nodeList) {
             if (n.isWin) {
                 n.djikDist = 0;
+                n.djikIsVisited = true;
                 queue.add(n);
             }
         }
         while (!queue.isEmpty()) {
             Node curr = queue.poll();
-            if (curr.djikIsVisited) continue; // Changed in Djikstra
-            curr.djikIsVisited = true;
+            //System.out.println("Curr index " + (nodeList.indexOf(curr)) + ", now length" + curr.djikDist);
             for (Node neighbor: curr.neighbors) {
-                if (neighbor.djikIsVisited) continue; // Changed in Djikstra
-                neighbor.djikDist = curr.djikDist + 1;
-                neighbor.djikPred = curr;
-                queue.add(neighbor);
+                //System.out.println("Neigh index " + (nodeList.indexOf(neighbor)) + ", now length" + neighbor.djikDist);
+                if (!neighbor.djikIsVisited) {
+                    //System.out.println("new neighbor");
+                    neighbor.djikDist = curr.djikDist + 1;
+                    neighbor.djikPred = curr;
+                    neighbor.djikIsVisited = true;
+                    queue.add(neighbor);
+                }
             }
         }
 
         // Find maximal, print with max num of moves
         Node maxNode = initWinNode;
         for (Node n: nodeList) if (n.djikDist > maxNode.djikDist) maxNode = n;
-        Board oneBoard = maxNode.board;
-        oneBoard.printGrid(); System.out.println("Max move: " + maxNode.djikDist);
-        return oneBoard;
+        maxNode.board.printGrid();
+        System.out.println("Claim Max move: " + maxNode.djikDist);
+/*
+        // Backtracking
+        System.out.println("Backward check . . .");
+        for (Node x = maxNode; x != null; x = x.djikPred) {
+            x.board.printGrid();
+            System.out.println("Max move: " + x.djikDist);
+        }
+*/
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime)/1000000;
+        System.out.println("Duration " + duration + "/1000 seconds.");
+        return maxNode.board;
     }
 
     /* -prvt
-    * Bare: sometimes working sometimes not
-    */
-    public Board newRandomWinBoard() {
-        int currNumOfBlock = 0;
-        Board b = new Board ();
-        List <String []> grid = b.getGrid();
-        if (b.addBlock("z", 2, 4, 2, true)) currNumOfBlock++;
-        // cheat
-        grid.get(2)[3] = "-";
-
-        for (int i = 0; i < grid.size(); i++) {
-            if (i == 2) continue;
-            for (int j = 0; j < grid.size(); j++) {
-                if (!grid.get(i)[j].equals("*")) continue;
-                String fillOrNot = randomBinaryChoice("yes", "no", 0.6);
-                if (fillOrNot.equals("no")) continue;
-                String id = Character.toString((char)(96 + currNumOfBlock));
-                boolean [] isHorizontal = {false, true};
-                int [] size = {2, 3};
-                int isHorizontalIdx = randomBinaryChoice(0, 1, 0.55);
-                int sizeIdx = randomBinaryChoice(0, 1, 0.51);
-                currNumOfBlock++;
-                if (b.addBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
-                if (b.addBlock(id, i, j, size[sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
-                if (b.addBlock(id, i, j, size[1-sizeIdx], isHorizontal[isHorizontalIdx])) continue;
-                if (b.addBlock(id, i, j, size[1-sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
-                currNumOfBlock--;
-            }
-        }
-        grid.get(2)[3] = "*";
-        return (currNumOfBlock > 7 && currNumOfBlock < 12) ? b : null;
-    }
-    private <E> E randomBinaryChoice (E item1, E item2, double probItem1) {
-        return (Math.random() < probItem1) ? item1 : item2;
+     *
+     */
+    private boolean containsRef (List <Node> nl, Node n) {
+        if (n == null) return (this == null);
+        for (Node x: nl) if (x == n) return true;
+        return false;
     }
 
     /* -prvt
 	 * process input txt file
 	 */
-    private Board process() {
+    private Board process (String file) {
         Board board = new Board ();
         Scanner sc = null;
         try {
-            sc = new Scanner(new File("src/gridlock/endGameState.txt"));
+            sc = new Scanner(new File(file));
             for (int row = 0; row < 6; row++) {
                 for (int col = 0; col < 6; col++) {
                     String id = sc.next();
                     if (!id.equals("*")) {
                         int blockID = board.blockExist(id);
                         if (blockID != -1) board.incrementSize(blockID, row, col);
-                        else board.addBlock(id, row, col);
+                        else board.setBlock(id, row, col);
                     }
                 }
             }
@@ -204,4 +261,42 @@ public class BoardGenerator {
         }
         return board;
     }
+
+    /* -prvt
+    * Bare: sometimes working sometimes not
+    */
+    public Board newRandomWinBoard() {
+        int currNumOfBlock = 0;
+        Board b = new Board ();
+        List <String []> grid = b.getGrid();
+        if (b.setBlock("z", 2, 4, 2, true)) currNumOfBlock++;
+        // cheat
+        grid.get(2)[3] = "-";
+
+        for (int i = 0; i < grid.size(); i++) {
+            if (i == 2) continue;
+            for (int j = 0; j < grid.size(); j++) {
+                if (!grid.get(i)[j].equals("*")) continue;
+                String fillOrNot = randomBinaryChoice("yes", "no", 0.5);
+                if (fillOrNot.equals("no")) continue;
+                String id = Character.toString((char)(96 + currNumOfBlock));
+                boolean [] isHorizontal = {false, true};
+                int [] size = {2, 3};
+                int isHorizontalIdx = randomBinaryChoice(0, 1, 0.6);
+                int sizeIdx = randomBinaryChoice(0, 1, 0.5);
+                currNumOfBlock++;
+                if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[1-sizeIdx], isHorizontal[isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[1-sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
+                currNumOfBlock--;
+            }
+        }
+        grid.get(2)[3] = "*";
+        return (currNumOfBlock > 7 && currNumOfBlock < 12) ? b : null;
+    }
+    private <E> E randomBinaryChoice (E item1, E item2, double probItem1) {
+        return (Math.random() < probItem1) ? item1 : item2;
+    }
+
 }
