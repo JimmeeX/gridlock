@@ -249,6 +249,10 @@ public class GameController {
             }
         }
     }
+
+    /**
+     * Makes the goal pulse
+     */
     private void fadeOut(){
         Bounds bound = primaryField.getBoundsInLocal();
         Rectangle r = new Rectangle(625, 225,174,75);
@@ -257,14 +261,15 @@ public class GameController {
 
         FadeTransition ft = new FadeTransition(Duration.millis(2500), r);
 
-        ft.setFromValue(0.5);//Specifies the start opacity value for this FadeTransition
+        ft.setFromValue(0.3);//Specifies the start opacity value for this FadeTransition
         ft.setToValue(0);
         ft.setCycleCount(Timeline.INDEFINITE);
         ft.setAutoReverse(true);
         primaryField.getChildren().add(r);
         ft.play();
-
     }
+
+
     @FXML
     private void showGameWin(ActionEvent event) throws Exception {
         this.playVictorySound();

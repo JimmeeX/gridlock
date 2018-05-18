@@ -1,17 +1,22 @@
 package gridlock.view;
 
 import gridlock.model.SystemSettings;
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyValue;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -22,6 +27,12 @@ import java.io.ObjectOutputStream;
 
 public class MenuController {
     private SystemSettings settings;
+
+    @FXML
+    private Button Play;
+
+    @FXML
+    private AnchorPane pane;
 
     public void initData(SystemSettings settings) {
         this.settings = settings;
@@ -43,7 +54,17 @@ public class MenuController {
         playSettingsController.initData(this.settings);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        window.setScene(playSettingsScene);
+        FadeTransition ft = new FadeTransition(Duration.millis(600), pane);
+        ft.setFromValue(1);//Specifies the start opacity value for this FadeTransition
+        ft.setToValue(0);
+        ft.play();
+        ft.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                window.setScene(playSettingsScene);
+            }
+        });
+       
     }
 
     /**
@@ -152,4 +173,5 @@ public class MenuController {
     private void playButtonPressSound() {
         this.settings.playButtonPressSound();
     }
+
 }
