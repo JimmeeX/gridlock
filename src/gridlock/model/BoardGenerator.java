@@ -193,7 +193,7 @@ public class BoardGenerator {
                     if (!id.equals("*")) {
                         int blockID = board.blockExist(id);
                         if (blockID != -1) board.incrementSize(blockID, row, col);
-                        else board.addBlock(id, row, col);
+                        else board.setBlock(id, row, col);
                     }
                 }
             }

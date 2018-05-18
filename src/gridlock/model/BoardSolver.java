@@ -34,7 +34,7 @@ public class BoardSolver {
             }
 	        this.board.printGrid();
             System.out.println("");
-            search(3,9);
+            //search(3,9);
             this.board.printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
@@ -43,7 +43,7 @@ public class BoardSolver {
         }
     }
 
-	private void search(int minMoves, int maxMoves) {
+	/*private void search(int minMoves, int maxMoves) {
 		//set initial state
     	Block curBlock = this.board.getBlock("z");
 
@@ -82,7 +82,7 @@ public class BoardSolver {
 			}
 		}
 
-	}
+	}*/
 
 	private void addPosition(ArrayList<Integer[]> list, int row, int col) {
     	Integer[] position = new Integer[2];
