@@ -26,6 +26,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -56,6 +57,8 @@ public class GameController {
     private Pane boardField;
     @FXML
     private Button nextButton;
+    @FXML
+    private Polygon goalArrow;
 
     public void initData(SystemSettings settings, Mode mode, Difficulty difficulty, Integer level) {
         // Initialise Variables
@@ -254,18 +257,18 @@ public class GameController {
      * Makes the goal pulse
      */
     private void fadeOut(){
-        Bounds bound = primaryField.getBoundsInLocal();
-        Rectangle r = new Rectangle(625, 225,174,75);
+//        Bounds bound = primaryField.getBoundsInLocal();
+//        Rectangle r = new Rectangle(625, 225,174,75);
+        goalArrow.setFill(Color.PALEGOLDENROD);
+//        r.setFill(Color.PALEGOLDENROD);
 
-        r.setFill(Color.PALEGOLDENROD);
+        FadeTransition ft = new FadeTransition(Duration.millis(1500), goalArrow);
 
-        FadeTransition ft = new FadeTransition(Duration.millis(2500), r);
-
-        ft.setFromValue(0.3);//Specifies the start opacity value for this FadeTransition
+        ft.setFromValue(1);//Specifies the start opacity value for this FadeTransition
         ft.setToValue(0);
         ft.setCycleCount(Timeline.INDEFINITE);
         ft.setAutoReverse(true);
-        primaryField.getChildren().add(r);
+        //primaryField.getChildren().add(goalArrow);
         ft.play();
     }
 

@@ -8,7 +8,8 @@
 /*}*/
 
 .root {
-    -fx-font-family: Verdana;
+    /*-fx-font-family: Verdana;*/
+    -fx-font-family: "Bodoni MT", Didot, "Didot LT STD", "Book Antiqua", Garamond, "Times New Roman", serif;
     -fx-background-color: #424953;
     -fx-background-image: url("003.jpg");
     -fx-background-size: 800px 600px;
@@ -16,7 +17,8 @@
 }
 
 #parentpane {
-    -fx-font-family: Verdana;
+    /*-fx-font-family: Verdana;*/
+    -fx-font-family: "Bodoni MT", Didot, "Didot LT STD", "Book Antiqua", Garamond, "Times New Roman", serif;
     -fx-background-color: #424953;
     -fx-background-image: url("003.jpg");
     -fx-background-size: 800px 600px;
@@ -34,33 +36,37 @@
     -fx-font-size: 64px;
     -fx-font-weight: 900;
     -fx-text-fill: white;
-    -fx-effect: innershadow(gaussian, saddlebrown, 25, 0, 0, 0);
+    -fx-effect: innershadow(gaussian, #FCAB10, 25, 0, 0, 0);
 }
 
 #subtitle {
     -fx-font-size: 24px;
-    -fx-text-fill: orange;
+    -fx-text-fill: white;
+    -fx-effect: innershadow(gaussian, #FCAB10, 25, 0, 0, 0);
 }
 
 #text {
     -fx-font-size: 12px;
     -fx-text-fill: white;
+    -fx-effect: innershadow(gaussian, #FCAB10, 25, 0, 0, 0);
 }
 
 #level {
-    -fx-font-size: 16;
+    -fx-font-size: 12;
     -fx-pref-height: 50;
     -fx-pref-width: 50;
-    -fx-background-radius: 50;
-    -fx-border-radius: 50;
-    -fx-border-color: black;
+    /*-fx-background-radius: 50;*/
+    /*-fx-border-radius: 50;*/
+    -fx-background-radius: 40;
+    -fx-border-radius: 40;
+    -fx-border-color: #CDC9C9;
     -fx-border-width: 2px;
 }
 
 #obstacles {
     -fx-arc-width: 0;
     -fx-arc-height: 0;
-    -fx-fill: #FF7F50;
+    -fx-fill: #B8E0D2;
     /*-fx-stroke: red;*/
     /*-fx-effect: dropshadow(gaussian, red, 25, 0, 0, 0);*/
 }
@@ -68,17 +74,19 @@
 #player {
     -fx-arc-width: 0;
     -fx-arc-height: 0;
-    -fx-fill: #F0F8FF;
+    /*-fx-fill: #F0F8FF;*/
+    -fx-fill: #EFF6E0;
     /*-fx-stroke: white;*/
     /*-fx-effect: dropshadow(gaussian, white, 25, 0, 0, 0);*/
 }
 
 #grid {
-    -fx-background-color: #343232;
+    /*-fx-background-color: #343232;*/
+    -fx-background-color: #242B33;
 }
 
 #goal {
-    -fx-fill: #343232;
+    -fx-fill: #242B33;
     -fx-stroke: transparent;
     /*-fx-effect: dropshadow(gaussian, #343232, 5, 0, 0, 0);*/
 }
