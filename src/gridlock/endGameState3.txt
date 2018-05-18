@@ -1,14 +1,17 @@
-a a b c c *
-d * b * e f
-d z z * e f
-d g g g e f
-* * * h i i
-j j * h k k
+* h * * * *
+* h g g g *
+* * d z z a
+* * d c * a
+f e e c * a
+f * * c b b
 
 
-a * b b c *
-a d d d c *
-z z e f g *
-h h e f g *
-* * * i j j
-* * * i * *
+
+
+
+* * * * * *
+* * * * * *
+* * * * * *
+* * * * * *
+* * * * * *
+* * * * * *

@@ -47,40 +47,12 @@ public class BoardGenerator {
                 }
             }
             return true;
-            //return (isAllProper(n) && isExactPlaceofBlock(n));
-        }
-
-        private boolean isAllProper (Node n) {
-            // Checking if the ID exists and its fixed row/col is same
-            for (Block thisBlock: this.board.getBlocks()) {
-                String id = thisBlock.getID();
-                Block thatBlockWithSameID = n.board.getBlock(id);
-                if (thatBlockWithSameID == null
-                        || thisBlock.isHorizontal() != thatBlockWithSameID.isHorizontal()
-                        || thisBlock.getSize() != thatBlockWithSameID.getSize()) return false;;
-                if (!(thisBlock.isHorizontal()
-                        ? thisBlock.getRow() == thatBlockWithSameID.getRow()
-                        : thisBlock.getCol() == thatBlockWithSameID.getCol())) return false;
-            }
-            return true;
-        }
-
-        private boolean isExactPlaceofBlock (Node n) {
-            for (Block thisBlock: this.board.getBlocks()) {
-                String id = thisBlock.getID();
-                Block thatBlockWithSameID = n.board.getBlock(id);
-                if (!(thisBlock.isHorizontal()
-                        ? thisBlock.getCol() == thatBlockWithSameID.getCol()
-                        : thisBlock.getRow() == thatBlockWithSameID.getRow())) return false;
-            }
-            return true;
         }
 
         private boolean isBothYesorNoWinCriteria (Node n) {
             // false only if one is winning and the other is not
             return ((this.isWin && n.isWin) || (!this.isWin && !n.isWin));
         }
-
 
         private boolean isSameRange (Node n) {
             // After ensuring n is "proper", comparing range
@@ -197,9 +169,9 @@ public class BoardGenerator {
                 }
             }
         }
-
-        // We now have all nodeList
         System.out.println("We have " + nodeList.size() + " nodes.");
+
+        // Graph content
         /*for (int i = 0; i < nodeList.size(); i++) {
             System.out.println("NOde ke - " + i);
             nodeList.get(i).board.printGrid();
@@ -227,8 +199,7 @@ public class BoardGenerator {
             for (Node neighbor: curr.neighbors) {
                 //System.out.println("Neigh index " + (nodeList.indexOf(neighbor)) + ", now length" + neighbor.djikDist);
                 if (!neighbor.djikIsVisited) {
-                    //System.out.println("eh");
-                    // Determining weight: the minimal
+                    //System.out.println("new neighbor");
                     neighbor.djikDist = curr.djikDist + 1;
                     neighbor.djikPred = curr;
                     neighbor.djikIsVisited = true;
@@ -236,21 +207,20 @@ public class BoardGenerator {
                 }
             }
         }
-        /*for (int i = 0; i < nodeList.size(); i++) {
-            System.out.println("Node ke - " + i + " has layer " + nodeList.get(i).djikDist);
-        }*/
 
         // Find maximal, print with max num of moves
         Node maxNode = initWinNode;
         for (Node n: nodeList) if (n.djikDist > maxNode.djikDist) maxNode = n;
-
-        /*
-        System.out.println("backward check");
+        maxNode.board.printGrid();
+        System.out.println("Claim Max move: " + maxNode.djikDist);
+/*
+        // Backtracking
+        System.out.println("Backward check . . .");
         for (Node x = maxNode; x != null; x = x.djikPred) {
             x.board.printGrid();
             System.out.println("Max move: " + x.djikDist);
-        }*/
-        System.out.println("Eventual Max move: " + maxNode.djikDist);
+        }
+*/
         long endTime = System.nanoTime();
         long duration = (endTime - startTime)/1000000;
         System.out.println("Duration " + duration + "/1000 seconds.");
