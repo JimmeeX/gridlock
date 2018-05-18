@@ -66,7 +66,7 @@
 #obstacles {
     -fx-arc-width: 0;
     -fx-arc-height: 0;
-    -fx-fill: #B8E0D2;
+    -fx-fill: #BAD0E0;
     /*-fx-stroke: red;*/
     /*-fx-effect: dropshadow(gaussian, red, 25, 0, 0, 0);*/
 }
