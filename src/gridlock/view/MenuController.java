@@ -54,9 +54,10 @@ public class MenuController {
         playSettingsController.initData(this.settings);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
         FadeTransition ft = new FadeTransition(Duration.millis(600), pane);
         ft.setFromValue(1);//Specifies the start opacity value for this FadeTransition
-        ft.setToValue(0);
+        ft.setToValue(0.0);
         ft.play();
         ft.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
@@ -64,7 +65,7 @@ public class MenuController {
                 window.setScene(playSettingsScene);
             }
         });
-       
+
     }
 
     /**
