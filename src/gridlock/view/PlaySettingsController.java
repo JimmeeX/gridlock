@@ -50,7 +50,8 @@ public class PlaySettingsController {
 
     @FXML
     private void initialize() {
-        FadeTransition ft = new FadeTransition(Duration.millis(1500), backPane);
+        this.parentPane.setOpacity(0);
+        FadeTransition ft = new FadeTransition(Duration.millis(250), parentPane);
         ft.setFromValue(0);//Specifies the start opacity value for this FadeTransition
         ft.setToValue(1);
         ft.play();

@@ -43,28 +43,57 @@ public class MenuController {
      * @param event Play Button
      * @throws Exception
      */
+
     @FXML
-    private void navToPlaySettings(ActionEvent event) throws Exception {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("PlaySettings.fxml"));
-        Parent playSettingsParent = loader.load();
-        Scene playSettingsScene = new Scene(playSettingsParent);
-
-        PlaySettingsController playSettingsController = loader.getController();
-        playSettingsController.initData(this.settings);
-
-        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-        FadeTransition ft = new FadeTransition(Duration.millis(1200), parentPane);
+    private void navToPlaySettings(ActionEvent event_1) throws Exception {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), parentPane);
         ft.setFromValue(1);//Specifies the start opacity value for this FadeTransition
         ft.setToValue(0.0);
         ft.play();
+
         ft.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                window.setScene(playSettingsScene);
+                try {
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(getClass().getResource("PlaySettings.fxml"));
+                    Parent playSettingsParent = loader.load();
+                    Scene playSettingsScene = new Scene(playSettingsParent);
+
+                    PlaySettingsController playSettingsController = loader.getController();
+                    playSettingsController.initData(settings);
+
+                    Stage window = (Stage) ((Node) event_1.getSource()).getScene().getWindow();
+
+                    window.setScene(playSettingsScene);
+                }
+                catch (Exception e) {
+                    System.out.println("Failed");
+                }
             }
         });
+//        FXMLLoader loader = new FXMLLoader();
+//        loader.setLocation(getClass().getResource("PlaySettings.fxml"));
+//        Parent playSettingsParent = loader.load();
+//        Scene playSettingsScene = new Scene(playSettingsParent);
+//
+//        PlaySettingsController playSettingsController = loader.getController();
+//        playSettingsController.initData(this.settings);
+//
+//        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+//
+//        window.setScene(playSettingsScene);
+
+//        FadeTransition ft = new FadeTransition(Duration.millis(1200), parentPane);
+//        ft.setFromValue(1);//Specifies the start opacity value for this FadeTransition
+//        ft.setToValue(0.0);
+//        ft.play();
+//        ft.setOnFinished(new EventHandler<ActionEvent>() {
+//            @Override
+//            public void handle(ActionEvent event) {
+//                window.setScene(playSettingsScene);
+//            }
+//        });
 
     }
 
