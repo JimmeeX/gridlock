@@ -43,6 +43,8 @@ public class GameController {
     private ArrayList<Node> recNodeList;
 
     @FXML
+    private AnchorPane wrapper;
+    @FXML
     private Label modeLabel;
     @FXML
     private Label difficultyLabel;
@@ -111,6 +113,12 @@ public class GameController {
         // Add Drag/Drop Functionality to the Rectangles
         this.addMouseGestures();
         fadeOut();
+    }
+
+    @FXML
+    private void initialize() {
+        this.wrapper.setOpacity(0);
+        this.performFadeIn(this.wrapper);
     }
 
     private void initialiseBoard(String file) {
@@ -269,6 +277,26 @@ public class GameController {
         ft.play();
     }
 
+    @FXML
+    private void changeSceneControl(ActionEvent event) {
+        FadeTransition ft = this.performFadeOut(this.wrapper);
+        ft.setOnFinished (fadeEvent -> {
+            try {
+                Button button = (Button) event.getSource();
+                switch (button.getText()) {
+                    case "Levels":
+                        this.navToLevelSelect(event);
+                        break;
+                    case "Quit":
+                        this.navToMenu(event);
+                        break;
+                }
+            }
+            catch (Exception e) {
+                System.out.println("Scene Transition Failed");
+            }
+        });
+    }
 
     @FXML
     private void showGameWin(ActionEvent event) throws Exception {
@@ -345,6 +373,22 @@ public class GameController {
     @FXML
     private void showHint(ActionEvent event) {
         // TODO
+    }
+
+    private FadeTransition performFadeOut(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(1);
+        ft.setToValue(0);
+        ft.play();
+        return ft;
+    }
+
+    private FadeTransition performFadeIn(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.play();
+        return ft;
     }
 
     @FXML

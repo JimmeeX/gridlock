@@ -24,18 +24,52 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.concurrent.TimeUnit;
 
 public class MenuController {
     private SystemSettings settings;
 
     @FXML
-    private Button Play;
-
-    @FXML
-    private AnchorPane parentPane;
+    private AnchorPane wrapper;
 
     public void initData(SystemSettings settings) {
         this.settings = settings;
+    }
+
+    @FXML
+    private void initialize() {
+        this.wrapper.setOpacity(0);
+        this.performFadeIn(this.wrapper);
+    }
+
+    @FXML
+    private void changeSceneControl(ActionEvent event) {
+        FadeTransition ft = this.performFadeOut(this.wrapper);
+        ft.setOnFinished (fadeEvent -> {
+            try {
+                Button button = (Button) event.getSource();
+                switch (button.getText()) {
+                    case "Play":
+                        this.navToPlaySettings(event);
+                        break;
+                    case "Settings":
+                        this.navToSettings(event);
+                        break;
+                    case "Help":
+                        this.navToHelp(event);
+                        break;
+                    case "About":
+                        this.navToAbout(event);
+                        break;
+                    case "Quit":
+                        this.quitGame(event);
+                        break;
+                }
+            }
+            catch (Exception e) {
+                System.out.println("Scene Transition Failed");
+            }
+        });
     }
 
     /**
@@ -43,58 +77,19 @@ public class MenuController {
      * @param event Play Button
      * @throws Exception
      */
-
     @FXML
-    private void navToPlaySettings(ActionEvent event_1) throws Exception {
-        FadeTransition ft = new FadeTransition(Duration.millis(250), parentPane);
-        ft.setFromValue(1);//Specifies the start opacity value for this FadeTransition
-        ft.setToValue(0.0);
-        ft.play();
+    private void navToPlaySettings(ActionEvent event) throws Exception {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("PlaySettings.fxml"));
+        Parent playSettingsParent = loader.load();
+        Scene playSettingsScene = new Scene(playSettingsParent);
 
-        ft.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    FXMLLoader loader = new FXMLLoader();
-                    loader.setLocation(getClass().getResource("PlaySettings.fxml"));
-                    Parent playSettingsParent = loader.load();
-                    Scene playSettingsScene = new Scene(playSettingsParent);
+        PlaySettingsController playSettingsController = loader.getController();
+        playSettingsController.initData(this.settings);
 
-                    PlaySettingsController playSettingsController = loader.getController();
-                    playSettingsController.initData(settings);
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-                    Stage window = (Stage) ((Node) event_1.getSource()).getScene().getWindow();
-
-                    window.setScene(playSettingsScene);
-                }
-                catch (Exception e) {
-                    System.out.println("Failed");
-                }
-            }
-        });
-//        FXMLLoader loader = new FXMLLoader();
-//        loader.setLocation(getClass().getResource("PlaySettings.fxml"));
-//        Parent playSettingsParent = loader.load();
-//        Scene playSettingsScene = new Scene(playSettingsParent);
-//
-//        PlaySettingsController playSettingsController = loader.getController();
-//        playSettingsController.initData(this.settings);
-//
-//        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-//
-//        window.setScene(playSettingsScene);
-
-//        FadeTransition ft = new FadeTransition(Duration.millis(1200), parentPane);
-//        ft.setFromValue(1);//Specifies the start opacity value for this FadeTransition
-//        ft.setToValue(0.0);
-//        ft.play();
-//        ft.setOnFinished(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent event) {
-//                window.setScene(playSettingsScene);
-//            }
-//        });
-
+        window.setScene(playSettingsScene);
     }
 
     /**
@@ -167,6 +162,22 @@ public class MenuController {
 
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.close();
+    }
+
+    private FadeTransition performFadeOut(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(1);
+        ft.setToValue(0);
+        ft.play();
+        return ft;
+    }
+
+    private FadeTransition performFadeIn(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.play();
+        return ft;
     }
 
     @FXML

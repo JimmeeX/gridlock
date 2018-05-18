@@ -1,6 +1,7 @@
 package gridlock.view;
 
 import gridlock.model.SystemSettings;
+import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -11,14 +12,18 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class SettingsController {
     private SystemSettings settings;
+    @FXML
+    private AnchorPane wrapper;
     @FXML
     Slider soundSlider;
     @FXML
@@ -36,6 +41,9 @@ public class SettingsController {
 
     @FXML
     private void initialize() {
+        this.wrapper.setOpacity(0);
+        this.performFadeIn(this.wrapper);
+
         this.soundSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -48,6 +56,24 @@ public class SettingsController {
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 musicProgressBar.setProgress(newValue.doubleValue() / 100);
                 settings.setMusicVolume(musicSlider.getValue() / 100);
+            }
+        });
+    }
+
+    @FXML
+    private void changeSceneControl(ActionEvent event) {
+        FadeTransition ft = this.performFadeOut(this.wrapper);
+        ft.setOnFinished (fadeEvent -> {
+            try {
+                Button button = (Button) event.getSource();
+                switch (button.getText()) {
+                    case "Back":
+                        this.navToMenu(event);
+                        break;
+                }
+            }
+            catch (Exception e) {
+                System.out.println("Scene Transition Failed");
             }
         });
     }
@@ -81,6 +107,22 @@ public class SettingsController {
     private void sliderExit(MouseEvent event) {
         Node node = (Node)event.getSource();
         node.setCursor(Cursor.DEFAULT);
+    }
+
+    private FadeTransition performFadeOut(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(1);
+        ft.setToValue(0);
+        ft.play();
+        return ft;
+    }
+
+    private FadeTransition performFadeIn(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.play();
+        return ft;
     }
 
     @FXML
