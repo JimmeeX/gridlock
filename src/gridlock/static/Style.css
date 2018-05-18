@@ -8,7 +8,6 @@
 /*}*/
 
 .root {
-    /*-fx-font-family: Verdana;*/
     -fx-font-family: "Bodoni MT", Didot, "Didot LT STD", "Book Antiqua", Garamond, "Times New Roman", serif;
     -fx-background-color: #424953;
     -fx-background-image: url("003.jpg");
@@ -38,7 +37,6 @@
 #text {
     -fx-font-size: 12px;
     -fx-text-fill: white;
-    -fx-effect: innershadow(gaussian, #FCAB10, 25, 0, 0, 0);
 }
 
 #level {

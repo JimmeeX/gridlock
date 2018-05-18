@@ -181,7 +181,17 @@ public class GameController {
 
             // Retrieve the Rectangle and Update it with new position
             Rectangle rec = (Rectangle) this.boardField.getChildren().get(i + 1);
+            System.out.println(rec.getBoundsInParent().getMinX());
+            System.out.println(rec.getBoundsInParent().getMinY());
             setBlocks(block, rec);
+            if (block.isHorizontal()) {
+                this.animateBlockMoveX(rec, rec.getBoundsInParent().getMinX());
+            }
+            else {
+                this.animateBlockMoveY(rec, rec.getBoundsInParent().getMinY());
+            }
+            System.out.println(rec.getBoundsInParent().getMinX());
+            System.out.println(rec.getBoundsInParent().getMinY());
             this.boardField.getChildren().set(i + 1, rec);
 
             // update mouse
@@ -228,6 +238,26 @@ public class GameController {
         // Add Effects
         InnerShadow effect = new InnerShadow();
         rec.setEffect(effect);
+    }
+
+    private void animateBlockMoveX(Node node, double newX) {
+        Rectangle rec = (Rectangle) node;
+        final Timeline timeline = new Timeline();
+        timeline.setCycleCount(1);
+        KeyValue kv = new KeyValue(rec.xProperty(), newX);
+        final KeyFrame kf = new KeyFrame(Duration.millis(1000), kv);
+        timeline.getKeyFrames().add(kf);
+        timeline.play();
+    }
+
+    private void animateBlockMoveY(Node node, double newY) {
+        Rectangle rec = (Rectangle) node;
+        final Timeline timeline = new Timeline();
+        timeline.setCycleCount(1);
+        KeyValue kv = new KeyValue(rec.yProperty(), newY);
+        final KeyFrame kf = new KeyFrame(Duration.millis(1000), kv);
+        timeline.getKeyFrames().add(kf);
+        timeline.play();
     }
 
     private void animateWinSequence() {
