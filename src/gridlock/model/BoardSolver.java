@@ -28,7 +28,7 @@ public class BoardSolver {
                     if (!id.equals("*")) {
                         int blockID = this.board.blockExist(id);
                         if (blockID != -1) this.board.incrementSize(blockID, row, col);
-                        else this.board.addBlock(id, row, col);
+                        else this.board.setBlock(id, row, col);
                     }
                 }
             }

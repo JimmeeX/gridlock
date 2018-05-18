@@ -73,8 +73,7 @@ public class Board {
                         if (blockID != -1) {
                             incrementSize(blockID, row, col);
                             this.grid.get(row)[col] = id;
-                        }
-                        else addBlock(id, row, col);
+                        } else setBlock(id, row, col);
                     }
                 }
             }
@@ -83,6 +82,8 @@ public class Board {
             System.out.println(e.getMessage());
         } finally {
             if (sc != null) sc.close();
+        }
+    }
 
     public Block getBlock(String id) {
         for (Block block: this.blocks) {
@@ -95,69 +96,18 @@ public class Board {
         return this.grid.get(row);
     }
 
-    /** -prvt
-     * initialise the grid (size x size)
-     * @param size the length of the grid (square)
-     * @post this.grid.size() >= 0
-     */
-    private void initialiseGrid(int size) {
-        this.grid = new ArrayList<>();
-        for (int row = 0; row < size; row++) {
-            String[] newRow = new String[size];
-            for (int col = 0; col < size; col++) {
-                newRow[col] = "*";
-            }
-            this.grid.add(newRow);
-        }
-        return null;
-    }
-
-
-    public String[] getGridRow(int row) {
-        return this.grid.get(row);
-
-    /**
-     * process input txt file
-     * @param fileName the file name to be processed
-     */
-    public void process(String fileName) {
-        Scanner sc = null;
-        try {
-            sc = new Scanner(new File(fileName));
-            for (int row = 0; row < 6; row++) {
-                for (int col = 0; col < 6; col++) {
-                    String id = sc.next();
-                    if (!id.equals("*")) {
-                        int blockID = blockExist(id);
-                        if (blockID != -1) {
-                            incrementSize(blockID, row, col);
-                            this.grid.get(row)[col] = id;
-                        }
-                        else addBlock(id, row, col);
-                    }
-                }
-            }
-            printGrid();
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            if (sc != null) sc.close();
-        }
-    }
-
     /**
      * add a new block to the grid
      * @param id the block's id
      * @param row the row position of the block
      * @param col the col position of the block
      */
-    /*
-    public void addBlock(String id, int row, int col){
+
+    public void setBlock(String id, int row, int col){
         Block newBlock = new Block(id, row, col);
         this.grid.get(row)[col] = id;
         this.blocks.add(newBlock);
     }
-    */
     /**
      * check if the block has been initialised
      * @param id the id of the block (in String)
@@ -233,7 +183,7 @@ public class Board {
                 || row < 0 || col < 0
                 || !this.grid.get(row)[col].equals("*")) return false;
         // put scenario: check if the grid unit is empty
-        addBlock(id, row, col);
+        setBlock(id, row, col);
         int idx = blockExist(id);
         Block b = blocks.get(idx);
         if (isHorizontal) {
@@ -410,12 +360,13 @@ public class Board {
     // Added by Edwin
     public Board duplicate() {
         // Only need essentially grid and blocks w/ different reference
-        Board newBoard = new Board ();
+        Board newBoard = new Board();
         newBoard.grid.clear();
         for (String[] strArr : grid) newBoard.grid.add(strArr.clone());
         for (Block block : blocks) newBoard.getBlocks().add(block.duplicate());
         return newBoard;
-      
+    }
+
     /**
      * Check if the game is over (the "z" car is by the exit)
      * Will send "true" to "gameState" if game is over
@@ -432,6 +383,7 @@ public class Board {
         }
     }
 
+
     /**
      * print the grid
      */
@@ -443,6 +395,7 @@ public class Board {
             System.out.println();
         }
     }
+
     /**
      * Print all blocks' details
      */
