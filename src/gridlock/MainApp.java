@@ -57,16 +57,8 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-        long startTime = System.nanoTime();
         BoardGenerator bg = new BoardGenerator();
-        Board b = bg.generateOneBoard();
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime)/1000000;
-        System.out.println("Duration " + duration + "/1000 seconds.");
-        EndBoardGenerator ebg = new EndBoardGenerator();
-        Board b = null;
-        while (b == null) b = ebg.newEndBoard();
-        b.printGrid();
+        Board b = bg.generateOneBoard("src/gridlock/endGameState3.txt");
         launch(args);
     }
 }

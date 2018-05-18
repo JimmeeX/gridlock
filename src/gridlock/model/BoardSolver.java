@@ -81,8 +81,15 @@ public class BoardSolver {
 
 			}
 		}
-
 	}*/
+
+	private int calculateDensity() {
+    	int count = 0;
+    	for (Block block: this.board.getBlocks()) {
+    		count = count + movable(block, new ArrayList<>());
+	    }
+	    return count;
+	}
 
 	private void addPosition(ArrayList<Integer[]> list, int row, int col) {
     	Integer[] position = new Integer[2];

@@ -108,6 +108,7 @@ public class Board {
         this.grid.get(row)[col] = id;
         this.blocks.add(newBlock);
     }
+
     /**
      * check if the block has been initialised
      * @param id the id of the block (in String)
@@ -175,8 +176,29 @@ public class Board {
         this.numMoves.setValue(this.prevLocations.size());
     }
 
+    /**
+     * Check if the game is over (the "z" car is by the exit)
+     * Will send "true" to "gameState" if game is over
+     */
+    // Added by James :)
+    public void checkGameOver() {
+        this.gameState.setValue(false);
+        for (Block block: this.blocks) {
+            if (block.getID().equals("z")) {
+                if (block.getPosition().get(0)[1] == 4) {
+                    this.gameState.setValue(true);
+                }
+            }
+        }
+    }
+
+    // Added by James :)
+    public BooleanProperty gameStateProperty() {
+        return gameState;
+    }
+
     // Added by Edwin
-    public boolean addBlock(String id, int row, int col, int size, boolean isHorizontal) {
+    public boolean setBlock(String id, int row, int col, int size, boolean isHorizontal) {
         if (blockExist(id) != -1
                 || (size == 2 && (row > 4 || col > 4))
                 || (size == 3 && (row > 3 || col > 3))
@@ -366,23 +388,6 @@ public class Board {
         for (Block block : blocks) newBoard.getBlocks().add(block.duplicate());
         return newBoard;
     }
-
-    /**
-     * Check if the game is over (the "z" car is by the exit)
-     * Will send "true" to "gameState" if game is over
-     */
-    // Added by James :)
-    public void checkGameOver() {
-        this.gameState.setValue(false);
-        for (Block block: this.blocks) {
-            if (block.getID().equals("z")) {
-                if (block.getPosition().get(0)[1] == 4) {
-                    this.gameState.setValue(true);
-                }
-            }
-        }
-    }
-
 
     /**
      * print the grid
