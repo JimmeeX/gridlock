@@ -7,9 +7,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.MenuController">
+<AnchorPane prefHeight="580.0" prefWidth="780.0" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.MenuController">
    <children>
-      <AnchorPane id="parentpane" fx:id="pane" prefHeight="600.0" prefWidth="800.0" stylesheets="@../static/Style.css">
+      <AnchorPane id="parentpane" fx:id="parentPane" prefHeight="600.0" prefWidth="800.0">
           <children>
               <Label id="title" alignment="CENTER" contentDisplay="CENTER" layoutX="283.0" layoutY="57.0" text="Gridlock" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" />
               <Button id="button_controls" fx:id="Play" layoutX="300.0" layoutY="250.0" mnemonicParsing="false" onAction="#navToPlaySettings" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="100.0" prefWidth="200.0" style="-fx-font-size: 48;" text="Play" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" />
@@ -40,4 +40,7 @@
           </children>
       </AnchorPane>
    </children>
+   <rotationAxis>
+      <Point3D />
+   </rotationAxis>
 </AnchorPane>

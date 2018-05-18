@@ -12,7 +12,7 @@
     -fx-background-color: #424953;
     -fx-background-image: url("003.jpg");
     -fx-background-size: 800px 600px;
-    -fx-text-fill: #DDDEE0;
+    /*-fx-text-fill: #DDDEE0;*/
 }
 
 #parentpane {

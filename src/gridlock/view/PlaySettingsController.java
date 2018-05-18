@@ -3,6 +3,7 @@ package gridlock.view;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
+import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,6 +19,7 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -29,6 +31,12 @@ public class PlaySettingsController {
     private ToggleGroup toggleDifficulty;
     @FXML
     private ToggleGroup toggleGameMode;
+
+    @FXML
+    private AnchorPane parentPane;
+
+    @FXML
+    private AnchorPane backPane;
 
     public void initData(SystemSettings settings) {
         this.settings = settings;
@@ -42,6 +50,11 @@ public class PlaySettingsController {
 
     @FXML
     private void initialize() {
+        FadeTransition ft = new FadeTransition(Duration.millis(1500), backPane);
+        ft.setFromValue(0);//Specifies the start opacity value for this FadeTransition
+        ft.setToValue(1);
+        ft.play();
+
         this.toggleDifficulty.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {

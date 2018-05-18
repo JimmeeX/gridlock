@@ -32,7 +32,7 @@ public class MenuController {
     private Button Play;
 
     @FXML
-    private AnchorPane pane;
+    private AnchorPane parentPane;
 
     public void initData(SystemSettings settings) {
         this.settings = settings;
@@ -55,7 +55,7 @@ public class MenuController {
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-        FadeTransition ft = new FadeTransition(Duration.millis(600), pane);
+        FadeTransition ft = new FadeTransition(Duration.millis(1200), parentPane);
         ft.setFromValue(1);//Specifies the start opacity value for this FadeTransition
         ft.setToValue(0.0);
         ft.play();
