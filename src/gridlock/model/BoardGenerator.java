@@ -110,13 +110,13 @@ public class BoardGenerator {
         }
     }
 
-    public Board generateOneBoard () {
+   /* public Board generateOneBoard () {
         return generateOneBoard ("src/gridlock/endGameState.txt");
-    }
+    }*/
 
-    public Board generateOneBoard (String file) {
-        long startTime = System.nanoTime();
-        Board winBoard = process(file);
+    public Board generateOneBoard (Board board, int minMoves, int maxMoves) {
+        /*long startTime = System.nanoTime();*/
+        Board winBoard = board;
 
         // BFS: use lots of Node's equals function
         Node initWinNode = new Node (winBoard);
@@ -141,13 +141,7 @@ public class BoardGenerator {
                         if (i == b.getRow()) continue;
                         duplicate.makeMove(b.getID(), new Integer[]{i, b.getCol()}, true);
                     }
-                    // For Djikstra to work, eventually the node's neighbors should be reference based
-                    // Hence every neighbor should be referenced equivalently to a node in nodeList,
-                    // the premises would be that the nodeList will contain all sufficient nodes
-                    // to cover all actual neighbors, and all neighbors will never be inserted
-                    // something not in nodeList.
-                    // Thus we want to change every neigbhor that can be substituted with one n \in nodelist
-                    // then substitute it with n instead.
+
                     Node newNode = new Node(duplicate);
                     // Decide if n is a neighbor:
                     // * Must be ranged differently
@@ -211,8 +205,10 @@ public class BoardGenerator {
         // Find maximal, print with max num of moves
         Node maxNode = initWinNode;
         for (Node n: nodeList) if (n.djikDist > maxNode.djikDist) maxNode = n;
-        maxNode.board.printGrid();
         System.out.println("Claim Max move: " + maxNode.djikDist);
+        if (maxNode.djikDist < minMoves || maxNode.djikDist > maxMoves) return null;
+        //maxNode.board.printGrid();
+
 /*
         // Backtracking
         System.out.println("Backward check . . .");
@@ -221,9 +217,9 @@ public class BoardGenerator {
             System.out.println("Max move: " + x.djikDist);
         }
 */
-        long endTime = System.nanoTime();
+        /*long endTime = System.nanoTime();
         long duration = (endTime - startTime)/1000000;
-        System.out.println("Duration " + duration + "/1000 seconds.");
+        System.out.println("Duration " + duration + "/1000 seconds.");*/
         return maxNode.board;
     }
 
@@ -265,11 +261,19 @@ public class BoardGenerator {
     /* -prvt
     * Bare: sometimes working sometimes not
     */
-    public Board newRandomWinBoard() {
+    public Board newRandomWinBoard(double p, int minBlockNum, int maxBlockNum) {
         int currNumOfBlock = 0;
         Board b = new Board ();
         List <String []> grid = b.getGrid();
         if (b.setBlock("z", 2, 4, 2, true)) currNumOfBlock++;
+
+        Random random = new Random();
+        int row = random.nextInt(5);
+        int col = random.nextInt(1) + 4;
+        boolean isVertical = randomBinaryChoice(true, false, 0.5);
+        int s = randomBinaryChoice(2,3,0.5);
+
+        if (b.setBlock("a", row,  col, s, isVertical)) currNumOfBlock++;
         // cheat
         grid.get(2)[3] = "-";
 
@@ -277,12 +281,12 @@ public class BoardGenerator {
             if (i == 2) continue;
             for (int j = 0; j < grid.size(); j++) {
                 if (!grid.get(i)[j].equals("*")) continue;
-                String fillOrNot = randomBinaryChoice("yes", "no", 0.5);
+                String fillOrNot = randomBinaryChoice("yes", "no", p);
                 if (fillOrNot.equals("no")) continue;
-                String id = Character.toString((char)(96 + currNumOfBlock));
-                boolean [] isHorizontal = {false, true};
+                String id = Character.toString((char)(97 + currNumOfBlock));
+                boolean [] isHorizontal = {true, false};
                 int [] size = {2, 3};
-                int isHorizontalIdx = randomBinaryChoice(0, 1, 0.6);
+                int isHorizontalIdx = randomBinaryChoice(0, 1, 0.5);
                 int sizeIdx = randomBinaryChoice(0, 1, 0.5);
                 currNumOfBlock++;
                 if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
@@ -293,9 +297,30 @@ public class BoardGenerator {
             }
         }
         grid.get(2)[3] = "*";
-        return (currNumOfBlock > 7 && currNumOfBlock < 12) ? b : null;
+        return (currNumOfBlock > minBlockNum && currNumOfBlock < maxBlockNum) ? b : newRandomWinBoard(p, minBlockNum, maxBlockNum);
     }
+
     private <E> E randomBinaryChoice (E item1, E item2, double probItem1) {
         return (Math.random() < probItem1) ? item1 : item2;
+    }
+
+    public Board generateBoard(Difficulty d) {
+        double p;
+        int minBlockNum;
+        int maxBlockNum;
+        if (d.equals(d.valueOf("EASY"))) {
+            p = 0.3;
+            minBlockNum = 4;
+            maxBlockNum = 6;
+        } else if (d.equals(d.valueOf("MEDIUM"))) {
+            p = 0.5;
+            minBlockNum = 7;
+            maxBlockNum = 9;
+        } else {
+            p = 0.5;
+            minBlockNum = 10;
+            maxBlockNum = 13;
+        }
+        return newRandomWinBoard(p, minBlockNum, maxBlockNum);
     }
 }
