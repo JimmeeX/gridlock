@@ -57,10 +57,10 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-        EndBoardGenerator ebg = new EndBoardGenerator();
-        Board b = null;
-        while (b == null) b = ebg.newEndBoard();
-        b.printGrid();
+        //EndBoardGenerator ebg = new EndBoardGenerator();
+        //Board b = null;
+        //while (b == null) b = ebg.newEndBoard();
+        //b.printGrid();
         launch(args);
     }
 }

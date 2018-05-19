@@ -1,6 +1,6 @@
 package gridlock.view;
 
-import gridlock.model.Board;
+import gridlock.model.GameBoard;
 import gridlock.model.SystemSettings;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -20,7 +20,7 @@ public class MouseGestures {
 
     private SystemSettings settings;
 
-    private Board board;
+    private GameBoard board;
     private String id;
 
     private ArrayList <Node> enObjects;
@@ -46,7 +46,7 @@ public class MouseGestures {
 
     private DragContext dragContext = new DragContext();
 
-    public MouseGestures(SystemSettings settings, String id, Board board, Pane boardField,
+    public MouseGestures(SystemSettings settings, String id, GameBoard board, Pane boardField,
                          int gridX, int gridY, Boolean isHorizontal,
                             Node recNode, ArrayList<Node> recNodeL) {
         this.settings = settings;

@@ -129,4 +129,43 @@ public class Block {
         }
         return newBlock;
     }
+    
+    /*@Override
+	public int hashCode() {
+		int hash = 1;
+		hash = hash * 2 + ((this.id == null) ? 0 : this.id.hashCode());
+		hash = hash * 3 + (this.isHorizontal() ? 0 : 1);
+		hash = hash * 5 + this.getSize();
+		hash = hash * 7 + this.getCol();
+		hash = hash * 11 + this.getRow();
+		return hash;
+	}*/
+    
+    @Override
+    public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+    	if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Block other = (Block) obj;
+		if (!this.id.equals(other.id))
+			return false;
+		if (this.isHorizontal() != other.isHorizontal())
+			return false;
+		if (this.getSize() != other.getSize())
+			return false;
+		if (this.getRow() != other.getRow())
+			return false;
+		if (this.getCol() != other.getCol())
+			return false;
+		/*System.out.println(this.id + " = " + other.id);
+		System.out.println(this.isHorizontal() + " = " + other.isHorizontal());
+		System.out.println(this.getSize() + " = " + other.getSize());
+		System.out.println(this.getRow() + " = " + other.getRow());
+		System.out.println(this.getCol() + " = " + other.getCol());
+		*/
+		return true;
+    }
 }

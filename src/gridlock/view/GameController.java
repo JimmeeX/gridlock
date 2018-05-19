@@ -36,7 +36,7 @@ import java.util.ArrayList;
 
 public class GameController {
     private SystemSettings settings;
-    private Board board;
+    private GameBoard board;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
@@ -113,11 +113,12 @@ public class GameController {
     }
 
     private void initialiseBoard(String file) {
-        this.board = new Board();
-        levelGenerator(this.difficulty);
+        this.board = new GameBoard();
+        //levelGenerator(this.difficulty);
         this.board.process(file);
     }
-
+    
+    /*
     private void levelGenerator(Difficulty difficulty) {
         BoardSolver levGen = new BoardSolver();
         levGen.process();
@@ -128,7 +129,7 @@ public class GameController {
         } else {
 
         }
-    }
+    }*/
 
     private void initialiseNodeList() {
         this.recNodeList = new ArrayList<>();
