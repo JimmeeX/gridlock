@@ -34,6 +34,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Timer;
 
 public class GameController {
     private SystemSettings settings;
@@ -42,6 +43,7 @@ public class GameController {
     private Difficulty difficulty;
     private Integer level;
     private ArrayList<Node> recNodeList;
+    private ArrayList<MouseGestures> mgList;
 
     @FXML
     private AnchorPane wrapper;
@@ -61,6 +63,14 @@ public class GameController {
     private Button nextButton;
     @FXML
     private Polygon goalArrow;
+    @FXML
+    private Button undoButton;
+    @FXML
+    private Button redoButton;
+    @FXML
+    private Button hintButton;
+    @FXML
+    private Button resetButton;
 
     public void initData(SystemSettings settings, Mode mode, Difficulty difficulty, Integer level) {
         // Initialise Variables
@@ -160,14 +170,17 @@ public class GameController {
 
     private void addMouseGestures() {
         ArrayList<Block> blockL = this.board.getBlocks();
+        this.mgList = new ArrayList<>();
         for(int i = 0; i < blockL.size(); i++) {
             Node currNode = this.recNodeList.get(i);
             if (blockL.get(i).isHorizontal()) {
                 MouseGestures hmg = new MouseGestures(this.settings, blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, currNode, this.recNodeList);
                 hmg.makeDraggable(recNodeList.get(i));
+                this.mgList.add(hmg);
             } else {
                 MouseGestures vmg = new MouseGestures(this.settings, blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, currNode, this.recNodeList);
                 vmg.makeDraggable(recNodeList.get(i));
+                this.mgList.add(vmg);
             }
             this.boardField.getChildren().addAll(this.recNodeList.get(i));
         }
@@ -175,37 +188,37 @@ public class GameController {
 
     // Current Information
     private void updateBoard() {
+        this.disableButtons();
         ArrayList<Block> blockList = this.board.getBlocks();
         for (int i = 0; i < blockList.size(); i++) {
             Block block = blockList.get(i);
 
             // Retrieve the Rectangle and Update it with new position
-            Rectangle rec = (Rectangle) this.boardField.getChildren().get(i + 1);
-            System.out.println(rec.getBoundsInParent().getMinX());
-            System.out.println(rec.getBoundsInParent().getMinY());
-            setBlocks(block, rec);
-            if (block.isHorizontal()) {
-                this.animateBlockMoveX(rec, rec.getBoundsInParent().getMinX());
-            }
-            else {
-                this.animateBlockMoveY(rec, rec.getBoundsInParent().getMinY());
-            }
-            System.out.println(rec.getBoundsInParent().getMinX());
-            System.out.println(rec.getBoundsInParent().getMinY());
-            this.boardField.getChildren().set(i + 1, rec);
+            MouseGestures mg = this.mgList.get(i);
 
-            // update mouse
+            // Pane Size
+            int widthFactor = 450 / this.board.getGridSize();
+            int heightFactor = 450 / this.board.getGridSize();
+
+            TranslateTransition tt;
             if (block.isHorizontal()) {
-                MouseGestures hmg = new MouseGestures(this.settings, block.getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, this.recNodeList.get(i), this.recNodeList);
-                hmg.makeDraggable(recNodeList.get(i));
-            } else {
-                MouseGestures vmg = new MouseGestures(this.settings, block.getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, this.recNodeList.get(i), this.recNodeList);
-                vmg.makeDraggable(recNodeList.get(i));
+                double startCol = block.getCol()*widthFactor;
+                tt = mg.animateMoveNodeX(startCol);
             }
+
+            else {
+                double startRow = block.getRow()*heightFactor;
+                tt = mg.animateMoveNodeY(startRow);
+            }
+            this.mgList.set(i, mg);
+            tt.setOnFinished(event -> {
+                this.enableButtons();
+            });
         }
     }
 
-    private void setBlocks(Block b, Rectangle rec) {
+    private void setBlocks(Block b, Node node) {
+        Rectangle rec = (Rectangle)node;
         int height, width, startRow, startCol;
 
         // Pane Size
@@ -228,7 +241,7 @@ public class GameController {
         rec.setY(startRow);
         rec.setTranslateX(0);
         rec.setTranslateY(0);
-        
+
         setEffects(rec);
     }
 
@@ -238,26 +251,6 @@ public class GameController {
         // Add Effects
         InnerShadow effect = new InnerShadow();
         rec.setEffect(effect);
-    }
-
-    private void animateBlockMoveX(Node node, double newX) {
-        Rectangle rec = (Rectangle) node;
-        final Timeline timeline = new Timeline();
-        timeline.setCycleCount(1);
-        KeyValue kv = new KeyValue(rec.xProperty(), newX);
-        final KeyFrame kf = new KeyFrame(Duration.millis(1000), kv);
-        timeline.getKeyFrames().add(kf);
-        timeline.play();
-    }
-
-    private void animateBlockMoveY(Node node, double newY) {
-        Rectangle rec = (Rectangle) node;
-        final Timeline timeline = new Timeline();
-        timeline.setCycleCount(1);
-        KeyValue kv = new KeyValue(rec.yProperty(), newY);
-        final KeyFrame kf = new KeyFrame(Duration.millis(1000), kv);
-        timeline.getKeyFrames().add(kf);
-        timeline.play();
     }
 
     private void animateWinSequence() {
@@ -401,6 +394,20 @@ public class GameController {
         this.board.restart();
         this.board.updateNumMoves();
         this.updateBoard();
+    }
+
+    private void disableButtons() {
+        this.undoButton.setDisable(true);
+        this.redoButton.setDisable(true);
+        this.hintButton.setDisable(true);
+        this.resetButton.setDisable(true);
+    }
+
+    private void enableButtons() {
+        this.undoButton.setDisable(false);
+        this.redoButton.setDisable(false);
+        this.hintButton.setDisable(false);
+        this.resetButton.setDisable(false);
     }
 
     @FXML
