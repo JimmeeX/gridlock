@@ -84,9 +84,14 @@ public class GameController {
         this.levelLabel.setText("Level " + this.level.toString());
         this.movesLabel.setText("Moves: 0");
 
-        // Read Board from File
-        String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
-        this.initialiseBoard(levelName);
+        if (mode.equals(Mode.CAMPAIGN)) {
+            // Read Board from File
+            String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
+            this.initialiseBoard(levelName);
+        }
+//        else {
+//            this.
+//        }
 
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
@@ -136,7 +141,7 @@ public class GameController {
 
     private void initialiseBoard(String file) {
         this.board = new Board();
-        levelGenerator(this.difficulty);
+        this.levelGenerator(this.difficulty);
         this.board.process(file);
     }
 
