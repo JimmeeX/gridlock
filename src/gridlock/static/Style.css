@@ -39,6 +39,12 @@
     -fx-text-fill: white;
 }
 
+#tutorial {
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-background-color: brown;
+}
+
 #level {
     -fx-font-size: 12;
     -fx-pref-height: 50;
@@ -81,7 +87,7 @@
 
 #goal_arrow {
     -fx-fill: transparent;
-    /*-fx-stroke: black;*/
+    -fx-stroke: #eee8aa;
     -fx-stroke-width: 5;
     /*-fx-effect: dropshadow(gaussian, white, 10, 0, 0, 0);*/
 }

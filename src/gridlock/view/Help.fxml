@@ -8,20 +8,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <AnchorPane fx:id="primaryField" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: black;" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.HelpController">
    <children>
-      <AnchorPane fx:id="wrapper" prefHeight="600.0" prefWidth="800.0">
+      <AnchorPane fx:id="wrapper" layoutY="-8.0" prefHeight="600.0" prefWidth="800.0">
          <children>
-            <HBox alignment="CENTER" layoutX="86.0" layoutY="28.0" prefHeight="50.0" prefWidth="628.0" AnchorPane.topAnchor="30.0">
-               <children>
-                  <Label id="subtitle" alignment="CENTER" layoutX="140.0" layoutY="53.0" prefHeight="40.0" prefWidth="150.0" text="Help">
-                     <HBox.margin>
-                        <Insets left="25.0" right="25.0" />
-                     </HBox.margin>
-                  </Label>
-               </children>
-            </HBox>
+            <Button fx:id="continueButton" alignment="CENTER" layoutX="658.0" layoutY="33.0" mnemonicParsing="false" onAction="#continueAnimation" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Continue" AnchorPane.leftAnchor="650.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0" />
+            <Label id="tutorial" fx:id="helpText" alignment="CENTER" layoutX="-5.0" layoutY="25.0" prefHeight="40.0" prefWidth="500.0" text="Help" AnchorPane.leftAnchor="175.0" AnchorPane.rightAnchor="175.0" AnchorPane.topAnchor="25.0">
+               <HBox.margin>
+                  <Insets left="25.0" right="25.0" />
+               </HBox.margin>
+            </Label>
             <VBox alignment="CENTER" layoutX="11.0" layoutY="212.0" prefHeight="176.0" prefWidth="150.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="650.0" AnchorPane.topAnchor="75.0">
                <children>
                   <Button fx:id="undoButton" layoutX="48.0" layoutY="75.0" mnemonicParsing="false" onAction="#undoMove" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Undo">
@@ -69,16 +65,12 @@
                   </GridPane>
                </children>
             </Pane>
-            <Label id="subtitle" fx:id="movesLabel" alignment="CENTER" layoutX="639.0" layoutY="92.0" prefHeight="40.0" prefWidth="150.0" text="Label" AnchorPane.bottomAnchor="485.0" AnchorPane.leftAnchor="625.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="75.0" />
-            <VBox alignment="CENTER" layoutX="639.0" layoutY="312.0" prefHeight="213.0" prefWidth="165.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="650.0" AnchorPane.rightAnchor="25.0">
-               <children>
-                  <Button id="button_controls" layoutX="639.0" layoutY="389.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Quit" AnchorPane.leftAnchor="639.0" AnchorPane.rightAnchor="10.0">
-                     <VBox.margin>
-                        <Insets bottom="20.0" top="20.0" />
-                     </VBox.margin>
-                  </Button>
-               </children>
-            </VBox>
+            <Label id="subtitle" fx:id="movesLabel" alignment="CENTER" layoutX="630.0" layoutY="104.0" prefHeight="40.0" prefWidth="150.0" text="Label" AnchorPane.leftAnchor="625.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="125.0" />
+            <Button id="button_controls" layoutX="650.0" layoutY="397.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Quit" AnchorPane.leftAnchor="650.0" AnchorPane.rightAnchor="25.0">
+               <VBox.margin>
+                  <Insets bottom="20.0" top="20.0" />
+               </VBox.margin>
+            </Button>
             <Rectangle id="goal" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="75.0" layoutX="575.0" layoutY="225.0" stroke="BLACK" strokeType="INSIDE" width="175.0" AnchorPane.bottomAnchor="300.0" AnchorPane.leftAnchor="625.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="225.0" />
              <Polygon id="goal_arrow" fx:id="goalArrow" fill="DODGERBLUE" layoutX="775.0" layoutY="273.0" rotate="90.0" scaleX="0.5" scaleY="0.5" stroke="#f9d77e" strokeType="INSIDE" AnchorPane.rightAnchor="-10.0">
               <points>

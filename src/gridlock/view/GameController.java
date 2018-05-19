@@ -133,7 +133,8 @@ public class GameController {
 
         // Add Drag/Drop Functionality to the Rectangles
         this.addMouseGestures();
-        fadeOut();
+
+        this.pulse(this.goalArrow);
     }
 
     @FXML
@@ -294,22 +295,17 @@ public class GameController {
     }
 
     /**
-     * Makes the goal pulse
+     * Pulsing Animation
      */
-    private void fadeOut(){
-//        Bounds bound = primaryField.getBoundsInLocal();
-//        Rectangle r = new Rectangle(625, 225,174,75);
-        this.goalArrow.setFill(Color.PALEGOLDENROD);
-//        r.setFill(Color.PALEGOLDENROD);
-
-        FadeTransition ft = new FadeTransition(Duration.millis(1500), this.goalArrow);
+    private FadeTransition pulse(Node node){
+        FadeTransition ft = new FadeTransition(Duration.millis(1500), node);
 
         ft.setFromValue(1);//Specifies the start opacity value for this FadeTransition
         ft.setToValue(0);
         ft.setCycleCount(Timeline.INDEFINITE);
         ft.setAutoReverse(true);
-        //primaryField.getChildren().add(goalArrow);
         ft.play();
+        return ft;
     }
 
     @FXML

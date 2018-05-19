@@ -4,6 +4,8 @@ import gridlock.model.Block;
 import gridlock.model.Board;
 import gridlock.model.SystemSettings;
 import javafx.animation.*;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -29,6 +31,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class HelpController {
@@ -36,6 +39,9 @@ public class HelpController {
     private Board board;
     private ArrayList<Node> recNodeList;
     private ArrayList<MouseGestures> mgList;
+    private ArrayList<SequentialTransition> animations;
+    private IntegerProperty sequenceId;
+//    private SequentialTransition animations;
 
     @FXML
     private AnchorPane wrapper;
@@ -57,6 +63,10 @@ public class HelpController {
     private Button hintButton;
     @FXML
     private Button resetButton;
+    @FXML
+    private Button continueButton;
+    @FXML
+    private Label helpText;
 
     public void initData(SystemSettings settings) {
         this.settings = settings;
@@ -85,16 +95,70 @@ public class HelpController {
         // Draw the Rectangles and add it to the Board
         this.initialiseNodeList();
 
-        // Add Drag/Drop Functionality to the Rectangles
-        this.addMouseGestures();
+        // Deactivate Functionality of buttons and make them disappear.
+        this.deactivate();
 
-        // TODO: ADD HELP ANIMATION SEQUENCE HERE
+        this.sequenceId = new SimpleIntegerProperty();
+        this.sequenceId.setValue(0);
+
+        this.sequenceId.addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                switch (newValue.intValue()) {
+                    case 1:
+                        Node node = getPlayerNode();
+                        node.setOpacity(1);
+                        goalArrow.setOpacity(1);
+                        break;
+                    case 2:
+                        for (Node hNode:getHorizontalNodes()) {
+                            hNode.setOpacity(1);
+                        }
+                        break;
+                    case 3:
+                        for (Node vNode:getVerticalNodes()) {
+                            vNode.setOpacity(1);
+                            undoButton.setVisible(true);
+                            redoButton.setVisible(true);
+                            hintButton.setVisible(true);
+                            resetButton.setVisible(true);
+                        }
+                        break;
+                    case 4:
+                        undoButton.setOpacity(1);
+                        redoButton.setOpacity(1);
+                        hintButton.setOpacity(1);
+                        resetButton.setOpacity(1);
+                        undoButton.setDisable(false);
+                        redoButton.setDisable(false);
+                        hintButton.setDisable(false);
+                        resetButton.setDisable(false);
+
+                        // Add Drag/Drop Functionality to the Rectangles
+                        addMouseGestures();
+                }
+                if (newValue.intValue() == animations.size() - 1) {
+                    continueButton.setDisable(true);
+                }
+            }
+        });
+
+        this.animations = new ArrayList<>();
+        this.animations.add(this.animationSequence1());
+        this.animations.add(this.animationSequence2());
+        this.animations.add(this.animationSequence3());
+        this.animations.add(this.animationSequence4());
+        this.animations.add(this.animationSequence5());
+
+        // Play Animation
+        this.animations.get(0).play();
     }
 
     @FXML
     private void initialize() {
         this.wrapper.setOpacity(0);
-        this.performFadeIn(this.wrapper);
+        FadeTransition ft = this.fadeIn(this.wrapper);
+        ft.play();
     }
 
     private void initialiseNodeList() {
@@ -110,6 +174,7 @@ public class HelpController {
             }
             setBlocks(block, rec);
             this.recNodeList.add(rec);
+            this.boardField.getChildren().addAll(rec);
         }
     }
 
@@ -127,7 +192,6 @@ public class HelpController {
                 vmg.makeDraggable(recNodeList.get(i));
                 this.mgList.add(vmg);
             }
-            this.boardField.getChildren().addAll(this.recNodeList.get(i));
         }
     }
 
@@ -198,6 +262,24 @@ public class HelpController {
         rec.setEffect(effect);
     }
 
+    private void deactivate() {
+        for (Node node: this.recNodeList) {
+            node.setOpacity(0);
+        }
+        this.undoButton.setVisible(false);
+        this.redoButton.setVisible(false);
+        this.hintButton.setVisible(false);
+        this.resetButton.setVisible(false);
+        this.undoButton.setOpacity(0);
+        this.redoButton.setOpacity(0);
+        this.hintButton.setOpacity(0);
+        this.resetButton.setOpacity(0);
+        this.undoButton.setDisable(true);
+        this.redoButton.setDisable(true);
+        this.hintButton.setDisable(true);
+        this.resetButton.setDisable(true);
+    }
+
     private void animateWinSequence() {
         // Get the player node
         for (Node node:this.recNodeList) {
@@ -229,9 +311,162 @@ public class HelpController {
         }
     }
 
+    private SequentialTransition animationSequence1() {
+        // Goal Node Fade In
+        Node playerNode = this.getPlayerNode();
+        FadeTransition playerFadeIn = this.fadeIn(playerNode);
+
+        // Text Phase 1 Fade In
+        this.helpText.setText("1. This is the player block. The goal is to drag the player block to the goal on the right.");
+        FadeTransition textFadeIn = this.fadeIn(this.helpText);
+
+        // Pulsing Goal Block
+        FadeTransition playerPulse = this.pulse(playerNode);
+
+        // Pulsing Arrow
+        FadeTransition goalPulse = this.pulse(this.goalArrow);
+
+        ParallelTransition pulse = new ParallelTransition(playerPulse, goalPulse);
+
+        return new SequentialTransition(playerFadeIn, textFadeIn, pulse);
+    }
+
+    private SequentialTransition animationSequence2() {
+        FadeTransition textOut = this.fadeOut(this.helpText);
+        textOut.setOnFinished(event -> {
+            this.helpText.setText("2. The horizontal blocks can only move left or right!");
+        });
+
+        FadeTransition textIn = this.fadeIn(this.helpText);
+
+        // Horizontal Node Fade In
+        ParallelTransition horizontalFadeIn = new ParallelTransition();
+        ArrayList<Node> horizontalNodes = this.getHorizontalNodes();
+        for(Node node:horizontalNodes) {
+            FadeTransition ft = fadeIn(node);
+            horizontalFadeIn.getChildren().add(ft);
+        }
+
+        PauseTransition pause = new PauseTransition(Duration.millis(1000));
+
+        ParallelTransition horizontalPulse = new ParallelTransition();
+        for(Node node:horizontalNodes) {
+            FadeTransition ft = pulse(node);
+            horizontalPulse.getChildren().add(ft);
+        }
+
+        return (new SequentialTransition(textOut, textIn, horizontalFadeIn, pause, horizontalPulse));
+    }
+
+    private SequentialTransition animationSequence3() {
+        FadeTransition textOut = this.fadeOut(this.helpText);
+        textOut.setOnFinished(event -> {
+            this.helpText.setText("3. The vertical blocks can only move up or down!");
+        });
+
+        FadeTransition textIn = this.fadeIn(this.helpText);
+
+        // Vertical Node Fade In
+        ArrayList<Node> verticalNodes = this.getVerticalNodes();
+
+        ParallelTransition verticalFadeIn = new ParallelTransition();
+        for(Node node:verticalNodes) {
+            FadeTransition ft = fadeIn(node);
+            verticalFadeIn.getChildren().add(ft);
+        }
+
+        PauseTransition pause = new PauseTransition(Duration.millis(1000));
+
+        // Vertical Node pulse
+        ParallelTransition verticalPulse = new ParallelTransition();
+        for(Node node:verticalNodes) {
+            FadeTransition ft = pulse(node);
+            verticalPulse.getChildren().add(ft);
+        }
+
+        return (new SequentialTransition(textOut, textIn, verticalFadeIn, pause, verticalPulse));
+    }
+
+    private SequentialTransition animationSequence4() {
+        FadeTransition textOut = this.fadeOut(this.helpText);
+        textOut.setOnFinished(event -> {
+            this.helpText.setText("4. If you are stuck, you can undo, redo, use hints, or reset on the left.");
+        });
+
+        FadeTransition textIn = this.fadeIn(this.helpText);
+
+        FadeTransition undoIn = this.fadeIn(this.undoButton);
+        FadeTransition redoIn = this.fadeIn(this.redoButton);
+        FadeTransition hintIn = this.fadeIn(this.hintButton);
+        FadeTransition resetIn = this.fadeIn(this.resetButton);
+        ParallelTransition buttonIn = new ParallelTransition(undoIn, redoIn, hintIn, resetIn);
+
+        FadeTransition undoPulse = this.pulse(this.undoButton);
+        FadeTransition redoPulse = this.pulse(this.redoButton);
+        FadeTransition hintPulse = this.pulse(this.hintButton);
+        FadeTransition resetPulse = this.pulse(this.resetButton);
+        ParallelTransition buttonPulse = new ParallelTransition(undoPulse, redoPulse, hintPulse, resetPulse);
+
+        return (new SequentialTransition(textOut, textIn, buttonIn, buttonPulse));
+    }
+
+    private SequentialTransition animationSequence5() {
+        FadeTransition textOut = this.fadeOut(this.helpText);
+        textOut.setOnFinished(event -> {
+            this.helpText.setText("5. Good luck!");
+        });
+
+        FadeTransition textIn = this.fadeIn(this.helpText);
+
+        return (new SequentialTransition(textOut, textIn));
+    }
+
+    private Node getPlayerNode() {
+        for (Node node:this.recNodeList) {
+            if (node.getUserData().equals("z")) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private ArrayList<Node> getHorizontalNodes() {
+        ArrayList<Block> blockList = this.board.getBlocks();
+        ArrayList<Node> nodeList = new ArrayList<>();
+        for (int i = 0; i < blockList.size(); i++) {
+            Block b = blockList.get(i);
+            if (b.isHorizontal() && !b.getID().equals("z")) {
+                nodeList.add(this.recNodeList.get(i));
+            }
+        }
+        return nodeList;
+    }
+
+    private ArrayList<Node> getVerticalNodes() {
+        ArrayList<Block> blockList = this.board.getBlocks();
+        ArrayList<Node> nodeList = new ArrayList<>();
+        for (int i = 0; i < blockList.size(); i++) {
+            if (!blockList.get(i).isHorizontal()) {
+                nodeList.add(this.recNodeList.get(i));
+            }
+        }
+        return nodeList;
+    }
+
+    private FadeTransition pulse(Node node){
+        FadeTransition ft = new FadeTransition(Duration.millis(1500), node);
+
+        ft.setFromValue(1);//Specifies the start opacity value for this FadeTransition
+        ft.setToValue(0);
+        ft.setCycleCount(Timeline.INDEFINITE);
+        ft.setAutoReverse(true);
+        return ft;
+    }
+
     @FXML
     private void changeSceneControl(ActionEvent event) {
-        FadeTransition ft = this.performFadeOut(this.wrapper);
+        FadeTransition ft = this.fadeOut(this.wrapper);
+        ft.play();
         ft.setOnFinished (fadeEvent -> {
             try {
                 Button button = (Button) event.getSource();
@@ -306,6 +541,16 @@ public class HelpController {
         this.updateBoard();
     }
 
+    @FXML
+    private void continueAnimation(ActionEvent event) {
+        this.sequenceId.setValue(this.sequenceId.getValue()+1);
+        if (this.sequenceId.getValue() != 0) {
+            this.animations.get(this.sequenceId.getValue() - 1).stop();
+        }
+//        if (this.sequenceId.getValue() != )
+        this.animations.get(this.sequenceId.getValue()).play();
+    }
+
     private void disableButtons() {
         this.undoButton.setDisable(true);
         this.redoButton.setDisable(true);
@@ -321,19 +566,17 @@ public class HelpController {
     }
 
 
-    private FadeTransition performFadeOut(Node node) {
+    private FadeTransition fadeOut(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(1);
         ft.setToValue(0);
-        ft.play();
         return ft;
     }
 
-    private FadeTransition performFadeIn(Node node) {
+    private FadeTransition fadeIn(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(0);
         ft.setToValue(1);
-        ft.play();
         return ft;
     }
 
