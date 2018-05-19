@@ -57,10 +57,8 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-        EndBoardGenerator ebg = new EndBoardGenerator();
-        Board b = null;
-        while (b == null) b = ebg.newEndBoard();
-        b.printGrid();
+        BoardGenerator2 bg = new BoardGenerator2();
+        Board b = bg.generateOneBoard("src/gridlock/endGameState.txt");
         launch(args);
     }
 }

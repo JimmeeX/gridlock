@@ -28,11 +28,13 @@ public class BoardSolver {
                     if (!id.equals("*")) {
                         int blockID = this.board.blockExist(id);
                         if (blockID != -1) this.board.incrementSize(blockID, row, col);
-                        else this.board.addBlock(id, row, col);
+                        else this.board.setBlock(id, row, col);
                     }
                 }
             }
-            //search();
+	        this.board.printGrid();
+            System.out.println("");
+            //search(7);
             this.board.printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
@@ -40,15 +42,108 @@ public class BoardSolver {
             if (sc != null) sc.close();
         }
     }
+/*
+	private void search(int numOfMoves) {
+		//set initial state
+    	Block curBlock = this.board.getBlock("z");
+    	//set ArrayList of possible moves
+		ArrayList<Integer[]> positions = new Position
+		if (movable(curBlock) == 0) return;
+		int density = calculateDensity();
+		System.out.println("density = " + density);
+		BoardState curBoardState = new BoardState(null, density, 0);
 
-    /*
-	private void search() {
-		Block curBlock = this.board.getBlock("z");
-		if (curBlock.movable) {
+		//initialise priority queue and first and end state
+		PriorityQueue<BoardState> stateQueue= new PriorityQueue<>();
+		stateQueue.add(curBoardState);
+		BoardState endState = null;
 
+		//initialise visited array
+		ArrayList<BoardState> visited = new ArrayList<>();
+
+		//loop
+		while (!stateQueue.isEmpty()) {
+			BoardState curState = stateQueue.poll();
+			visited.add(curState);
+
+			//check if end condition is met
+			if (curState.getNMoves() == numOfMoves) {
+				endState = curState;
+				//break;
+			}
+
+			for ()
 		}
-	}*/
+	}
+*/
+	private int calculateDensity() {
+    	int count = 0;
+    	for (Block block: this.board.getBlocks()) {
+    		count = count + movable(block, new ArrayList<>());
+	    }
+	    return count;
+	}
 
+	private void addPosition(ArrayList<Integer[]> list, int row, int col) {
+    	Integer[] position = new Integer[2];
+    	position[0] = row;
+    	position[1] = col;
+    	list.add(position);
+	}
+
+	public int movable(Block block, ArrayList<Integer[]> positions) {
+    	int count = 0;
+    	if (block.isHorizontal()) {
+    		int row = block.getPosition().get(0)[0];
+    		int startCol = block.getPosition().get(0)[1] - 1;
+    		int endCol = block.getPosition().get(block.getPosition().size() - 1)[1] + 1;
+    		System.out.println("row = " + row + " startCol = " + startCol + " endCol = " + endCol);
+    		while (startCol >= 0) {
+			    System.out.println("left neighbor = " + this.board.getGridRow(row)[startCol]);
+			    System.out.println("COUNT BECOMES = " + count + " STARTCOL = " + startCol);
+			    if (this.board.getGridRow(row)[startCol].equals("*")) {
+			    	addPosition(positions, row, startCol);
+    				count++;
+    				startCol--;
+			    }
+    			else break;
+		    }
+		    while(endCol < 6) {
+			    System.out.println("COUNT BECOMES = " + count + " ENDCOL = " + endCol);
+    			if (this.board.getGridRow(row)[endCol].equals("*")) {
+    				addPosition(positions, row, endCol);
+    				count++;
+				    endCol++;
+			    }
+    			else break;
+		    }
+	    } else {
+    		int col = block.getPosition().get(0)[1];
+		    int startRow = block.getPosition().get(0)[0] - 1;
+		    int endRow = block.getPosition().get(block.getPosition().size() - 1)[0] + 1;
+		    System.out.println("col = " + col + " startRow = " + startRow + " endRow = " + endRow);
+		    while (startRow >= 0) {
+			    System.out.println("COUNT BECOMES = " + count + " STARTROW = " + startRow);
+			    if (this.board.getGridRow(startRow)[col].equals("*")) {
+			    	addPosition(positions, startRow, col);
+			    	count++;
+			    	startRow--;
+			    }
+			    else break;
+		    }
+		    while (endRow < 6) {
+			    System.out.println("COUNT BECOMES = " + count + " ENDROW = " + endRow);
+			    if (this.board.getGridRow(endRow)[col].equals("*")) {
+			    	addPosition(positions, endRow, col);
+			    	count++;
+				    endRow++;
+			    }
+			    else break;
+		    }
+	    }
+	    System.out.println("count = " + count);
+	    return count;
+	}
 
 	public LinkedList<ArrayList<Block>> solvePuzzle(ArrayList<Block> startBoard) {
 		PriorityQueue<ArrayList<Block>> queue = new PriorityQueue<>();

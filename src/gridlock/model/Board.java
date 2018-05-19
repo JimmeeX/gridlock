@@ -40,6 +40,7 @@ public class Board {
         this.gameState = new SimpleBooleanProperty(false);
         this.numMoves = new SimpleIntegerProperty(0);
     }
+
     /** -prvt
      * initialise the grid (size x size)
      * @param size the length of the grid (square)
@@ -72,8 +73,7 @@ public class Board {
                         if (blockID != -1) {
                             incrementSize(blockID, row, col);
                             this.grid.get(row)[col] = id;
-                        }
-                        else addBlock(id, row, col);
+                        } else setBlock(id, row, col);
                     }
                 }
             }
@@ -85,13 +85,25 @@ public class Board {
         }
     }
 
+    public Block getBlock(String id) {
+        for (Block block: this.blocks) {
+            if (block.getID().equals(id)) return block;
+        }
+        return null;
+    }
+
+    public String[] getGridRow(int row) {
+        return this.grid.get(row);
+    }
+
     /**
      * add a new block to the grid
      * @param id the block's id
      * @param row the row position of the block
      * @param col the col position of the block
      */
-    public void addBlock(String id, int row, int col){
+
+    public void setBlock(String id, int row, int col){
         Block newBlock = new Block(id, row, col);
         this.grid.get(row)[col] = id;
         this.blocks.add(newBlock);
@@ -164,15 +176,36 @@ public class Board {
         this.numMoves.setValue(this.prevLocations.size());
     }
 
+    /**
+     * Check if the game is over (the "z" car is by the exit)
+     * Will send "true" to "gameState" if game is over
+     */
+    // Added by James :)
+    public void checkGameOver() {
+        this.gameState.setValue(false);
+        for (Block block: this.blocks) {
+            if (block.getID().equals("z")) {
+                if (block.getPosition().get(0)[1] == 4) {
+                    this.gameState.setValue(true);
+                }
+            }
+        }
+    }
+
+    // Added by James :)
+    public BooleanProperty gameStateProperty() {
+        return gameState;
+    }
+
     // Added by Edwin
-    public boolean addBlock(String id, int row, int col, int size, boolean isHorizontal) {
+    public boolean setBlock(String id, int row, int col, int size, boolean isHorizontal) {
         if (blockExist(id) != -1
                 || (size == 2 && (row > 4 || col > 4))
                 || (size == 3 && (row > 3 || col > 3))
                 || row < 0 || col < 0
                 || !this.grid.get(row)[col].equals("*")) return false;
         // put scenario: check if the grid unit is empty
-        addBlock(id, row, col);
+        setBlock(id, row, col);
         int idx = blockExist(id);
         Block b = blocks.get(idx);
         if (isHorizontal) {
@@ -313,25 +346,47 @@ public class Board {
         this.nextLocations.clear();
     }
 
-    // Added by James :)
-    public BooleanProperty gameStateProperty() {
-        return gameState;
+    /**
+     * Let blockRange be an interval of the leftest/uppest and the rightest/downest
+     * possible block starting column/row when only that particular block is moved
+     * E.g. in endGameState.txt file:
+     * |* * * a a a
+     * |* * * * * *
+     * |* * b * z z
+     * |c c b * d e
+     * |f * b * d e
+     * |f * g g g e
+     * blockrange(z:horznt) = [3,4], blockrange (b: vert) = [0,2]
+     * @param id
+     * @return
+     */
+    // Added by Edwin
+    public Integer[] blockRange(String id) {
+        int idx = blockExist(id);
+        if (idx == -1) return null;
+        Block b = blocks.get(idx);
+        int size = b.getSize();
+        Integer[] intv = new Integer[2];
+        if (b.isHorizontal()) {
+            intv[0] = b.getCol(); intv[1] = b.getCol();
+            while (intv[0] > 0 && grid.get(b.getRow())[intv[0]-1].equals("*")) intv[0]--;
+            while (intv[1]+size- 1 < 5 && grid.get(b.getRow())[intv[1]+size].equals("*")) intv[1]++;
+        } else {
+            intv[0] = b.getRow(); intv[1] = b.getRow();
+            while (intv[0] > 0 && grid.get(intv[0]-1)[b.getCol()].equals("*")) intv[0]--;
+            while (intv[1]+size- 1 < 5 && grid.get(intv[1]+size)[b.getCol()].equals("*")) intv[1]++;
+        }
+        return intv;
     }
 
-    /**
-     * Check if the game is over (the "z" car is by the exit)
-     * Will send "true" to "gameState" if game is over
-     */
-    // Added by James :)
-    public void checkGameOver() {
-        this.gameState.setValue(false);
-        for (Block block: this.blocks) {
-            if (block.getID().equals("z")) {
-                if (block.getPosition().get(0)[1] == 4) {
-                    this.gameState.setValue(true);
-                }
-            }
-        }
+    // Added by Edwin
+    public Board duplicate() {
+        // Only need essentially grid and blocks w/ different reference
+        Board newBoard = new Board ();
+        newBoard.grid.clear();
+        for (String[] strArr : grid) newBoard.grid.add(strArr.clone());
+        for (Block block : blocks) newBoard.getBlocks().add(block.duplicate());
+        return newBoard;
     }
 
     /**
