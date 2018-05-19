@@ -73,8 +73,7 @@ public class Board {
                         if (blockID != -1) {
                             incrementSize(blockID, row, col);
                             this.grid.get(row)[col] = id;
-                        }
-                        else setBlock(id, row, col);
+                        } else setBlock(id, row, col);
                     }
                 }
             }

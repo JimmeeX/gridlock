@@ -11,9 +11,8 @@ public class BoardGenerator {
         Board board;
         boolean isWin;
         List <Node> neighbors;
-        boolean djikIsVisited;
-        int djikDist;
-        Node djikPred;
+        int dist;
+        Node pred;
 
         Node (Board board) {
             this.board = board;
@@ -21,9 +20,8 @@ public class BoardGenerator {
             if (zBlock != null && Arrays.equals(zBlock.getPosition().get(0), new Integer[] {2, 4})) this.isWin = true;
                 else this.isWin = false;
             this.neighbors = new ArrayList<>();
-            this.djikIsVisited = false;
-            this.djikDist = 100; // so far there has not been puzzle with >= 100 moves
-            this.djikPred = null;
+            this.dist = 100; // so far there has not been puzzle with >= 100 moves
+            this.pred = null;
         }
 
         /**
@@ -47,6 +45,14 @@ public class BoardGenerator {
                 }
             }
             return true;
+        }
+
+        public boolean isNeighbor (Node n) {
+            // Decide if n is a neighbor, either:
+            // * Must be ranged differently
+            // * Must be not both win/not yet
+            // * Must be in diff hemisphere
+            return (!(isBothYesorNoWinCriteria(n) && isSameRange(n) && isSameHemisphere(n)));
         }
 
         private boolean isBothYesorNoWinCriteria (Node n) {
@@ -141,6 +147,8 @@ public class BoardGenerator {
                         if (i == b.getRow()) continue;
                         duplicate.makeMove(b.getID(), new Integer[]{i, b.getCol()}, true);
                     }
+                    Node newNode = new Node(duplicate);
+                    if (!curr.isNeighbor(newNode)) continue;
                     // For Djikstra to work, eventually the node's neighbors should be reference based
                     // Hence every neighbor should be referenced equivalently to a node in nodeList,
                     // the premises would be that the nodeList will contain all sufficient nodes
@@ -148,14 +156,6 @@ public class BoardGenerator {
                     // something not in nodeList.
                     // Thus we want to change every neigbhor that can be substituted with one n \in nodelist
                     // then substitute it with n instead.
-                    Node newNode = new Node(duplicate);
-                    // Decide if n is a neighbor:
-                    // * Must be ranged differently
-                    // * Must be not both win/not yet
-                    // * Must be in diff hemisphere
-                    if (curr.isSameRange(newNode) && curr.isBothYesorNoWinCriteria(newNode)
-                            && curr.isSameHemisphere(newNode)) continue;
-                    // Check if there is some prev reference in nodeList
                     int nIndex = nodeList.indexOf(newNode);
                     if (nIndex != -1) {
                         Node existingNode = nodeList.get(nIndex);
@@ -186,10 +186,11 @@ public class BoardGenerator {
 
         // Currently BFS. If weight != 1, SOON: Djikstra (using PQ)
         // Only consider node as it is
+        List <Node> visited = new ArrayList<>();
         for (Node n: nodeList) {
             if (n.isWin) {
-                n.djikDist = 0;
-                n.djikIsVisited = true;
+                n.dist = 0;
+                visited.add(n);
                 queue.add(n);
             }
         }
@@ -198,11 +199,11 @@ public class BoardGenerator {
             //System.out.println("Curr index " + (nodeList.indexOf(curr)) + ", now length" + curr.djikDist);
             for (Node neighbor: curr.neighbors) {
                 //System.out.println("Neigh index " + (nodeList.indexOf(neighbor)) + ", now length" + neighbor.djikDist);
-                if (!neighbor.djikIsVisited) {
+                if (!containsRef(visited, neighbor)) {
                     //System.out.println("new neighbor");
-                    neighbor.djikDist = curr.djikDist + 1;
-                    neighbor.djikPred = curr;
-                    neighbor.djikIsVisited = true;
+                    neighbor.dist = curr.dist + 1;
+                    neighbor.pred = curr;
+                    visited.add(neighbor);
                     queue.add(neighbor);
                 }
             }
@@ -210,9 +211,9 @@ public class BoardGenerator {
 
         // Find maximal, print with max num of moves
         Node maxNode = initWinNode;
-        for (Node n: nodeList) if (n.djikDist > maxNode.djikDist) maxNode = n;
+        for (Node n: nodeList) if (n.dist > maxNode.dist) maxNode = n;
         maxNode.board.printGrid();
-        System.out.println("Claim Max move: " + maxNode.djikDist);
+        System.out.println("Claim Max move: " + maxNode.dist);
 /*
         // Backtracking
         System.out.println("Backward check . . .");
@@ -277,12 +278,12 @@ public class BoardGenerator {
             if (i == 2) continue;
             for (int j = 0; j < grid.size(); j++) {
                 if (!grid.get(i)[j].equals("*")) continue;
-                String fillOrNot = randomBinaryChoice("yes", "no", 0.5);
+                String fillOrNot = randomBinaryChoice("yes", "no", 0.3);
                 if (fillOrNot.equals("no")) continue;
                 String id = Character.toString((char)(96 + currNumOfBlock));
-                boolean [] isHorizontal = {false, true};
+                boolean [] isHorizontal = {true, false};
                 int [] size = {2, 3};
-                int isHorizontalIdx = randomBinaryChoice(0, 1, 0.6);
+                int isHorizontalIdx = randomBinaryChoice(0, 1, 0.5);
                 int sizeIdx = randomBinaryChoice(0, 1, 0.5);
                 currNumOfBlock++;
                 if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
