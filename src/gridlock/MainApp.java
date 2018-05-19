@@ -57,8 +57,8 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-        BoardGenerator2 bg = new BoardGenerator2();
-        Board b = bg.generateOneBoard("src/gridlock/endGameState.txt");
+        BoardGenerator bg = new BoardGenerator();
+        Board b = bg.generateOneBoard("src/gridlock/endGameState3.txt");
         launch(args);
     }
 }

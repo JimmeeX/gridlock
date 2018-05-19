@@ -10,7 +10,6 @@ public class BoardGenerator {
     private class Node {
         Board board;
         boolean isWin;
-        List <Node> neighbors;
         int dist;
         Node pred;
 
@@ -19,8 +18,7 @@ public class BoardGenerator {
             Block zBlock = board.getBlock("z");
             if (zBlock != null && Arrays.equals(zBlock.getPosition().get(0), new Integer[] {2, 4})) this.isWin = true;
                 else this.isWin = false;
-            this.neighbors = new ArrayList<>();
-            this.dist = 100; // so far there has not been puzzle with >= 100 moves
+            this.dist = 60; // so far there has not been puzzle with >= 100 moves
             this.pred = null;
         }
 
@@ -45,6 +43,22 @@ public class BoardGenerator {
                 }
             }
             return true;
+        }
+
+        @ Override
+        public int hashCode () {
+            // For first eleven block IDs (z, a, b, c, d, ...),  ordered and filled with
+            // its changeable row/col val. 0-5 values, prime 7, size: 7^11 = 1.9 * 10^9
+            int prime = 7;
+            int result = 1; // recommended as non-zero
+            for (int i = 0; i < 11; i++) {
+                String id = Character.toString((char)('a' + (i == 11 ? 25 : i)));
+                Block b = this.board.getBlock(id);
+                int digit = (b == null ? 5 :
+                            b.isHorizontal() ? b.getCol() : b.getRow());
+                result = prime * result + digit;
+            }
+            return result;
         }
 
         public boolean isNeighbor (Node n) {
@@ -123,18 +137,27 @@ public class BoardGenerator {
     public Board generateOneBoard (String file) {
         long startTime = System.nanoTime();
         Board winBoard = process(file);
-
-        // BFS: use lots of Node's equals function
         Node initWinNode = new Node (winBoard);
+
+        /* BFS:
+        * ) Queue is the open set
+        * ) Adjacency is both the open set and closed set: the only thing that makes
+        *   diff when a loop is just started/ended is that the open element always have empty arraylist
+        */
         Queue <Node> queue = new LinkedList<>();
-        List <Node> nodeList = new ArrayList<>(); // the visited nodes will soon be the node lists
+        Map <Node, List <Node>> adjacency = new HashMap<>();
+        Map <Node, List <Node>> adjacencyRefAB = new IdentityHashMap<>(30000);
+        Map <List <Node>, Node> adjacencyRefBA = new IdentityHashMap<>(30000);
+
+        List <Node> newNeighborList = new ArrayList<>();
+        adjacency.put(initWinNode, newNeighborList);
+        adjacencyRefAB.put(initWinNode, newNeighborList);
+        adjacencyRefBA.put(newNeighborList, initWinNode);
         queue.add(initWinNode);
-        nodeList.add(initWinNode);
         while (!queue.isEmpty()) {
             Node curr = queue.poll();
-            //System.out.println ("Node list index " + (int)(nodeList.size() - queue.size()) + " out of " + nodeList.size()+ "\n");
-            int j =0; if (nodeList.size() >= 1 && curr == nodeList.get(0)) j=1; //debug
-            // The neighbor "ignoring reference and duplicates" constructions is done here. Otherwise it is gonna loop
+            //System.out.println ("Node list index " + (int)(adjacency.size() - queue.size()) + " out of " + adjacency.size()+ "\n");
+            // The neighbor constructions, "ignoring reference and duplicates", are done here. Otherwise it is gonna loop
             for (Block b: curr.board.getBlocks()) {
                 // Consider all possibility of its new position (diff than currently), the new board is a neighbor
                 Integer[] intv = curr.board.blockRange(b.getID());
@@ -147,34 +170,41 @@ public class BoardGenerator {
                         if (i == b.getRow()) continue;
                         duplicate.makeMove(b.getID(), new Integer[]{i, b.getCol()}, true);
                     }
-                    Node newNode = new Node(duplicate);
-                    if (!curr.isNeighbor(newNode)) continue;
+                    Node potentNeighNode = new Node(duplicate);
+                    //if (!curr.isNeighbor(potentNeighNode)) continue;
                     // For Djikstra to work, eventually the node's neighbors should be reference based
                     // Hence every neighbor should be referenced equivalently to a node in nodeList,
                     // the premises would be that the nodeList will contain all sufficient nodes
                     // to cover all actual neighbors, and all neighbors will never be inserted
                     // something not in nodeList.
-                    // Thus we want to change every neigbhor that can be substituted with one n \in nodelist
-                    // then substitute it with n instead.
-                    int nIndex = nodeList.indexOf(newNode);
-                    if (nIndex != -1) {
-                        Node existingNode = nodeList.get(nIndex);
-                        if (!(containsRef(curr.neighbors, existingNode))) curr.neighbors.add(existingNode);
+                    List <Node> currNeighbors = adjacencyRefAB.get(curr);
+                    List <Node> pnnNeighbors = adjacency.get(potentNeighNode);
+                    if (pnnNeighbors == null) {
+                        // this pnn is brand new. Add it to curr's neighbor list
+                        currNeighbors.add(potentNeighNode);
+                        // and put it on queue
+                        newNeighborList = new ArrayList<>();
+                        adjacency.put(potentNeighNode, newNeighborList);
+                        adjacencyRefAB.put(potentNeighNode, newNeighborList);
+                        adjacencyRefBA.put(newNeighborList, potentNeighNode);
+                        queue.add(potentNeighNode);
                     } else {
-                        nodeList.add(newNode);
-                        queue.add(newNode);
-                        curr.neighbors.add(newNode);
+                        Node pnnOriginRef = adjacencyRefBA.get(pnnNeighbors);
+                        // pnn is still on queue, w different ref (pnnNeighbors.size() == 0)
+                        // or: potentNeighNode's board config is already on closed set before, w different ref
+                        if (!(containsRef(currNeighbors, pnnOriginRef))) currNeighbors.add(pnnOriginRef);
                     }
-                    //if (j==1) System.out.println("Duplicates:"); duplicate.printGrid();
                 }
             }
         }
-        System.out.println("We have " + nodeList.size() + " nodes.");
+        System.out.println("We have " + adjacency.size() + " nodes.");
 
-        // Graph content
-        /*for (int i = 0; i < nodeList.size(); i++) {
-            System.out.println("NOde ke - " + i);
-            nodeList.get(i).board.printGrid();
+        // Graph content: contain errors due to some changes
+        /*
+        Iterator <Map.Entry <Node, List <Node>>> it = adjacency.entrySet().iterator();
+        while (it.hasNext()) {
+            System.out.println("NOde ke - ");
+            it.next().getKey().board.printGrid();
         }
         for (int i = 0; i < nodeList.size(); i++) {
             for (int j = 0; j < nodeList.size(); j++) {
@@ -184,10 +214,11 @@ public class BoardGenerator {
             System.out.println();
         }*/
 
-        // Currently BFS. If weight != 1, SOON: Djikstra (using PQ)
-        // Only consider node as it is
+        // Now, BFS/Djikstra using all win nodes first. Using node ref as it is, we will use adjacencyRefAB
+        // This is still weak
         List <Node> visited = new ArrayList<>();
-        for (Node n: nodeList) {
+        queue.clear();
+        for (Node n: adjacencyRefAB.keySet()) {
             if (n.isWin) {
                 n.dist = 0;
                 visited.add(n);
@@ -196,11 +227,8 @@ public class BoardGenerator {
         }
         while (!queue.isEmpty()) {
             Node curr = queue.poll();
-            //System.out.println("Curr index " + (nodeList.indexOf(curr)) + ", now length" + curr.djikDist);
-            for (Node neighbor: curr.neighbors) {
-                //System.out.println("Neigh index " + (nodeList.indexOf(neighbor)) + ", now length" + neighbor.djikDist);
+            for (Node neighbor: adjacencyRefAB.get(curr)) {
                 if (!containsRef(visited, neighbor)) {
-                    //System.out.println("new neighbor");
                     neighbor.dist = curr.dist + 1;
                     neighbor.pred = curr;
                     visited.add(neighbor);
@@ -208,20 +236,19 @@ public class BoardGenerator {
                 }
             }
         }
-
-        // Find maximal, print with max num of moves
-        Node maxNode = initWinNode;
-        for (Node n: nodeList) if (n.dist > maxNode.dist) maxNode = n;
-        maxNode.board.printGrid();
-        System.out.println("Claim Max move: " + maxNode.dist);
-/*
+        /*
         // Backtracking
         System.out.println("Backward check . . .");
         for (Node x = maxNode; x != null; x = x.djikPred) {
             x.board.printGrid();
             System.out.println("Max move: " + x.djikDist);
-        }
-*/
+        }*/
+
+        // Conclusion: the most difficult puzzle in this graph, along w numOfMoves
+        Node maxNode = initWinNode;
+        for (Node n: adjacency.keySet()) if (n.dist > maxNode.dist) maxNode = n;
+        maxNode.board.printGrid();
+        System.out.println("Claim Max move: " + maxNode.dist);
         long endTime = System.nanoTime();
         long duration = (endTime - startTime)/1000000;
         System.out.println("Duration " + duration + "/1000 seconds.");
@@ -229,7 +256,7 @@ public class BoardGenerator {
     }
 
     /* -prvt
-     *
+     * Checking if a node list contains a node based on reference
      */
     private boolean containsRef (List <Node> nl, Node n) {
         if (n == null) return (this == null);
