@@ -10,6 +10,7 @@ public class BoardGenerator {
     private class Node {
         Board board;
         boolean isWin;
+        boolean isVisited;
         int dist;
         Node pred;
 
@@ -18,7 +19,8 @@ public class BoardGenerator {
             Block zBlock = board.getBlock("z");
             if (zBlock != null && Arrays.equals(zBlock.getPosition().get(0), new Integer[] {2, 4})) this.isWin = true;
                 else this.isWin = false;
-            this.dist = 60; // so far there has not been puzzle with >= 100 moves
+            this.isVisited = false;
+            this.dist = 60; // so far there has not been puzzle with >= 49
             this.pred = null;
         }
 
@@ -52,7 +54,7 @@ public class BoardGenerator {
             int prime = 7;
             int result = 1; // recommended as non-zero
             for (int i = 0; i < 11; i++) {
-                String id = Character.toString((char)('a' + (i == 11 ? 25 : i)));
+                String id = Character.toString((char)('a' + (i == 10 ? 25 : i)));
                 Block b = this.board.getBlock(id);
                 int digit = (b == null ? 5 :
                             b.isHorizontal() ? b.getCol() : b.getRow());
@@ -130,20 +132,20 @@ public class BoardGenerator {
         }
     }
 
-    public Board generateOneBoard () {
-        return generateOneBoard ("src/gridlock/endGameState.txt");
+    public Board generateOneBoard (String file) {
+        return generateOneBoard (process(file), 0 ,60);
     }
 
-    public Board generateOneBoard (String file) {
+    public Board generateOneBoard (Board board, int minMoves, int maxMoves) {
         long startTime = System.nanoTime();
-        Board winBoard = process(file);
-        Node initWinNode = new Node (winBoard);
+        Board winBoard = board;
 
         /* BFS:
         * ) Queue is the open set
         * ) Adjacency is both the open set and closed set: the only thing that makes
         *   diff when a loop is just started/ended is that the open element always have empty arraylist
         */
+        Node initWinNode = new Node (winBoard);
         Queue <Node> queue = new LinkedList<>();
         Map <Node, List <Node>> adjacency = new HashMap<>();
         Map <Node, List <Node>> adjacencyRefAB = new IdentityHashMap<>(30000);
@@ -171,7 +173,7 @@ public class BoardGenerator {
                         duplicate.makeMove(b.getID(), new Integer[]{i, b.getCol()}, true);
                     }
                     Node potentNeighNode = new Node(duplicate);
-                    //if (!curr.isNeighbor(potentNeighNode)) continue;
+                    if (!curr.isNeighbor(potentNeighNode)) continue;
                     // For Djikstra to work, eventually the node's neighbors should be reference based
                     // Hence every neighbor should be referenced equivalently to a node in nodeList,
                     // the premises would be that the nodeList will contain all sufficient nodes
@@ -197,62 +199,49 @@ public class BoardGenerator {
                 }
             }
         }
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime)/1000000;
+        System.out.println("Duration " + duration + "/1000 seconds.");
         System.out.println("We have " + adjacency.size() + " nodes.");
 
-        // Graph content: contain errors due to some changes
-        /*
-        Iterator <Map.Entry <Node, List <Node>>> it = adjacency.entrySet().iterator();
-        while (it.hasNext()) {
-            System.out.println("NOde ke - ");
-            it.next().getKey().board.printGrid();
-        }
-        for (int i = 0; i < nodeList.size(); i++) {
-            for (int j = 0; j < nodeList.size(); j++) {
-                if (nodeList.get(i).neighbors.contains(nodeList.get(j))) System.out.print("1 ");
-                else System.out.print("0 ");
-            }
-            System.out.println();
-        }*/
-
+        startTime = System.nanoTime();
         // Now, BFS/Djikstra using all win nodes first. Using node ref as it is, we will use adjacencyRefAB
         // This is still weak
-        List <Node> visited = new ArrayList<>();
         queue.clear();
         for (Node n: adjacencyRefAB.keySet()) {
             if (n.isWin) {
                 n.dist = 0;
-                visited.add(n);
+                n.isVisited = true;
                 queue.add(n);
             }
         }
         while (!queue.isEmpty()) {
             Node curr = queue.poll();
             for (Node neighbor: adjacencyRefAB.get(curr)) {
-                if (!containsRef(visited, neighbor)) {
+                if (!neighbor.isVisited) {
                     neighbor.dist = curr.dist + 1;
                     neighbor.pred = curr;
-                    visited.add(neighbor);
+                    neighbor.isVisited = true;
                     queue.add(neighbor);
                 }
             }
         }
-        /*
-        // Backtracking
-        System.out.println("Backward check . . .");
-        for (Node x = maxNode; x != null; x = x.djikPred) {
-            x.board.printGrid();
-            System.out.println("Max move: " + x.djikDist);
-        }*/
 
         // Conclusion: the most difficult puzzle in this graph, along w numOfMoves
         Node maxNode = initWinNode;
         for (Node n: adjacency.keySet()) if (n.dist > maxNode.dist) maxNode = n;
         maxNode.board.printGrid();
         System.out.println("Claim Max move: " + maxNode.dist);
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime)/1000000;
+        // Backtracking
+        /*System.out.println("Backward check . . .");
+        for (Node x = maxNode; x != null; x = x.pred) {
+            x.board.printGrid();
+            System.out.println("Max move: " + x.dist);
+        }*/
+        endTime = System.nanoTime();
+        duration = (endTime - startTime)/1000000;
         System.out.println("Duration " + duration + "/1000 seconds.");
-        return maxNode.board;
+        return (minMoves <= maxNode.dist && maxNode.dist <= maxMoves) ? maxNode.board : null;
     }
 
     /* -prvt
@@ -293,11 +282,19 @@ public class BoardGenerator {
     /* -prvt
     * Bare: sometimes working sometimes not
     */
-    public Board newRandomWinBoard() {
+    public Board newRandomWinBoard(double p, int minBlockNum, int maxBlockNum) {
         int currNumOfBlock = 0;
         Board b = new Board ();
         List <String []> grid = b.getGrid();
         if (b.setBlock("z", 2, 4, 2, true)) currNumOfBlock++;
+
+        Random random = new Random();
+        int row = random.nextInt(5);
+        int col = random.nextInt(1) + 4;
+        boolean isVertical = randomBinaryChoice(true, false, 0.5);
+        int s = randomBinaryChoice(2,3,0.5);
+
+        if (b.setBlock("a", row,  col, s, isVertical)) currNumOfBlock++;
         // cheat
         grid.get(2)[3] = "-";
 
@@ -305,9 +302,9 @@ public class BoardGenerator {
             if (i == 2) continue;
             for (int j = 0; j < grid.size(); j++) {
                 if (!grid.get(i)[j].equals("*")) continue;
-                String fillOrNot = randomBinaryChoice("yes", "no", 0.3);
+                String fillOrNot = randomBinaryChoice("yes", "no", p);
                 if (fillOrNot.equals("no")) continue;
-                String id = Character.toString((char)(96 + currNumOfBlock));
+                String id = Character.toString((char)(97 + currNumOfBlock));
                 boolean [] isHorizontal = {true, false};
                 int [] size = {2, 3};
                 int isHorizontalIdx = randomBinaryChoice(0, 1, 0.5);
@@ -321,10 +318,32 @@ public class BoardGenerator {
             }
         }
         grid.get(2)[3] = "*";
-        return (currNumOfBlock > 7 && currNumOfBlock < 12) ? b : null;
+        return (currNumOfBlock > minBlockNum && currNumOfBlock < maxBlockNum)
+                ? b : newRandomWinBoard(p, minBlockNum, maxBlockNum);
     }
+
     private <E> E randomBinaryChoice (E item1, E item2, double probItem1) {
         return (Math.random() < probItem1) ? item1 : item2;
+    }
+
+    public Board generateBoard(Difficulty d) {
+        double p;
+        int minBlockNum;
+        int maxBlockNum;
+        if (d.equals(d.valueOf("EASY"))) {
+            p = 0.3;
+            minBlockNum = 4;
+            maxBlockNum = 6;
+        } else if (d.equals(d.valueOf("MEDIUM"))) {
+            p = 0.5;
+            minBlockNum = 7;
+            maxBlockNum = 9;
+        } else {
+            p = 0.5;
+            minBlockNum = 10;
+            maxBlockNum = 13;
+        }
+        return newRandomWinBoard(p, minBlockNum, maxBlockNum);
     }
 
 }

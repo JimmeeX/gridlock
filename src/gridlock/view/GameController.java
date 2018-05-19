@@ -26,6 +26,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -33,6 +34,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Timer;
 
 public class GameController {
     private SystemSettings settings;
@@ -41,7 +43,10 @@ public class GameController {
     private Difficulty difficulty;
     private Integer level;
     private ArrayList<Node> recNodeList;
+    private ArrayList<MouseGestures> mgList;
 
+    @FXML
+    private AnchorPane wrapper;
     @FXML
     private Label modeLabel;
     @FXML
@@ -56,6 +61,16 @@ public class GameController {
     private Pane boardField;
     @FXML
     private Button nextButton;
+    @FXML
+    private Polygon goalArrow;
+    @FXML
+    private Button undoButton;
+    @FXML
+    private Button redoButton;
+    @FXML
+    private Button hintButton;
+    @FXML
+    private Button resetButton;
 
     public void initData(SystemSettings settings, Mode mode, Difficulty difficulty, Integer level) {
         // Initialise Variables
@@ -69,9 +84,17 @@ public class GameController {
         this.levelLabel.setText("Level " + this.level.toString());
         this.movesLabel.setText("Moves: 0");
 
-        // Read Board from File
-        String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
-        this.initialiseBoard(levelName);
+        this.board = new Board();
+        if (mode.equals(Mode.CAMPAIGN)) {
+            // Read Board from File
+            String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
+            this.board.process(levelName);
+        }
+        // TODO: Board Generator
+        else {
+            BoardGenerator2 bg = new BoardGenerator2();
+            this.board = bg.generateOneBoard("src/gridlock/endGameState.txt");
+        }
 
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
@@ -110,11 +133,20 @@ public class GameController {
 
         // Add Drag/Drop Functionality to the Rectangles
         this.addMouseGestures();
+
+        this.pulse(this.goalArrow);
+    }
+
+    @FXML
+    private void initialize() {
+        this.wrapper.setOpacity(0);
+        this.performFadeIn(this.wrapper);
     }
 
     private void initialiseBoard(String file) {
         this.board = new Board();
-        levelGenerator(this.difficulty);
+        if (this.mode.equals(Mode.CAMPAIGN))
+        this.levelGenerator(this.difficulty);
         this.board.process(file);
     }
 
@@ -148,14 +180,17 @@ public class GameController {
 
     private void addMouseGestures() {
         ArrayList<Block> blockL = this.board.getBlocks();
+        this.mgList = new ArrayList<>();
         for(int i = 0; i < blockL.size(); i++) {
             Node currNode = this.recNodeList.get(i);
             if (blockL.get(i).isHorizontal()) {
                 MouseGestures hmg = new MouseGestures(this.settings, blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, currNode, this.recNodeList);
                 hmg.makeDraggable(recNodeList.get(i));
+                this.mgList.add(hmg);
             } else {
                 MouseGestures vmg = new MouseGestures(this.settings, blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, currNode, this.recNodeList);
                 vmg.makeDraggable(recNodeList.get(i));
+                this.mgList.add(vmg);
             }
             this.boardField.getChildren().addAll(this.recNodeList.get(i));
         }
@@ -163,27 +198,37 @@ public class GameController {
 
     // Current Information
     private void updateBoard() {
+        this.disableButtons();
         ArrayList<Block> blockList = this.board.getBlocks();
         for (int i = 0; i < blockList.size(); i++) {
             Block block = blockList.get(i);
 
             // Retrieve the Rectangle and Update it with new position
-            Rectangle rec = (Rectangle) this.boardField.getChildren().get(i + 1);
-            setBlocks(block, rec);
-            this.boardField.getChildren().set(i + 1, rec);
+            MouseGestures mg = this.mgList.get(i);
 
-            // update mouse
+            // Pane Size
+            int widthFactor = 450 / this.board.getGridSize();
+            int heightFactor = 450 / this.board.getGridSize();
+
+            TranslateTransition tt;
             if (block.isHorizontal()) {
-                MouseGestures hmg = new MouseGestures(this.settings, block.getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, this.recNodeList.get(i), this.recNodeList);
-                hmg.makeDraggable(recNodeList.get(i));
-            } else {
-                MouseGestures vmg = new MouseGestures(this.settings, block.getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, this.recNodeList.get(i), this.recNodeList);
-                vmg.makeDraggable(recNodeList.get(i));
+                double startCol = block.getCol()*widthFactor;
+                tt = mg.animateMoveNodeX(startCol);
             }
+
+            else {
+                double startRow = block.getRow()*heightFactor;
+                tt = mg.animateMoveNodeY(startRow);
+            }
+            this.mgList.set(i, mg);
+            tt.setOnFinished(event -> {
+                this.enableButtons();
+            });
         }
     }
 
-    private void setBlocks(Block b, Rectangle rec) {
+    private void setBlocks(Block b, Node node) {
+        Rectangle rec = (Rectangle)node;
         int height, width, startRow, startCol;
 
         // Pane Size
@@ -206,7 +251,7 @@ public class GameController {
         rec.setY(startRow);
         rec.setTranslateX(0);
         rec.setTranslateY(0);
-        
+
         setEffects(rec);
     }
 
@@ -247,6 +292,42 @@ public class GameController {
                 });
             }
         }
+    }
+
+    /**
+     * Pulsing Animation
+     */
+    private FadeTransition pulse(Node node){
+        FadeTransition ft = new FadeTransition(Duration.millis(1500), node);
+
+        ft.setFromValue(1);//Specifies the start opacity value for this FadeTransition
+        ft.setToValue(0);
+        ft.setCycleCount(Timeline.INDEFINITE);
+        ft.setAutoReverse(true);
+        ft.play();
+        return ft;
+    }
+
+    @FXML
+    private void changeSceneControl(ActionEvent event) {
+        FadeTransition ft = this.performFadeOut(this.wrapper);
+        ft.setOnFinished (fadeEvent -> {
+            try {
+                Button button = (Button) event.getSource();
+                switch (button.getText()) {
+                    case "Levels":
+                        this.navToLevelSelect(event);
+                        break;
+                    case "Quit":
+                        this.navToMenu(event);
+                        break;
+                }
+            }
+            catch (Exception e) {
+                System.out.println(e);
+                System.out.println("Scene Transition Failed");
+            }
+        });
     }
 
     @FXML
@@ -321,9 +402,39 @@ public class GameController {
         this.updateBoard();
     }
 
+    private void disableButtons() {
+        this.undoButton.setDisable(true);
+        this.redoButton.setDisable(true);
+        this.hintButton.setDisable(true);
+        this.resetButton.setDisable(true);
+    }
+
+    private void enableButtons() {
+        this.undoButton.setDisable(false);
+        this.redoButton.setDisable(false);
+        this.hintButton.setDisable(false);
+        this.resetButton.setDisable(false);
+    }
+
     @FXML
     private void showHint(ActionEvent event) {
         // TODO
+    }
+
+    private FadeTransition performFadeOut(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(1);
+        ft.setToValue(0);
+        ft.play();
+        return ft;
+    }
+
+    private FadeTransition performFadeIn(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.play();
+        return ft;
     }
 
     @FXML
