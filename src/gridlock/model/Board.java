@@ -335,11 +335,8 @@ public class Board {
     	return this.path.size();
     }
     
-    public void printPath() {
-    	for (Board board: this.path) {
-    		System.out.println("Step:");
-    		board.printBlocks();
-    	}
+    public ArrayList<Board> getPath() {
+    	return this.path;
     }
     
 }
