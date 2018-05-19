@@ -1,35 +1,232 @@
 package gridlock.view;
 
+import gridlock.model.Block;
+import gridlock.model.Board;
 import gridlock.model.SystemSettings;
-import javafx.animation.FadeTransition;
-import javafx.animation.ScaleTransition;
+import javafx.animation.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.effect.BoxBlur;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
 
 public class HelpController {
     private SystemSettings settings;
+    private Board board;
+    private ArrayList<Node> recNodeList;
+    private ArrayList<MouseGestures> mgList;
 
     @FXML
     private AnchorPane wrapper;
+    @FXML
+    private Label movesLabel;
+    @FXML
+    private AnchorPane primaryField;
+    @FXML
+    private Pane boardField;
+    @FXML
+    private Button nextButton;
+    @FXML
+    private Polygon goalArrow;
+    @FXML
+    private Button undoButton;
+    @FXML
+    private Button redoButton;
+    @FXML
+    private Button hintButton;
+    @FXML
+    private Button resetButton;
 
     public void initData(SystemSettings settings) {
         this.settings = settings;
+        this.movesLabel.setText("Moves: 0");
+        this.board = new Board();
+        this.board.process("src/gridlock/resources/tut.txt");
+
+        this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (newValue) {
+                    nextButton.setDisable(false);
+                    animateWinSequence();
+                }
+            }
+        });
+
+        // Add Listener for Board Moves
+        this.board.numMovesProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                movesLabel.setText("Moves: " + newValue.toString());
+            }
+        });
+
+        // Draw the Rectangles and add it to the Board
+        this.initialiseNodeList();
+
+        // Add Drag/Drop Functionality to the Rectangles
+        this.addMouseGestures();
+
+        // TODO: ADD HELP ANIMATION SEQUENCE HERE
     }
 
     @FXML
     private void initialize() {
         this.wrapper.setOpacity(0);
         this.performFadeIn(this.wrapper);
+    }
+
+    private void initialiseNodeList() {
+        this.recNodeList = new ArrayList<>();
+        // Draw Rectangles and add to Pane (so Pane is its Parent).
+        for (Block block: this.board.getBlocks()) {
+            Rectangle rec = new Rectangle(0, 0);
+            rec.setUserData(block.getID());
+            if (block.getID().equals("z")) {
+                rec.setId("player");
+            } else {
+                rec.setId("obstacles");
+            }
+            setBlocks(block, rec);
+            this.recNodeList.add(rec);
+        }
+    }
+
+    private void addMouseGestures() {
+        ArrayList<Block> blockL = this.board.getBlocks();
+        this.mgList = new ArrayList<>();
+        for(int i = 0; i < blockL.size(); i++) {
+            Node currNode = this.recNodeList.get(i);
+            if (blockL.get(i).isHorizontal()) {
+                MouseGestures hmg = new MouseGestures(this.settings, blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), true, currNode, this.recNodeList);
+                hmg.makeDraggable(recNodeList.get(i));
+                this.mgList.add(hmg);
+            } else {
+                MouseGestures vmg = new MouseGestures(this.settings, blockL.get(i).getID(), this.board, this.boardField, this.board.getGridSize(), this.board.getGridSize(), false, currNode, this.recNodeList);
+                vmg.makeDraggable(recNodeList.get(i));
+                this.mgList.add(vmg);
+            }
+            this.boardField.getChildren().addAll(this.recNodeList.get(i));
+        }
+    }
+
+    // Current Information
+    private void updateBoard() {
+        this.disableButtons();
+        ArrayList<Block> blockList = this.board.getBlocks();
+        for (int i = 0; i < blockList.size(); i++) {
+            Block block = blockList.get(i);
+
+            // Retrieve the Rectangle and Update it with new position
+            MouseGestures mg = this.mgList.get(i);
+
+            // Pane Size
+            int widthFactor = 450 / this.board.getGridSize();
+            int heightFactor = 450 / this.board.getGridSize();
+
+            TranslateTransition tt;
+            if (block.isHorizontal()) {
+                double startCol = block.getCol()*widthFactor;
+                tt = mg.animateMoveNodeX(startCol);
+            }
+
+            else {
+                double startRow = block.getRow()*heightFactor;
+                tt = mg.animateMoveNodeY(startRow);
+            }
+            this.mgList.set(i, mg);
+            tt.setOnFinished(event -> {
+                this.enableButtons();
+            });
+        }
+    }
+
+    private void setBlocks(Block b, Node node) {
+        Rectangle rec = (Rectangle)node;
+        int height, width, startRow, startCol;
+
+        // Pane Size
+        int widthFactor = 450 / this.board.getGridSize();
+        int heightFactor = 450 / this.board.getGridSize();
+
+        if(b.isHorizontal()){
+            height = heightFactor;
+            width = widthFactor*b.getSize();
+        } else {
+            height = heightFactor*b.getSize();
+            width = widthFactor;
+        }
+        startRow = b.getRow()*heightFactor;
+        startCol = b.getCol()*widthFactor;
+
+        rec.setHeight(height);
+        rec.setWidth(width);
+        rec.setX(startCol);
+        rec.setY(startRow);
+        rec.setTranslateX(0);
+        rec.setTranslateY(0);
+
+        setEffects(rec);
+    }
+
+    private void setEffects(Rectangle rec) {
+        rec.setEffect(new BoxBlur());
+
+        // Add Effects
+        InnerShadow effect = new InnerShadow();
+        rec.setEffect(effect);
+    }
+
+    private void animateWinSequence() {
+        // Get the player node
+        for (Node node:this.recNodeList) {
+            if (node.getUserData().equals("z")) {
+                // Make BoardField Object Invisible
+                node.setVisible(false);
+
+                Bounds bounds = node.localToScene(node.getBoundsInLocal());
+                // Create Identical Rectangle but in the primary Stage.
+                Rectangle animatedRectangle = new Rectangle(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+                animatedRectangle.setId("player");
+                setEffects(animatedRectangle);
+                this.primaryField.getChildren().add(animatedRectangle);
+
+                // Animation Sequence
+                final Timeline timeline = new Timeline();
+                timeline.setCycleCount(1);
+                final KeyValue kv = new KeyValue(animatedRectangle.xProperty(), this.primaryField.getWidth());
+                final KeyFrame kf = new KeyFrame(Duration.millis(1000), kv);
+                timeline.getKeyFrames().add(kf);
+                timeline.play();
+                timeline.setOnFinished(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        nextButton.fire();
+                    }
+                });
+            }
+        }
     }
 
     @FXML
@@ -39,15 +236,39 @@ public class HelpController {
             try {
                 Button button = (Button) event.getSource();
                 switch (button.getText()) {
-                    case "Back":
+                    case "Quit":
                         this.navToMenu(event);
                         break;
                 }
             }
             catch (Exception e) {
+                System.out.println(e);
                 System.out.println("Scene Transition Failed");
             }
         });
+    }
+
+    @FXML
+    private void showHelpWin(ActionEvent event) throws Exception {
+        this.playVictorySound();
+        // Initialise Popup Stage
+        Stage helpWinStage = new Stage();
+        helpWinStage.initStyle(StageStyle.UNDECORATED);
+        helpWinStage.initModality(Modality.APPLICATION_MODAL);
+        helpWinStage.initOwner(((Node)event.getSource()).getScene().getWindow());
+
+        // Load Screen
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("HelpWin.fxml"));
+        Parent helpWinParent = loader.load();
+        Scene helpWinScene = new Scene(helpWinParent);
+
+        // Attach Controller
+        HelpWinController helpWinController = loader.getController();
+        helpWinController.initData(this.settings, this.board.getNumMoves());
+
+        helpWinStage.setScene(helpWinScene);
+        helpWinStage.show();
     }
 
     @FXML
@@ -63,6 +284,42 @@ public class HelpController {
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(menuScene);
     }
+
+    @FXML
+    private void undoMove(ActionEvent event) {
+        this.board.undoMove();
+        this.board.updateNumMoves();
+        this.updateBoard();
+    }
+
+    @FXML
+    private void redoMove(ActionEvent event) {
+        this.board.redoMove();
+        this.board.updateNumMoves();
+        this.updateBoard();
+    }
+
+    @FXML
+    private void resetBoard(ActionEvent event) {
+        this.board.restart();
+        this.board.updateNumMoves();
+        this.updateBoard();
+    }
+
+    private void disableButtons() {
+        this.undoButton.setDisable(true);
+        this.redoButton.setDisable(true);
+        this.hintButton.setDisable(true);
+        this.resetButton.setDisable(true);
+    }
+
+    private void enableButtons() {
+        this.undoButton.setDisable(false);
+        this.redoButton.setDisable(false);
+        this.hintButton.setDisable(false);
+        this.resetButton.setDisable(false);
+    }
+
 
     private FadeTransition performFadeOut(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
@@ -113,5 +370,10 @@ public class HelpController {
     @FXML
     private void playButtonPressSound() {
         this.settings.playButtonPressSound();
+    }
+
+    @FXML
+    private void playVictorySound() {
+        this.settings.playVictorySound();
     }
 }

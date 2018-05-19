@@ -115,6 +115,7 @@ public class LevelSelectController {
                 }
             }
             catch (Exception e) {
+                System.out.println(e);
                 System.out.println("Scene Transition Failed");
             }
         });

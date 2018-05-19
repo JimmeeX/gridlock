@@ -94,6 +94,7 @@ public class PlaySettingsController {
                 }
             }
             catch (Exception e) {
+                System.out.println(e);
                 System.out.println("Scene Transition Failed");
             }
         });

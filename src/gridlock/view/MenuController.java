@@ -67,6 +67,7 @@ public class MenuController {
                 }
             }
             catch (Exception e) {
+                System.out.println(e);
                 System.out.println("Scene Transition Failed");
             }
         });

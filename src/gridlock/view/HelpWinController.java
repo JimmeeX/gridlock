@@ -3,8 +3,6 @@ package gridlock.view;
 import gridlock.model.SystemSettings;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,51 +11,28 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Slider;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class SettingsController {
+public class HelpWinController {
     private SystemSettings settings;
     @FXML
     private AnchorPane wrapper;
     @FXML
-    Slider soundSlider;
-    @FXML
-    ProgressBar soundProgressBar;
-    @FXML
-    Slider musicSlider;
-    @FXML
-    ProgressBar musicProgressBar;
+    private Label movesLabel;
 
-    public void initData(SystemSettings settings) {
+    public void initData(SystemSettings settings, Integer numMoves) {
         this.settings = settings;
-        this.soundSlider.setValue(this.settings.getSoundVolume() * 100);
-        this.musicSlider.setValue(this.settings.getMusicVolume() * 100);
+        this.movesLabel.setText("Moves: " + numMoves.toString());
     }
 
     @FXML
     private void initialize() {
         this.wrapper.setOpacity(0);
         this.performFadeIn(this.wrapper);
-
-        this.soundSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                soundProgressBar.setProgress(newValue.doubleValue() / 100);
-                settings.setSoundVolume(soundSlider.getValue() / 100);
-            }
-        });
-        this.musicSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                musicProgressBar.setProgress(newValue.doubleValue() / 100);
-                settings.setMusicVolume(musicSlider.getValue() / 100);
-            }
-        });
     }
 
     @FXML
@@ -67,6 +42,9 @@ public class SettingsController {
             try {
                 Button button = (Button) event.getSource();
                 switch (button.getText()) {
+                    case "Restart":
+                        this.restartLevel(event);
+                        break;
                     case "Back":
                         this.navToMenu(event);
                         break;
@@ -80,6 +58,25 @@ public class SettingsController {
     }
 
     @FXML
+    private void restartLevel(ActionEvent event) throws Exception {
+        // On owner stage, reload the same level
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("Help.fxml"));
+        Parent helpParent = loader.load();
+        Scene helpScene = new Scene(helpParent);
+
+        HelpController helpController = loader.getController();
+        helpController.initData(this.settings);
+
+        Stage popupWindow = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage owner = (Stage)popupWindow.getOwner();
+        owner.setScene(helpScene);
+
+        // Close the popup window -> return to the game with a new board state
+        popupWindow.close();
+    }
+
+    @FXML
     private void navToMenu(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("Menu.fxml"));
@@ -89,25 +86,12 @@ public class SettingsController {
         MenuController menuController = loader.getController();
         menuController.initData(this.settings);
 
-        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        window.setScene(menuScene);
-    }
+        Stage popupWindow = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Stage owner = (Stage)popupWindow.getOwner();
+        owner.setScene(menuScene);
 
-    @FXML
-    private void resetProgress(ActionEvent event) {
-        this.settings.resetProgress();
-    }
-
-    @FXML
-    private void sliderEnter(MouseEvent event) {
-        Node node = (Node)event.getSource();
-        node.setCursor(Cursor.HAND);
-    }
-
-    @FXML
-    private void sliderExit(MouseEvent event) {
-        Node node = (Node)event.getSource();
-        node.setCursor(Cursor.DEFAULT);
+        // Close popup
+        popupWindow.close();
     }
 
     private FadeTransition performFadeOut(Node node) {

@@ -45,6 +45,7 @@ public class AboutController {
                 }
             }
             catch (Exception e) {
+                System.out.println(e);
                 System.out.println("Scene Transition Failed");
             }
         });

@@ -84,14 +84,17 @@ public class GameController {
         this.levelLabel.setText("Level " + this.level.toString());
         this.movesLabel.setText("Moves: 0");
 
+        this.board = new Board();
         if (mode.equals(Mode.CAMPAIGN)) {
             // Read Board from File
             String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
-            this.initialiseBoard(levelName);
+            this.board.process(levelName);
         }
-//        else {
-//            this.
-//        }
+        // TODO: Board Generator
+        else {
+            BoardGenerator2 bg = new BoardGenerator2();
+            this.board = bg.generateOneBoard("src/gridlock/endGameState.txt");
+        }
 
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
@@ -141,6 +144,7 @@ public class GameController {
 
     private void initialiseBoard(String file) {
         this.board = new Board();
+        if (this.mode.equals(Mode.CAMPAIGN))
         this.levelGenerator(this.difficulty);
         this.board.process(file);
     }
@@ -324,6 +328,7 @@ public class GameController {
                 }
             }
             catch (Exception e) {
+                System.out.println(e);
                 System.out.println("Scene Transition Failed");
             }
         });
