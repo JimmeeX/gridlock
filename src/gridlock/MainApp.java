@@ -58,46 +58,23 @@ public class MainApp extends Application {
 
     public static void main(String[] args) {
         BoardGenerator bg = new BoardGenerator();
-        Board b = bg.generateOneBoard("src/gridlock/resources/hard/" + 6 + ".txt");
+        /*for (int i= 1; i<=20; i++) {
+            Board b = bg.generateOneBoard("src/gridlock/resources/easy/" + i + ".txt");
+        }*/
 
         //EASY
-        Difficulty d = Difficulty.EASY;
-        Board easy = bg.generateBoard(d);
+        Board easyStart = bg.generateAPuzzle(Difficulty.EASY);
         System.out.println("EASY = ");
-        Board easyStart = bg.generateOneBoard(easy, 3, 7);
-        while (easyStart == null) {
-            easy = bg.generateBoard(d);
-            //System.out.println("EASY = ");
-            easyStart = bg.generateOneBoard(easy, 3,7);
-        }
-        easy.printGrid();
         easyStart.printGrid();
 
         //MEDIUM
-        d = Difficulty.MEDIUM;
-        Board med = bg.generateBoard(d);
+        Board medStart = bg.generateAPuzzle(Difficulty.MEDIUM);
         System.out.println("MEDIUM = ");
-        //med.printGrid();
-        Board medStart = bg.generateOneBoard(med, 8, 13);
-        while (medStart == null) {
-            med = bg.generateBoard(d);
-            //System.out.println("MEDIUM = ");
-            medStart = bg.generateOneBoard(med, 8,13);
-        }
-        med.printGrid();
         medStart.printGrid();
 
         //HARD
-        d = Difficulty.HARD;
-        Board hard = bg.generateBoard(d);
+        Board hardStart = bg.generateAPuzzle(Difficulty.HARD);
         System.out.println("HARD = ");
-        Board hardStart = bg.generateOneBoard(hard, 14,20);
-        while (hardStart == null) {
-            hard = bg.generateBoard(d);
-            //System.out.println("HARD = ");
-            hardStart = bg.generateOneBoard(hard, 14, 20);
-        }
-        hard.printGrid();
         hardStart.printGrid();
 
         launch(args);
