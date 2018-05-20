@@ -58,8 +58,8 @@ public class MainApp extends Application {
 
     public static void main(String[] args) {
         BoardGenerator bg = new BoardGenerator();
-        Board b = bg.generateOneBoard("src/gridlock/endGameState3.txt");
-/*
+        Board b = bg.generateOneBoard("src/gridlock/resources/hard/" + 6 + ".txt");
+
         //EASY
         Difficulty d = Difficulty.EASY;
         Board easy = bg.generateBoard(d);
@@ -67,7 +67,7 @@ public class MainApp extends Application {
         Board easyStart = bg.generateOneBoard(easy, 3, 7);
         while (easyStart == null) {
             easy = bg.generateBoard(d);
-            System.out.println("EASY = ");
+            //System.out.println("EASY = ");
             easyStart = bg.generateOneBoard(easy, 3,7);
         }
         easy.printGrid();
@@ -77,12 +77,11 @@ public class MainApp extends Application {
         d = Difficulty.MEDIUM;
         Board med = bg.generateBoard(d);
         System.out.println("MEDIUM = ");
-        med.printGrid();
+        //med.printGrid();
         Board medStart = bg.generateOneBoard(med, 8, 13);
         while (medStart == null) {
             med = bg.generateBoard(d);
-            med.printGrid();
-            System.out.println("MEDIUM = ");
+            //System.out.println("MEDIUM = ");
             medStart = bg.generateOneBoard(med, 8,13);
         }
         med.printGrid();
@@ -95,12 +94,12 @@ public class MainApp extends Application {
         Board hardStart = bg.generateOneBoard(hard, 14,20);
         while (hardStart == null) {
             hard = bg.generateBoard(d);
-            System.out.println("HARD = ");
+            //System.out.println("HARD = ");
             hardStart = bg.generateOneBoard(hard, 14, 20);
         }
         hard.printGrid();
         hardStart.printGrid();
-*/
+
         launch(args);
     }
 }

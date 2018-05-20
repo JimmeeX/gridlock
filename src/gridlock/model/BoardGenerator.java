@@ -64,10 +64,10 @@ public class BoardGenerator {
         }
 
         public boolean isNeighbor (Node n) {
-            // Decide if n is a neighbor, either:
-            // * Must be ranged differently
-            // * Must be not both win/not yet
-            // * Must be in diff hemisphere
+            // Decide if n is a neighbor (assuming only one move is performed), either:
+            // * If one win and one not, accept directly
+            // * If they are ranged differently, accept directly
+            // * If same, check if thay are same hemisphere or not. Yes <=> reject
             return (!(isBothYesorNoWinCriteria(n) && isSameRange(n) && isSameHemisphere(n)));
         }
 
@@ -117,12 +117,12 @@ public class BoardGenerator {
                     //System.out.println("thisbr " + Arrays.toString(thisBr) + " otherbr " + Arrays.toString(otherBr));
                     //System.out.println("thisblock itself is horizontal: " + String.valueOf(a));
                     if (a) {
-                        if (thisBr[0] <= otherCol && thisBr[1] >= otherCol
-                                && otherBr[0] <= thisRow && otherBr[1] >= thisRow
+                        if (thisBr[0] <= otherCol && thisBr[1] + thisBlock.getSize()-1 >= otherCol
+                                && otherBr[0] <= thisRow && otherBr[1] + otherOrientationBlock.getSize()-1 >= thisRow
                                 && (thisCol-otherCol)*(thatCol-otherCol) <= 0) return false;
                     } else {
-                        if (thisBr[0] <= otherRow && thisBr[1] >= otherRow
-                                && otherBr[0] <= thisCol && otherBr[1] >= thisCol
+                        if (thisBr[0] <= otherRow && thisBr[1] + thisBlock.getSize()-1 >= otherRow
+                                && otherBr[0] <= thisCol && otherBr[1] + otherOrientationBlock.getSize()-1 >= thisCol
                                 && (thisRow-otherRow)*(thatRow-otherRow) <= 0) return false;
                     }
                 }
@@ -230,14 +230,14 @@ public class BoardGenerator {
         // Conclusion: the most difficult puzzle in this graph, along w numOfMoves
         Node maxNode = initWinNode;
         for (Node n: adjacency.keySet()) if (n.dist > maxNode.dist) maxNode = n;
-        maxNode.board.printGrid();
+        //maxNode.board.printGrid();
         System.out.println("Claim Max move: " + maxNode.dist);
         // Backtracking
-        /*System.out.println("Backward check . . .");
+        System.out.println("Backward check . . .");
         for (Node x = maxNode; x != null; x = x.pred) {
             x.board.printGrid();
             System.out.println("Max move: " + x.dist);
-        }*/
+        }
         endTime = System.nanoTime();
         duration = (endTime - startTime)/1000000;
         System.out.println("Duration " + duration + "/1000 seconds.");
