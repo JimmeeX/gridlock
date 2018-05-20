@@ -304,7 +304,7 @@ public class GameBoard {
     }
     
     public Block getHint() {
-    	Board startBoard = new Board(this.blocks, new ArrayList<Board>());
+    	Board startBoard = new Board(this.blocks, new ArrayList<Board>(), null);
     	BoardSolver solver = new BoardSolver(startBoard);
     	return solver.solvePuzzle();
     }
