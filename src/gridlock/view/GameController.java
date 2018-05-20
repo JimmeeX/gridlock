@@ -38,7 +38,7 @@ import java.util.Timer;
 
 public class GameController {
     private SystemSettings settings;
-    private Board board;
+    private GameBoard board;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
@@ -84,17 +84,17 @@ public class GameController {
         this.levelLabel.setText("Level " + this.level.toString());
         this.movesLabel.setText("Moves: 0");
 
-        this.board = new Board();
+        this.board = new GameBoard();
         if (mode.equals(Mode.CAMPAIGN)) {
             // Read Board from File
             String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
             this.board.process(levelName);
         }
-        // TODO: Board Generator
-        else {
-            BoardGenerator2 bg = new BoardGenerator2();
-            this.board = bg.generateOneBoard("src/gridlock/endGameState.txt");
-        }
+//        // TODO: Board Generator
+//        else {
+//            BoardGenerator2 bg = new BoardGenerator2();
+//            this.board = bg.generateOneBoard("src/gridlock/endGameState.txt");
+//        }
 
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
@@ -143,13 +143,19 @@ public class GameController {
         this.performFadeIn(this.wrapper);
     }
 
-    private void initialiseBoard(String file) {
-        this.board = new Board();
-        if (this.mode.equals(Mode.CAMPAIGN))
-        this.levelGenerator(this.difficulty);
-        this.board.process(file);
-    }
-
+//    private void initialiseBoard(String file) {
+//<<<<<<< HEAD
+//        this.board = new Board();
+//        if (this.mode.equals(Mode.CAMPAIGN))
+//        this.levelGenerator(this.difficulty);
+//=======
+//        this.board = new GameBoard();
+//        //levelGenerator(this.difficulty);
+//>>>>>>> 3122184800bc4015c1176a5d2679d8ed042fe075
+//        this.board.process(file);
+//    }
+    
+    /*
     private void levelGenerator(Difficulty difficulty) {
         BoardSolver levGen = new BoardSolver();
         levGen.process();
@@ -160,7 +166,7 @@ public class GameController {
         } else {
 
         }
-    }
+    }*/
 
     private void initialiseNodeList() {
         this.recNodeList = new ArrayList<>();
@@ -396,6 +402,11 @@ public class GameController {
     }
 
     @FXML
+    private void showHint(ActionEvent event) {
+//        this.board = this.board.getHint();
+    }
+
+    @FXML
     private void resetBoard(ActionEvent event) {
         this.board.restart();
         this.board.updateNumMoves();
@@ -414,11 +425,6 @@ public class GameController {
         this.redoButton.setDisable(false);
         this.hintButton.setDisable(false);
         this.resetButton.setDisable(false);
-    }
-
-    @FXML
-    private void showHint(ActionEvent event) {
-        // TODO
     }
 
     private FadeTransition performFadeOut(Node node) {
