@@ -96,11 +96,11 @@ public class GameController {
             String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
             this.board.process(levelName);
         }
-//        // TODO: Board Generator
-//        else {
-//            BoardGenerator2 bg = new BoardGenerator2();
-//            this.board = bg.generateOneBoard("src/gridlock/endGameState.txt");
-//        }
+        // TODO: Board Generator
+        else {
+            BoardGenerator bg = new BoardGenerator();
+            this.board = bg.generateAPuzzle(this.difficulty);
+        }
 
 
         // Add Listener for Win Game Condition

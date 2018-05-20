@@ -131,8 +131,38 @@ public class BoardGenerator {
         }
     }
 
+    public GameBoard generateAPuzzle (Difficulty d) {
+        GameBoard result = null;
+        while (result == null)
+            result = generateOneBoard (generateWinBoard(d), lowestNumOfMoves (d), highestNumOfMoves (d));
+        return result;
+    }
+
     public GameBoard generateOneBoard (String file) {
         return generateOneBoard (process(file), 0 ,60);
+    }
+
+    private GameBoard process (String file) {
+        GameBoard board = new GameBoard ();
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new File(file));
+            for (int row = 0; row < 6; row++) {
+                for (int col = 0; col < 6; col++) {
+                    String id = sc.next();
+                    if (!id.equals("*")) {
+                        int blockID = board.blockExist(id);
+                        if (blockID != -1) board.incrementSize(blockID, row, col);
+                        else board.setBlock(id, row, col);
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (sc != null) sc.close();
+        }
+        return board;
     }
 
     public GameBoard generateOneBoard (GameBoard board, int minMoves, int maxMoves) {
@@ -233,17 +263,16 @@ public class BoardGenerator {
         System.out.println("Claim Max move: " + maxNode.dist);
 
         // Backtracking
-        System.out.println("Backward check . . .");
+        /*System.out.println("Backward check . . .");
         for (Node x = maxNode; x != null; x = x.pred) {
             x.board.printGrid();
             System.out.println("Max move: " + x.dist);
-        }
+        }*/
         endTime = System.nanoTime();
         duration = (endTime - startTime)/1000000;
         System.out.println("Duration " + duration + "/1000 seconds.");
         return (minMoves <= maxNode.dist && maxNode.dist <= maxMoves) ? maxNode.board : null;
     }
-
     /* -prvt
      * Checking if a node list contains a node based on reference
      */
@@ -251,32 +280,6 @@ public class BoardGenerator {
         if (n == null) return (this == null);
         for (Node x : nl) if (x == n) return true;
         return false;
-    }
-
-    /* -prvt
-	 * process input txt file
-	 */
-    private GameBoard process (String file) {
-        GameBoard board = new GameBoard ();
-        Scanner sc = null;
-        try {
-            sc = new Scanner(new File(file));
-            for (int row = 0; row < 6; row++) {
-                for (int col = 0; col < 6; col++) {
-                    String id = sc.next();
-                    if (!id.equals("*")) {
-                        int blockID = board.blockExist(id);
-                        if (blockID != -1) board.incrementSize(blockID, row, col);
-                        else board.setBlock(id, row, col);
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            if (sc != null) sc.close();
-        }
-        return board;
     }
 
     /* -prvt
@@ -325,7 +328,8 @@ public class BoardGenerator {
     private <E> E randomBinaryChoice(E item1, E item2, double probItem1) {
         return (Math.random() < probItem1) ? item1 : item2;
     }
-    public GameBoard generateBoard(Difficulty d) {
+
+    private GameBoard generateWinBoard (Difficulty d) {
         double p;
         int minBlockNum;
         int maxBlockNum;
@@ -345,7 +349,7 @@ public class BoardGenerator {
 	    return newRandomWinBoard(p, minBlockNum, maxBlockNum);
     }
 
-    public boolean checkTrivialCase(Board board) {
+    public boolean checkTrivialCase(GameBoard board) {
         board.printGrid();
 
         for (int j = 0; j < board.getGridSize(); j++) {
@@ -369,5 +373,13 @@ public class BoardGenerator {
             size.clear();
         }
         return true;
+    }
+
+    private int lowestNumOfMoves (Difficulty d) {
+        return d.equals(d.valueOf("EASY")) ? 3 : d.equals(d.valueOf("MEDIUM")) ? 8 : 14;
+    }
+
+    private int highestNumOfMoves (Difficulty d) {
+        return d.equals(d.valueOf("EASY")) ? 7 : d.equals(d.valueOf("MEDIUM")) ? 13 : 20;
     }
 }
