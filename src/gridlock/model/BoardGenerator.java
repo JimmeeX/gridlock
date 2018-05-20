@@ -28,11 +28,12 @@ public class BoardGenerator {
          * intersects A, A in both nodes are in same hemispheres
          * Execption holds when a node is a win node. In this case if the z block is located differently,
          * assume they are different.
+         *
          * @param obj
          * @return
          */
         @Override
-        public boolean equals (Object obj) {
+        public boolean equals(Object obj) {
             if (this == obj) return true;
             // Assume for now there is no inheritance of Node
             if (!obj.getClass().equals(this.getClass())) return false;
@@ -74,7 +75,7 @@ public class BoardGenerator {
             return ((this.isWin && n.isWin) || (!this.isWin && !n.isWin));
         }
 
-        private boolean isSameRange (Node n) {
+        private boolean isSameRange(Node n) {
             // After ensuring n is "proper", comparing range
             for (Block thisBlock : this.board.getBlocks()) {
                 String id = thisBlock.getID();
@@ -83,17 +84,17 @@ public class BoardGenerator {
                 int thisCol = thisBlock.getCol();
                 int thatRow = thatBlock.getRow();
                 int thatCol = thatBlock.getCol();
-                Integer [] br1 = this.board.blockRange(id);
-                Integer [] br2 = n.board.blockRange(id);
+                Integer[] br1 = this.board.blockRange(id);
+                Integer[] br2 = n.board.blockRange(id);
                 //System.out.println("id " + id + " br1 " + Arrays.toString(br1) + " br2 " + Arrays.toString(br2));
                 //System.out.println("loc1 " + thisRow + thisCol + " loc2 " + thatRow + thatCol);
-                if (br1 [0] != br2 [0] || br1 [1] != br2 [1]) return false;
+                if (br1[0] != br2[0] || br1[1] != br2[1]) return false;
                 //System.out.println("pass range");
             }
             return true;
         }
 
-        private boolean isSameHemisphere (Node n) {
+        private boolean isSameHemisphere(Node n) {
             // After ensuring n is same ranges, comparing hemisphere
             for (Block thisBlock : this.board.getBlocks()) {
                 String id = thisBlock.getID();
@@ -109,8 +110,8 @@ public class BoardGenerator {
                     if (a == otherOrientationBlock.isHorizontal()) continue;
                     int otherRow = otherOrientationBlock.getRow();
                     int otherCol = otherOrientationBlock.getCol();
-                    Integer [] thisBr = this.board.blockRange(id);
-                    Integer [] otherBr = this.board.blockRange(otherOrientationBlock.getID());
+                    Integer[] thisBr = this.board.blockRange(id);
+                    Integer[] otherBr = this.board.blockRange(otherOrientationBlock.getID());
                     //System.out.println("id-other " + otherOrientationBlock.getID() + " other position " + otherRow + otherCol);
                     //System.out.println("thisbr " + Arrays.toString(thisBr) + " otherbr " + Arrays.toString(otherBr));
                     //System.out.println("thisblock itself is horizontal: " + String.valueOf(a));
@@ -246,9 +247,9 @@ public class BoardGenerator {
     /* -prvt
      * Checking if a node list contains a node based on reference
      */
-    private boolean containsRef (List <Node> nl, Node n) {
+    private boolean containsRef(List<Node> nl, Node n) {
         if (n == null) return (this == null);
-        for (Node x: nl) if (x == n) return true;
+        for (Node x : nl) if (x == n) return true;
         return false;
     }
 
@@ -289,11 +290,11 @@ public class BoardGenerator {
 
         Random random = new Random();
         int row = random.nextInt(5);
-        int col = random.nextInt(1) + 4;
-        boolean isVertical = randomBinaryChoice(true, false, 0.5);
-        int s = randomBinaryChoice(2,3,0.5);
+        int col = randomBinaryChoice(4, 5, 0.5);
+        int s = randomBinaryChoice(2, 3, 0.5);
+        System.out.println("col = " + col);
 
-        if (b.setBlock("a", row,  col, s, isVertical)) currNumOfBlock++;
+        if (b.setBlock("a", row, col, s, false)) currNumOfBlock++;
         // cheat
         grid.get(2)[3] = "-";
 
@@ -303,16 +304,16 @@ public class BoardGenerator {
                 if (!grid.get(i)[j].equals("*")) continue;
                 String fillOrNot = randomBinaryChoice("yes", "no", p);
                 if (fillOrNot.equals("no")) continue;
-                String id = Character.toString((char)(97 + currNumOfBlock));
-                boolean [] isHorizontal = {true, false};
-                int [] size = {2, 3};
+                String id = Character.toString((char) (97 + currNumOfBlock));
+                boolean[] isHorizontal = {true, false};
+                int[] size = {2, 3};
                 int isHorizontalIdx = randomBinaryChoice(0, 1, 0.5);
                 int sizeIdx = randomBinaryChoice(0, 1, 0.5);
                 currNumOfBlock++;
                 if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
-                if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
-                if (b.setBlock(id, i, j, size[1-sizeIdx], isHorizontal[isHorizontalIdx])) continue;
-                if (b.setBlock(id, i, j, size[1-sizeIdx], isHorizontal[1-isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[1 - isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[1 - sizeIdx], isHorizontal[isHorizontalIdx])) continue;
+                if (b.setBlock(id, i, j, size[1 - sizeIdx], isHorizontal[1 - isHorizontalIdx])) continue;
                 currNumOfBlock--;
             }
         }
@@ -321,7 +322,7 @@ public class BoardGenerator {
                 ? b : newRandomWinBoard(p, minBlockNum, maxBlockNum);
     }
 
-    private <E> E randomBinaryChoice (E item1, E item2, double probItem1) {
+    private <E> E randomBinaryChoice(E item1, E item2, double probItem1) {
         return (Math.random() < probItem1) ? item1 : item2;
     }
     public GameBoard generateBoard(Difficulty d) {
@@ -335,13 +336,38 @@ public class BoardGenerator {
         } else if (d.equals(d.valueOf("MEDIUM"))) {
             p = 0.5;
             minBlockNum = 7;
-            maxBlockNum = 9;
+            maxBlockNum = 8;
         } else {
             p = 0.5;
             minBlockNum = 10;
             maxBlockNum = 13;
         }
-        return newRandomWinBoard(p, minBlockNum, maxBlockNum);
+	    return newRandomWinBoard(p, minBlockNum, maxBlockNum);
     }
 
+    public boolean checkTrivialCase(Board board) {
+        board.printGrid();
+
+        for (int j = 0; j < board.getGridSize(); j++) {
+            ArrayList<String> id = new ArrayList<>();
+            ArrayList<Integer> size = new ArrayList<>();
+            int count = 0;
+            for (int i = 0; i < board.getGridSize() - 1; i++) {
+                System.out.println(board.getGrid().get(i)[j]);
+                //check
+            }
+            if (count != 0) {
+                size.add(count);
+            }
+            for (int k = 0; k < size.size(); k++) {
+                System.out.println("  id = " + id.get(k) + " size " + size.get(k));
+            }
+            System.out.println("");
+            if (size.size() == 2 && size.get(0) == 3) return false;
+            if (size.size() == 3 && size.get(0) == 2 && size.get(1) == 2 && size.get(2) == 2) return false;
+            id.clear();
+            size.clear();
+        }
+        return true;
+    }
 }

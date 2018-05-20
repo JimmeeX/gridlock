@@ -47,9 +47,9 @@ public class Board {
 
     /**
      * process input txt file
-     * @param fileName the file name to be processed
      */
-    public void process(String fileName) {
+    //@param fileName the file name to be processed
+    /*public void process(String fileName) {
         Scanner sc = null;
         try {
             sc = new Scanner(new File(fileName));
@@ -71,7 +71,7 @@ public class Board {
         } finally {
             if (sc != null) sc.close();
         }
-    }
+    }*/
 
     public Block getBlock(String id) {
         for (Block block: this.blocks) {
@@ -430,38 +430,6 @@ public class Board {
 
     public ArrayList<Board> getPath() {
         return this.path;
-
-    // Added by Edwin
-    public Board duplicate() {
-        // Only need essentially grid and blocks w/ different reference
-        Board newBoard = new Board();
-        newBoard.grid.clear();
-        for (String[] strArr : grid) newBoard.grid.add(strArr.clone());
-        for (Block block : blocks) newBoard.getBlocks().add(block.duplicate());
-        return newBoard;
-    }
-
-    /**
-     * print the grid
-     */
-    public void printGrid() {
-        for (int row = 0; row < 6; row++) {
-            for (int col = 0; col < 6; col++) {
-                System.out.print(this.grid.get(row)[col] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-    }
-
-    /**
-     * Print all blocks' details
-     */
-    public void printBlocks() {
-        for (Block block: this.blocks) {
-            System.out.println(block.toString());
-        }
-
     }
 
     public Block getLastMove() {
