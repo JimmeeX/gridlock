@@ -403,7 +403,39 @@ public class GameController {
 
     @FXML
     private void showHint(ActionEvent event) {
-//        this.board = this.board.getHint();
+        this.disableButtons();
+        Block block = this.board.getHint();
+        Integer[] newPosition = {block.getRow(), block.getCol()};
+        this.board.makeMove(block.getID(), newPosition, true);
+        this.board.updateNumMoves();
+        this.board.checkGameOver();
+        // Find the ID of this block
+        for (int i = 0; i < this.mgList.size(); i++) {
+            if (block.getID().equals(this.recNodeList.get(i).getUserData())) {
+                MouseGestures mg = this.mgList.get(i);
+
+                // Pane Size
+                int widthFactor = 450 / this.board.getGridSize();
+                int heightFactor = 450 / this.board.getGridSize();
+
+                TranslateTransition tt;
+                if (block.isHorizontal()) {
+                    double startCol = block.getCol()*widthFactor;
+                    tt = mg.animateMoveNodeX(startCol);
+                }
+
+                else {
+                    double startRow = block.getRow()*heightFactor;
+                    tt = mg.animateMoveNodeY(startRow);
+                }
+
+                this.mgList.set(i, mg);
+                tt.setOnFinished(moveEvent -> {
+                    this.enableButtons();
+                });
+
+            }
+        }
     }
 
     @FXML

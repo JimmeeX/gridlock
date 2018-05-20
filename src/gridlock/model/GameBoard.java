@@ -303,10 +303,11 @@ public class GameBoard {
         return this.blocks;
     }
     
-    public Board getHint() {
-    	Board startBoard = new Board(this.blocks, new ArrayList<Board>());
+    public Block getHint() {
+    	Board startBoard = new Board(this.blocks, new ArrayList<Board>(), null);
     	BoardSolver solver = new BoardSolver(startBoard);
     	return solver.solvePuzzle();
     }
+    
 }
 

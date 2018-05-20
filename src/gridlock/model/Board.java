@@ -14,11 +14,12 @@ public class Board {
     private ArrayList<String[]> grid;
     private ArrayList<Block> blocks;
     private ArrayList<Board> path;
+    private Block lastMove;
 
     /**
      * Board class constructor
      */
-    public Board(ArrayList<Block> blocks, ArrayList<Board> prev) {
+    public Board(ArrayList<Block> blocks, ArrayList<Board> prev, Block lastMove) {
         initialiseGrid(6);
         this.blocks = blocks;
         path = new ArrayList<>();
@@ -26,7 +27,7 @@ public class Board {
             this.path.add(parentBoard);
         }
         this.path.add(this);
-
+        this.lastMove = lastMove;
     }
     /** -prvt
      * initialise the grid (size x size)
@@ -160,6 +161,7 @@ public class Board {
 
     public ArrayList<Board> getNextPossible() {
         ArrayList<Board> next = new ArrayList<>();
+        Block changedBlock = null;
         for (Block block : this.blocks) {
             if (block.isHorizontal()) {
                 Integer[] newPos = new Integer[2];
@@ -178,10 +180,11 @@ public class Board {
                             Block newBlock = blockCopy.duplicate();
                             if (newBlock.getID().equals(block.getID())) {
                                 newBlock.setNewPosition(newPos);
+                                changedBlock = newBlock;
                             }
                             copyBlocks.add(newBlock);
                         }
-                        Board newBoard = new Board(copyBlocks, this.path);
+                        Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                         next.add(newBoard);
                     }
                 }
@@ -191,10 +194,11 @@ public class Board {
                         Block newBlock = blockCopy.duplicate();
                         if (newBlock.getID().equals(block.getID())) {
                             newBlock.setNewPosition(newPos);
+                            changedBlock = newBlock;
                         }
                         copyBlocks.add(newBlock);
                     }
-                    Board newBoard = new Board(copyBlocks, this.path);
+                    Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                     next.add(newBoard);
                 }
                 // go as far right as it can go
@@ -211,10 +215,11 @@ public class Board {
                             Block newBlock = blockCopy.duplicate();
                             if (newBlock.getID().equals(block.getID())) {
                                 newBlock.setNewPosition(newPos);
+                                changedBlock = newBlock;
                             }
                             copyBlocks.add(newBlock);
                         }
-                        Board newBoard = new Board(copyBlocks, this.path);
+                        Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                         next.add(newBoard);
                     }
                 }
@@ -224,10 +229,11 @@ public class Board {
                         Block newBlock = blockCopy.duplicate();
                         if (newBlock.getID().equals(block.getID())) {
                             newBlock.setNewPosition(newPos);
+                            changedBlock = newBlock;
                         }
                         copyBlocks.add(newBlock);
                     }
-                    Board newBoard = new Board(copyBlocks, this.path);
+                    Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                     next.add(newBoard);
                 }
             } else {
@@ -247,10 +253,11 @@ public class Board {
                             Block newBlock = blockCopy.duplicate();
                             if (newBlock.getID().equals(block.getID())) {
                                 newBlock.setNewPosition(newPos);
+                                changedBlock = newBlock;
                             }
                             copyBlocks.add(newBlock);
                         }
-                        Board newBoard = new Board(copyBlocks, this.path);
+                        Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                         next.add(newBoard);
                     }
                 }
@@ -260,10 +267,11 @@ public class Board {
                         Block newBlock = blockCopy.duplicate();
                         if (newBlock.getID().equals(block.getID())) {
                             newBlock.setNewPosition(newPos);
+                            changedBlock = newBlock;
                         }
                         copyBlocks.add(newBlock);
                     }
-                    Board newBoard = new Board(copyBlocks, this.path);
+                    Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                     next.add(newBoard);
                 }
                 // go as far down as it can go
@@ -280,10 +288,11 @@ public class Board {
                             Block newBlock = blockCopy.duplicate();
                             if (newBlock.getID().equals(block.getID())) {
                                 newBlock.setNewPosition(newPos);
+                                changedBlock = newBlock;
                             }
                             copyBlocks.add(newBlock);
                         }
-                        Board newBoard = new Board(copyBlocks, this.path);
+                        Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                         next.add(newBoard);
                     }
                 }
@@ -293,10 +302,11 @@ public class Board {
                         Block newBlock = blockCopy.duplicate();
                         if (newBlock.getID().equals(block.getID())) {
                             newBlock.setNewPosition(newPos);
+                            changedBlock = newBlock;
                         }
                         copyBlocks.add(newBlock);
                     }
-                    Board newBoard = new Board(copyBlocks, this.path);
+                    Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                     next.add(newBoard);
                 }
             }
@@ -337,6 +347,10 @@ public class Board {
 
     public ArrayList<Board> getPath() {
         return this.path;
+    }
+
+    public Block getLastMove() {
+        return this.lastMove;
     }
 
 }

@@ -12,7 +12,7 @@ class BoardSolver {
 	}
 
 
-	public Board solvePuzzle() {
+	public Block solvePuzzle() {
 		LinkedList<Board> queue = new LinkedList<>();
 		ArrayList<Board> visited = new ArrayList<>();
 		int numExpanded = 0;
@@ -21,7 +21,10 @@ class BoardSolver {
 		while (!queue.isEmpty()) {
 			Board curr = queue.poll();
 			numExpanded++;
-			if (curr.checkGameOver()) return curr.getPath().get(1);
+			if (curr.checkGameOver()) {
+				Board nextBoard = curr.getPath().get(1);
+				return nextBoard.getLastMove();
+			}
 			if (visited.contains(curr)) continue;
 
 			visited.add(curr);
