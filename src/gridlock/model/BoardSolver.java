@@ -1,20 +1,17 @@
 package gridlock.model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Scanner;
 
-public class BoardSolver {
+class BoardSolver {
 
 	Board board;
 
-	public BoardSolver() {
-		this.board = new Board();
+	public BoardSolver(Board board) {
+		this.board = board;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * process input txt file
 	 */
@@ -157,22 +154,28 @@ public class BoardSolver {
 		ArrayList<ArrayList<Block>> visited = new ArrayList<>();
 		
 		queue.add(startBoard);
+=======
+	public Block solvePuzzle() {
+		LinkedList<Board> queue = new LinkedList<>();
+		ArrayList<Board> visited = new ArrayList<>();
+		int numExpanded = 0;
+
+		queue.add(this.board);
+>>>>>>> afca3cd71b0f4141a6bc12787f51a3d142ae8fde
 		while (!queue.isEmpty()) {
-			ArrayList<Block> curr = queue.poll();
+			Board curr = queue.poll();
+			numExpanded++;
+			if (curr.checkGameOver()) {
+				Board nextBoard = curr.getPath().get(1);
+				return nextBoard.getLastMove();
+			}
 			if (visited.contains(curr)) continue;
-			
+
 			visited.add(curr);
-			
-			for (ArrayList<Block> blocks : getNextPossibleMoves(curr)) queue.add(blocks);
+
+			for (Board boards : curr.getNextPossible()) queue.add(boards);
 		}
 		return null; // SOON
 	}
-	
-	public ArrayList<ArrayList<Block>> getNextPossibleMoves(ArrayList<Block> currState) {
-		ArrayList<ArrayList<Block>> possible = new ArrayList<>();
-		for (char id = 'a'; id < 'a' + currState.size(); id++) { //SOOON
-			
-		}
-		return possible;
-	}
+
 }

@@ -3,6 +3,7 @@ package gridlock.view;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
+import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -13,11 +14,9 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -28,6 +27,8 @@ public class LevelSelectController {
     private Difficulty difficulty;
     private Integer level;
 
+    @FXML
+    private AnchorPane wrapper;
     @FXML
     private GridPane levels;
     @FXML
@@ -56,6 +57,9 @@ public class LevelSelectController {
 
     @FXML
     private void initialize() {
+        this.wrapper.setOpacity(0);
+        this.performFadeIn(this.wrapper);
+
         this.toggleLevel.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
@@ -93,6 +97,28 @@ public class LevelSelectController {
             }
             this.levels.getChildren().set(i, levelButton);
         }
+    }
+
+    @FXML
+    private void changeSceneControl(ActionEvent event) {
+        FadeTransition ft = this.performFadeOut(this.wrapper);
+        ft.setOnFinished (fadeEvent -> {
+            try {
+                Button button = (Button) event.getSource();
+                switch (button.getText()) {
+                    case "Start":
+                        this.navToGame(event);
+                        break;
+                    case "Back":
+                        this.navToPlaySettings(event);
+                        break;
+                }
+            }
+            catch (Exception e) {
+                System.out.println(e);
+                System.out.println("Scene Transition Failed");
+            }
+        });
     }
 
     @FXML
@@ -134,6 +160,22 @@ public class LevelSelectController {
     private void levelExit(MouseEvent event) {
         Node node = (Node)event.getSource();
         node.setCursor(Cursor.DEFAULT);
+    }
+
+    private FadeTransition performFadeOut(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(1);
+        ft.setToValue(0);
+        ft.play();
+        return ft;
+    }
+
+    private FadeTransition performFadeIn(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.play();
+        return ft;
     }
 
     @FXML
