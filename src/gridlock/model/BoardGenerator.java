@@ -134,8 +134,16 @@ public class BoardGenerator {
 
     public Board generateAPuzzle (Difficulty d) {
         Board result = null;
-        while (result == null)
-            result = generateOneBoard (generateWinBoard(d), lowestNumOfMoves (d), highestNumOfMoves (d));
+        int retry = 0;
+        while (result == null && retry < 100) {
+            result = generateOneBoard(generateWinBoard(d), lowestNumOfMoves(d), highestNumOfMoves(d));
+            retry++;
+        }
+        if (result == null) {
+            String level = d.equals(d.valueOf("EASY")) ? "easy" : d.equals(d.valueOf("MEDIUM")) ? "medium" : "hard";
+            result = process("src/gridlock/resources/" + level + "/20.txt");
+            System.out.println("Too long");
+        }
         return result;
     }
 
@@ -229,8 +237,8 @@ public class BoardGenerator {
         }
         long endTime = System.nanoTime();
         long duration = (endTime - startTime)/1000000;
-        System.out.println("Duration " + duration + "/1000 seconds.");
-        System.out.println("We have " + adjacency.size() + " nodes.");
+        //System.out.println("Duration " + duration + "/1000 seconds.");
+        //System.out.println("We have " + adjacency.size() + " nodes.");
 
         startTime = System.nanoTime();
         // Now, BFS/Djikstra using all win nodes first. Using node ref as it is, we will use adjacencyRefAB
@@ -268,7 +276,7 @@ public class BoardGenerator {
         }*/
         endTime = System.nanoTime();
         duration = (endTime - startTime)/1000000;
-        System.out.println("Duration " + duration + "/1000 seconds.");
+        //System.out.println("Duration " + duration + "/1000 seconds.");
         return (minMoves <= maxNode.dist && maxNode.dist <= maxMoves) ? maxNode.board : null;
     }
     /* -prvt
