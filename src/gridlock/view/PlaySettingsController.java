@@ -3,6 +3,7 @@ package gridlock.view;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
+import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -14,10 +15,12 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -29,6 +32,9 @@ public class PlaySettingsController {
     private ToggleGroup toggleDifficulty;
     @FXML
     private ToggleGroup toggleGameMode;
+
+    @FXML
+    private AnchorPane wrapper;
 
     public void initData(SystemSettings settings) {
         this.settings = settings;
@@ -42,6 +48,9 @@ public class PlaySettingsController {
 
     @FXML
     private void initialize() {
+        this.wrapper.setOpacity(0);
+        this.performFadeIn(this.wrapper);
+
         this.toggleDifficulty.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
@@ -65,6 +74,28 @@ public class PlaySettingsController {
                     ToggleButton selectedMode = (ToggleButton) toggleGameMode.getSelectedToggle();
                     mode = Mode.valueOf(selectedMode.getText().toUpperCase());
                 }
+            }
+        });
+    }
+
+    @FXML
+    private void changeSceneControl(ActionEvent event) {
+        FadeTransition ft = this.performFadeOut(this.wrapper);
+        ft.setOnFinished (fadeEvent -> {
+            try {
+                Button button = (Button) event.getSource();
+                switch (button.getText()) {
+                    case "Play":
+                        this.playSettingsControl(event);
+                        break;
+                    case "Back":
+                        this.navToMenu(event);
+                        break;
+                }
+            }
+            catch (Exception e) {
+                System.out.println(e);
+                System.out.println("Scene Transition Failed");
             }
         });
     }
@@ -118,6 +149,22 @@ public class PlaySettingsController {
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
+    }
+
+    private FadeTransition performFadeOut(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(1);
+        ft.setToValue(0);
+        ft.play();
+        return ft;
+    }
+
+    private FadeTransition performFadeIn(Node node) {
+        FadeTransition ft = new FadeTransition(Duration.millis(250), node);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.play();
+        return ft;
     }
 
     @FXML
