@@ -10,7 +10,7 @@
 .root {
     -fx-font-family: "Bodoni MT", Didot, "Didot LT STD", "Book Antiqua", Garamond, "Times New Roman", serif;
     -fx-background-color: #424953;
-    -fx-background-image: url("003.jpg");
+    -fx-background-image: url("images/003.jpg");
     -fx-background-size: 800px 600px;
 }
 
@@ -76,6 +76,7 @@
 
 #grid {
     /*-fx-background-color: #343232;*/
+    -fx-background-image: url("images/geometric.jpg");
     -fx-background-color: #2F3840;
 }
 
