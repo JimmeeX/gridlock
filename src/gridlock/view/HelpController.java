@@ -1,7 +1,7 @@
 package gridlock.view;
 
 import gridlock.model.Block;
-import gridlock.model.Board;
+import gridlock.model.GameBoard;
 import gridlock.model.SystemSettings;
 import javafx.animation.*;
 import javafx.beans.property.IntegerProperty;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 
 public class HelpController {
     private SystemSettings settings;
-    private Board board;
+    private GameBoard board;
     private ArrayList<Node> recNodeList;
     private ArrayList<MouseGestures> mgList;
     private ArrayList<SequentialTransition> animations;
@@ -71,7 +71,7 @@ public class HelpController {
     public void initData(SystemSettings settings) {
         this.settings = settings;
         this.movesLabel.setText("Moves: 0");
-        this.board = new Board();
+        this.board = new GameBoard();
         this.board.process("src/gridlock/resources/tut.txt");
 
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
@@ -532,6 +532,43 @@ public class HelpController {
         this.board.redoMove();
         this.board.updateNumMoves();
         this.updateBoard();
+    }
+
+    @FXML
+    private void showHint(ActionEvent event) {
+        this.disableButtons();
+        Block block = this.board.getHint();
+        Integer[] newPosition = {block.getRow(), block.getCol()};
+        this.board.makeMove(block.getID(), newPosition, true);
+        this.board.updateNumMoves();
+        this.board.checkGameOver();
+        // Find the ID of this block
+        for (int i = 0; i < this.mgList.size(); i++) {
+            if (block.getID().equals(this.recNodeList.get(i).getUserData())) {
+                MouseGestures mg = this.mgList.get(i);
+
+                // Pane Size
+                int widthFactor = 450 / this.board.getGridSize();
+                int heightFactor = 450 / this.board.getGridSize();
+
+                TranslateTransition tt;
+                if (block.isHorizontal()) {
+                    double startCol = block.getCol()*widthFactor;
+                    tt = mg.animateMoveNodeX(startCol);
+                }
+
+                else {
+                    double startRow = block.getRow()*heightFactor;
+                    tt = mg.animateMoveNodeY(startRow);
+                }
+
+                this.mgList.set(i, mg);
+                tt.setOnFinished(moveEvent -> {
+                    this.enableButtons();
+                });
+
+            }
+        }
     }
 
     @FXML

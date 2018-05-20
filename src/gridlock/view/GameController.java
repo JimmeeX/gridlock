@@ -4,6 +4,9 @@ import gridlock.model.*;
 import javafx.animation.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -38,12 +41,15 @@ import java.util.Timer;
 
 public class GameController {
     private SystemSettings settings;
-    private Board board;
+    private GameBoard board;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
     private ArrayList<Node> recNodeList;
     private ArrayList<MouseGestures> mgList;
+
+    private Service<Void> solverThread;
+    private Block solverBlock;
 
     @FXML
     private AnchorPane wrapper;
@@ -84,7 +90,7 @@ public class GameController {
         this.levelLabel.setText("Level " + this.level.toString());
         this.movesLabel.setText("Moves: 0");
 
-        this.board = new Board();
+        this.board = new GameBoard();
         if (mode.equals(Mode.CAMPAIGN)) {
             // Read Board from File
             String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
@@ -92,9 +98,10 @@ public class GameController {
         }
         // TODO: Board Generator
         else {
-            BoardGenerator2 bg = new BoardGenerator2();
-            this.board = bg.generateOneBoard("src/gridlock/endGameState.txt");
+            BoardGenerator bg = new BoardGenerator();
+            this.board = bg.generateAPuzzle(this.difficulty);
         }
+
 
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
@@ -120,13 +127,41 @@ public class GameController {
             }
         });
 
+        // Initialise Solver in the background
+//        this.solverBlock = new Block("block", 0, 0);
+        this.solverThread = new Service<Void>() {
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        solverBlock = board.getHint();
+                        return null;
+                    }
+                };
+            }
+        };
+
+        this.solverThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                hintButton.setDisable(false);
+            }
+        });
+
         // Add Listener for Board Moves
         this.board.numMovesProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 movesLabel.setText("Moves: " + newValue.toString());
+                solverThread.cancel();
+                solverThread.restart();
             }
+            // Probably Run A solver in the background. Once solve is ready, enable the hint button.
         });
+
+        // Run the solver for the first time with the Initial Board state
+        this.solverThread.restart();
 
         // Draw the Rectangles and add it to the Board
         this.initialiseNodeList();
@@ -141,25 +176,6 @@ public class GameController {
     private void initialize() {
         this.wrapper.setOpacity(0);
         this.performFadeIn(this.wrapper);
-    }
-
-    private void initialiseBoard(String file) {
-        this.board = new Board();
-        if (this.mode.equals(Mode.CAMPAIGN))
-        this.levelGenerator(this.difficulty);
-        this.board.process(file);
-    }
-
-    private void levelGenerator(Difficulty difficulty) {
-        BoardSolver levGen = new BoardSolver();
-        levGen.process();
-        if (difficulty.equals("EASY")) {
-            levGen.process();
-        } else if (difficulty.equals("MEDIUM")) {
-
-        } else {
-
-        }
     }
 
     private void initialiseNodeList() {
@@ -396,6 +412,43 @@ public class GameController {
     }
 
     @FXML
+    private void showHint(ActionEvent event) {
+        this.disableButtons();
+//        Block block = this.board.getHint();
+        Integer[] newPosition = {this.solverBlock.getRow(), this.solverBlock.getCol()};
+        this.board.makeMove(this.solverBlock.getID(), newPosition, true);
+        this.board.updateNumMoves();
+        this.board.checkGameOver();
+        // Find the ID of this block
+        for (int i = 0; i < this.mgList.size(); i++) {
+            if (this.solverBlock.getID().equals(this.recNodeList.get(i).getUserData())) {
+                MouseGestures mg = this.mgList.get(i);
+
+                // Pane Size
+                int widthFactor = 450 / this.board.getGridSize();
+                int heightFactor = 450 / this.board.getGridSize();
+
+                TranslateTransition tt;
+                if (this.solverBlock.isHorizontal()) {
+                    double startCol = this.solverBlock.getCol()*widthFactor;
+                    tt = mg.animateMoveNodeX(startCol);
+                }
+
+                else {
+                    double startRow = this.solverBlock.getRow()*heightFactor;
+                    tt = mg.animateMoveNodeY(startRow);
+                }
+
+                this.mgList.set(i, mg);
+                tt.setOnFinished(moveEvent -> {
+                    this.enableButtons();
+                });
+
+            }
+        }
+    }
+
+    @FXML
     private void resetBoard(ActionEvent event) {
         this.board.restart();
         this.board.updateNumMoves();
@@ -412,13 +465,10 @@ public class GameController {
     private void enableButtons() {
         this.undoButton.setDisable(false);
         this.redoButton.setDisable(false);
-        this.hintButton.setDisable(false);
+        if (!this.solverThread.isRunning()) {
+            this.hintButton.setDisable(false);
+        }
         this.resetButton.setDisable(false);
-    }
-
-    @FXML
-    private void showHint(ActionEvent event) {
-        // TODO
     }
 
     private FadeTransition performFadeOut(Node node) {

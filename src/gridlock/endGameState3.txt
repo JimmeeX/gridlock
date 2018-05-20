@@ -1,12 +1,9 @@
-* h * * * *
-* h g g g *
-* * d z z a
-* * d c * a
-f e e c * a
-f * * c b b
-
-
-
+a a a b c d
+e f f b c d
+e * z z c d
+g g h * * *
+* i h * j j
+* i k k l l
 
 
 * * * * * *
