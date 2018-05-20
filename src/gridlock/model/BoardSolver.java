@@ -11,7 +11,6 @@ class BoardSolver {
 		this.board = board;
 	}
 
-
 	public Block solvePuzzle() {
 		LinkedList<Board> queue = new LinkedList<>();
 		ArrayList<Board> visited = new ArrayList<>();

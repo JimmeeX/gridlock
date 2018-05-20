@@ -230,6 +230,7 @@ public class BoardGenerator {
         for (Node n: adjacency.keySet()) if (n.dist > maxNode.dist) maxNode = n;
         //maxNode.board.printGrid();
         System.out.println("Claim Max move: " + maxNode.dist);
+
         // Backtracking
         System.out.println("Backward check . . .");
         for (Node x = maxNode; x != null; x = x.pred) {
@@ -323,7 +324,6 @@ public class BoardGenerator {
     private <E> E randomBinaryChoice (E item1, E item2, double probItem1) {
         return (Math.random() < probItem1) ? item1 : item2;
     }
-
     public GameBoard generateBoard(Difficulty d) {
         double p;
         int minBlockNum;

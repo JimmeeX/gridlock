@@ -46,6 +46,87 @@ public class Board {
     }
 
     /**
+     * process input txt file
+     * @param fileName the file name to be processed
+     */
+    public void process(String fileName) {
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new File(fileName));
+            for (int row = 0; row < 6; row++) {
+                for (int col = 0; col < 6; col++) {
+                    String id = sc.next();
+                    if (!id.equals("*")) {
+                        int blockID = blockExist(id);
+                        if (blockID != -1) {
+                            incrementSize(blockID, row, col);
+                            this.grid.get(row)[col] = id;
+                        } else setBlock(id, row, col);
+                    }
+                }
+            }
+            printGrid();
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (sc != null) sc.close();
+        }
+    }
+
+    public Block getBlock(String id) {
+        for (Block block: this.blocks) {
+            if (block.getID().equals(id)) return block;
+        }
+        return null;
+    }
+
+    public String[] getGridRow(int row) {
+        return this.grid.get(row);
+    }
+
+    /**
+     * add a new block to the grid
+     * @param id the block's id
+     * @param row the row position of the block
+     * @param col the col position of the block
+     */
+
+    public void setBlock(String id, int row, int col){
+        Block newBlock = new Block(id, row, col);
+        this.grid.get(row)[col] = id;
+        this.blocks.add(newBlock);
+    }
+
+    /**
+     * check if the block has been initialised
+     * @param id the id of the block (in String)
+     * @return -1 if the block doesn't exist
+     * @return the block index if the block exists
+     */
+    public int blockExist(String id) {
+        for (int block = 0; block < this.blocks.size(); block++) {
+            if (this.blocks.get(block).getID().equals(id)) return block;
+        }
+        return -1;
+    }
+
+    /**
+     * increment the size of initialised blocks
+     * @param idx the index of the block in blocks
+     * @param row the row position of the block
+     * @param col the col position of the block
+     * @post the block's size will increase by 1
+     */
+    public void incrementSize(int idx, int row, int col) {
+        Block thisBlock = this.blocks.get(idx);
+        Integer[] newPosition = new Integer[2];
+        newPosition[0] = row;
+        newPosition[1] = col;
+        thisBlock.addPosition(newPosition);
+        this.grid.get(row)[col] = thisBlock.getID();
+    }
+
+    /**
      * get the grid
      */
     public ArrayList<String[]> getGrid () {
@@ -137,6 +218,7 @@ public class Board {
             System.out.println();
         }
     }
+  
     /**
      * Print all blocks' details
      */
@@ -335,6 +417,7 @@ public class Board {
         return true;
     }
 
+
     @Override
     public String toString() {
         printBlocks();
@@ -347,6 +430,38 @@ public class Board {
 
     public ArrayList<Board> getPath() {
         return this.path;
+
+    // Added by Edwin
+    public Board duplicate() {
+        // Only need essentially grid and blocks w/ different reference
+        Board newBoard = new Board();
+        newBoard.grid.clear();
+        for (String[] strArr : grid) newBoard.grid.add(strArr.clone());
+        for (Block block : blocks) newBoard.getBlocks().add(block.duplicate());
+        return newBoard;
+    }
+
+    /**
+     * print the grid
+     */
+    public void printGrid() {
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 6; col++) {
+                System.out.print(this.grid.get(row)[col] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+    /**
+     * Print all blocks' details
+     */
+    public void printBlocks() {
+        for (Block block: this.blocks) {
+            System.out.println(block.toString());
+        }
+
     }
 
     public Block getLastMove() {
