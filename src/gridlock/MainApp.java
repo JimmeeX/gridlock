@@ -56,9 +56,50 @@ public class MainApp extends Application {
         stage.close();
     }
 
-//    public static void main(String[] args) {
-//        BoardGenerator2 bg = new BoardGenerator2();
-//        Board b = bg.generateOneBoard("src/gridlock/endGameState.txt");
-//        launch(args);
-//    }
+    public static void main(String[] args) {
+//        BoardGenerator bg = new BoardGenerator();
+//        GameBoard b = bg.generateOneBoard("src/gridlock/resources/hard/" + 6 + ".txt");
+//
+//        //EASY
+//        Difficulty d = Difficulty.EASY;
+//        GameBoard easy = bg.generateBoard(d);
+//        System.out.println("EASY = ");
+//        GameBoard easyStart = bg.generateOneBoard(easy, 3, 7);
+//        while (easyStart == null) {
+//            easy = bg.generateBoard(d);
+//            //System.out.println("EASY = ");
+//            easyStart = bg.generateOneBoard(easy, 3,7);
+//        }
+//        easy.printGrid();
+//        easyStart.printGrid();
+//
+//        //MEDIUM
+//        d = Difficulty.MEDIUM;
+//        GameBoard med = bg.generateBoard(d);
+//        System.out.println("MEDIUM = ");
+//        //med.printGrid();
+//        GameBoard medStart = bg.generateOneBoard(med, 8, 13);
+//        while (medStart == null) {
+//            med = bg.generateBoard(d);
+//            //System.out.println("MEDIUM = ");
+//            medStart = bg.generateOneBoard(med, 8,13);
+//        }
+//        med.printGrid();
+//        medStart.printGrid();
+//
+//        //HARD
+//        d = Difficulty.HARD;
+//        GameBoard hard = bg.generateBoard(d);
+//        System.out.println("HARD = ");
+//        GameBoard hardStart = bg.generateOneBoard(hard, 14,20);
+//        while (hardStart == null) {
+//            hard = bg.generateBoard(d);
+//            //System.out.println("HARD = ");
+//            hardStart = bg.generateOneBoard(hard, 14, 20);
+//        }
+//        hard.printGrid();
+//        hardStart.printGrid();
+
+        launch(args);
+    }
 }

@@ -96,6 +96,7 @@ public class GameController {
 //            this.board = bg.generateOneBoard("src/gridlock/endGameState.txt");
 //        }
 
+
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -142,6 +143,13 @@ public class GameController {
         this.wrapper.setOpacity(0);
         this.performFadeIn(this.wrapper);
     }
+
+//    private void initialiseBoard(String file) {
+//        this.board = new Board();
+//        if (this.mode.equals(Mode.CAMPAIGN))
+//        this.levelGenerator(this.difficulty);
+//        this.board.process(file);
+//    }
 
 //    private void initialiseBoard(String file) {
 //<<<<<<< HEAD

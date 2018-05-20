@@ -1,7 +1,6 @@
 package gridlock.view;
 
 import gridlock.model.Block;
-import gridlock.model.Board;
 import gridlock.model.GameBoard;
 import gridlock.model.SystemSettings;
 import javafx.animation.*;
