@@ -57,10 +57,10 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-//        BoardGenerator bg = new BoardGenerator();
-//        GameBoard b = bg.generateOneBoard("src/gridlock/resources/hard/" + 6 + ".txt");
-//
-//        //EASY
+        BoardGenerator bg = new BoardGenerator();
+        //GameBoard b = bg.generateOneBoard("src/gridlock/resources/hard/" + 6 + ".txt");
+
+        //EASY
 //        Difficulty d = Difficulty.EASY;
 //        GameBoard easy = bg.generateBoard(d);
 //        System.out.println("EASY = ");
@@ -72,9 +72,9 @@ public class MainApp extends Application {
 //        }
 //        easy.printGrid();
 //        easyStart.printGrid();
-//
-//        //MEDIUM
-//        d = Difficulty.MEDIUM;
+
+        //MEDIUM
+//        Difficulty d = Difficulty.MEDIUM;
 //        GameBoard med = bg.generateBoard(d);
 //        System.out.println("MEDIUM = ");
 //        //med.printGrid();
@@ -86,19 +86,19 @@ public class MainApp extends Application {
 //        }
 //        med.printGrid();
 //        medStart.printGrid();
-//
-//        //HARD
-//        d = Difficulty.HARD;
-//        GameBoard hard = bg.generateBoard(d);
-//        System.out.println("HARD = ");
-//        GameBoard hardStart = bg.generateOneBoard(hard, 14,20);
-//        while (hardStart == null) {
-//            hard = bg.generateBoard(d);
-//            //System.out.println("HARD = ");
-//            hardStart = bg.generateOneBoard(hard, 14, 20);
-//        }
-//        hard.printGrid();
-//        hardStart.printGrid();
+
+        //HARD
+        Difficulty d = Difficulty.HARD;
+        GameBoard hard = bg.generateBoard(d);
+        System.out.println("HARD = ");
+        GameBoard hardStart = bg.generateOneBoard(hard, 14,20);
+        while (hardStart == null) {
+            hard = bg.generateBoard(d);
+            //System.out.println("HARD = ");
+            hardStart = bg.generateOneBoard(hard, 14, 20);
+        }
+        hard.printGrid();
+        hardStart.printGrid();
 
         launch(args);
     }

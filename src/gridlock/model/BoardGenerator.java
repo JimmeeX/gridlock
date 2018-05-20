@@ -292,7 +292,7 @@ public class BoardGenerator {
         int row = random.nextInt(5);
         int col = randomBinaryChoice(4, 5, 0.5);
         int s = randomBinaryChoice(2, 3, 0.5);
-        System.out.println("col = " + col);
+        //System.out.println("col = " + col);
 
         if (b.setBlock("a", row, col, s, false)) currNumOfBlock++;
         // cheat
@@ -334,19 +334,23 @@ public class BoardGenerator {
             minBlockNum = 4;
             maxBlockNum = 6;
         } else if (d.equals(d.valueOf("MEDIUM"))) {
+
             p = 0.5;
             minBlockNum = 7;
-            maxBlockNum = 8;
+            maxBlockNum = 9;
         } else {
             p = 0.5;
             minBlockNum = 10;
             maxBlockNum = 13;
         }
-	    return newRandomWinBoard(p, minBlockNum, maxBlockNum);
+	    GameBoard board = newRandomWinBoard(p, minBlockNum, maxBlockNum);
+        board.printGrid();
+        //while (!isValid(board)) board = newRandomWinBoard(p, minBlockNum, maxBlockNum);
+        return board;
     }
 
-    public boolean checkTrivialCase(Board board) {
-        board.printGrid();
+    public boolean isValid(GameBoard board) {
+        //board.printGrid();
 
         for (int j = 0; j < board.getGridSize(); j++) {
             ArrayList<String> id = new ArrayList<>();
