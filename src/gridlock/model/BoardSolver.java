@@ -34,7 +34,7 @@ public class BoardSolver {
             }
 	        this.board.printGrid();
             System.out.println("");
-            //search(3,9);
+            //hint(3,9);
             this.board.printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
@@ -43,7 +43,7 @@ public class BoardSolver {
         }
     }
 
-	/*private void search(int minMoves, int maxMoves) {
+	private void hint(Board board) {
 		//set initial state
     	Block curBlock = this.board.getBlock("z");
 
@@ -67,12 +67,12 @@ public class BoardSolver {
 			visited.add(curState);
 
 			//check if end condition is met
-			if (curState.getNMoves() >= minMoves && curState.getNMoves() <= maxMoves) {
+			/*if (curState.getNMoves() >= minMoves && curState.getNMoves() <= maxMoves) {
 				endState = curState;
 				//break;
-			}
+			}*/
 
-			Board board = curState.getBoard();
+			//Board board = curState.getBoard();
 
 			for (Integer[] position: positions) {
 				board.makeMove(curState.getBlock().getID(), position, true);
@@ -81,7 +81,7 @@ public class BoardSolver {
 
 			}
 		}
-	}*/
+	}
 
 	private int calculateDensity() {
     	int count = 0;

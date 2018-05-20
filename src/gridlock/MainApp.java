@@ -74,7 +74,7 @@ public class MainApp extends Application {
         easyStart.printGrid();
 
         //MEDIUM
-        d = Difficulty.MEDIUM;
+        /*Difficulty d = Difficulty.MEDIUM;
         Board med = bg.generateBoard(d);
         System.out.println("MEDIUM = ");
         med.printGrid();
@@ -86,10 +86,10 @@ public class MainApp extends Application {
             medStart = bg.generateOneBoard(med, 8,13);
         }
         med.printGrid();
-        medStart.printGrid();
+        medStart.printGrid();*/
 
         //HARD
-        d = Difficulty.HARD;
+       /* d = Difficulty.HARD;
         Board hard = bg.generateBoard(d);
         System.out.println("HARD = ");
         Board hardStart = bg.generateOneBoard(hard, 14,20);
@@ -99,7 +99,7 @@ public class MainApp extends Application {
             hardStart = bg.generateOneBoard(hard, 14, 20);
         }
         hard.printGrid();
-        hardStart.printGrid();
+        hardStart.printGrid();*/
 
         launch(args);
     }
