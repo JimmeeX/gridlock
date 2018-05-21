@@ -55,6 +55,8 @@ public class GameController {
     @FXML
     private Label movesLabel;
     @FXML
+    private Label minMovesLabel;
+    @FXML
     private AnchorPane primaryField;
     @FXML
     private Pane boardField;
@@ -85,6 +87,7 @@ public class GameController {
         this.levelLabel.setText("Level " + this.level.toString());
         this.movesLabel.setText("Moves: 0");
 
+
         this.board = new GameBoard();
         if (mode.equals(Mode.CAMPAIGN)) {
             // Read Board from File
@@ -105,15 +108,15 @@ public class GameController {
                 if (newValue) {
                     disableButtons();
                     nextButton.setDisable(false);
-                    // TODO: These are just test numbers for 1,2,3 stars
-                    if (board.getNumMoves() <= 15) {
-                        settings.setLevelComplete(difficulty, level, 3);
-                    }
-                    else if (board.getNumMoves() <= 25) {
-                        settings.setLevelComplete(difficulty, level, 2);
-                    }
-                    else {
-                        settings.setLevelComplete(difficulty, level, 1);
+                    if (mode.equals(Mode.CAMPAIGN)) {
+                        // TODO: These are just test numbers for 1,2,3 stars
+                        if (board.getNumMoves() <= 15) {
+                            settings.setLevelComplete(difficulty, level, 3);
+                        } else if (board.getNumMoves() <= 25) {
+                            settings.setLevelComplete(difficulty, level, 2);
+                        } else {
+                            settings.setLevelComplete(difficulty, level, 1);
+                        }
                     }
                     animateWinSequence();
                 }
