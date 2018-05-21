@@ -195,7 +195,6 @@ public class GameBoard {
 
     // Added by Edwin
     public boolean setBlock(String id, int row, int col, int size, boolean isHorizontal) {
-        System.out.println("euh");
         if (blockExist(id) != -1
                 || (isHorizontal ? col + size > 6 : row + size > 6)
                 || row < 0 || col < 0

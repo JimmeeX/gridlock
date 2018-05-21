@@ -91,7 +91,7 @@ public class GameController {
         }
         // TODO: Board Generator
         else {
-            GameBoardGenerator bg = new GameBoardGenerator();
+            GameBoardGenerator2 bg = new GameBoardGenerator2(); // Trial...
             this.board = bg.generateAPuzzle(this.difficulty);
         }
 

@@ -182,9 +182,7 @@ public class GameBoardGenerator2 {
     private List <GameBoard> newRandomWinBoardList() {
         // The end list guarantees that in actual implementations, the returned board
         // is guaranteed to have a solution among these winning boards.
-        GameBoard referencedWinBoard = new GameBoard();
-                referencedWinBoard.process("src/gridlock/resources/levelgenstuffs/endGameState.txt"); //newRandomWinBoard();
-        referencedWinBoard.printGrid();
+        GameBoard referencedWinBoard = newRandomWinBoard();
 
         // NEED: each row & col block numbers configurations to rearrange (Exception holds for "z")
         List <GameBoard> result = new ArrayList<>();
@@ -383,12 +381,13 @@ public class GameBoardGenerator2 {
         System.out.println("Claim max move: " + maxNode.dist);
         //System.out.println("Duration " + duration + "/1000 seconds.");
 
+        /*
         // Backtracking
         System.out.println("Backward check . . .");
         for (Node x = maxNode; x != null; x = x.pred) {
             System.out.println("Claim max move: " + x.dist);
             x.board.printGrid();
-        }
+        }*/
         return (minMoves <= maxNode.dist && maxNode.dist <= maxMoves)
                 ? maxNode.board.duplicate() : null; // since prevLoc still exists
     }
