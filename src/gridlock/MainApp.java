@@ -57,23 +57,6 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-        BoardGenerator bg = new BoardGenerator();
-
-//        //EASY
-//        GameBoard easyStart = bg.generateAPuzzle(Difficulty.EASY);
-//        System.out.println("EASY = ");
-//        easyStart.printGrid();
-
-//        //MEDIUM
-//        GameBoard medStart = bg.generateAPuzzle(Difficulty.MEDIUM);
-//        System.out.println("MEDIUM = ");
-//        medStart.printGrid();
-//
-//        //HARD
-//        GameBoard hardStart = bg.generateAPuzzle(Difficulty.HARD);
-//        System.out.println("HARD = ");
-//        hardStart.printGrid();
-
         launch(args);
     }
 }
