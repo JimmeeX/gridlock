@@ -27,14 +27,12 @@ public class GameBoard {
     private BooleanProperty gameState;
     private IntegerProperty numMoves;
 
-    /**
-     * Board class constructor
-     */
     public GameBoard() {
         initialiseGrid(6);
         this.blocks = new ArrayList<>();
         this.prevLocations = new ArrayList<>();
         this.nextLocations = new ArrayList<>();
+
         // Added by James :)
         // Board starts off as unsolved (ie, false)
         this.gameState = new SimpleBooleanProperty(false);
@@ -77,7 +75,6 @@ public class GameBoard {
                     }
                 }
             }
-            printGrid();
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -346,6 +343,10 @@ public class GameBoard {
         this.nextLocations.clear();
     }
 
+    /**
+     * get hint of the next block to move
+     * @return
+     */
     public Block getHint() {
         Board startBoard = new Board(this.blocks, new ArrayList<Board>(), null);
         BoardSolver solver = new BoardSolver(startBoard);
@@ -429,4 +430,5 @@ public class GameBoard {
             System.out.println(block.toString());
         }
     }
+    
 }

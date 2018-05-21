@@ -61,7 +61,7 @@ public class MainApp extends Application {
         /*for (int i= 1; i<=20; i++) {
             Board b = bg.generateOneBoard("src/gridlock/resources/easy/" + i + ".txt");
         }*/
-
+        /*
         //EASY
         GameBoard easyStart = bg.generateAPuzzle(Difficulty.EASY);
         System.out.println("EASY = ");
@@ -75,7 +75,7 @@ public class MainApp extends Application {
         //HARD
         GameBoard hardStart = bg.generateAPuzzle(Difficulty.HARD);
         System.out.println("HARD = ");
-        hardStart.printGrid();
+        hardStart.printGrid();*/
 
         launch(args);
     }
