@@ -49,7 +49,7 @@ public class SystemSettings implements Serializable {
 
         Media bgMedia = new Media(new File("src/gridlock/static/audio/Limes-Jovial.mp3").toURI().toString());
         this.bgMusic = new MediaPlayer(bgMedia);
-        this.bgMusic.setVolume(this.soundVolume.getValue());
+        this.bgMusic.setVolume(this.musicVolume.getValue());
         this.bgMusic.setCycleCount(MediaPlayer.INDEFINITE);
 
         // Initialise Volume Listeners
@@ -100,7 +100,7 @@ public class SystemSettings implements Serializable {
 
         Media bgMedia = new Media(new File("src/gridlock/static/audio/Limes-Jovial.mp3").toURI().toString());
         this.bgMusic = new MediaPlayer(bgMedia);
-        this.bgMusic.setVolume(this.soundVolume.getValue());
+        this.bgMusic.setVolume(this.musicVolume.getValue());
         this.bgMusic.setCycleCount(MediaPlayer.INDEFINITE);
 
         // Initialise Volume Listeners

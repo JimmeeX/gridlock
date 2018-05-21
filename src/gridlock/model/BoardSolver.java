@@ -20,7 +20,7 @@ class BoardSolver {
 			Board curr = queue.poll();
 			if (curr.checkGameOver()) {
 				Board nextBoard = curr.getPath().get(1);
-				numMoves = nextBoard.getPathSize() - 1;
+				numMoves = curr.getPathSize() - 1;
 				System.out.println("Hint found.");
 				return nextBoard.getLastMove();
 			}
