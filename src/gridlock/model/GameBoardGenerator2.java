@@ -141,16 +141,15 @@ public class GameBoardGenerator2 {
         int retry = 0;
 
         generateInitialHeuristics (d);
+        long startTime = System.nanoTime();
         while (result == null && retry < 50) {
-            long startTime = System.nanoTime();
             System.out.println("Retry " + retry);
             result = generateOneBoard();
             retry++;
-            long endTime = System.nanoTime();
-            long duration = (endTime - startTime)/1000000;
-            System.out.println("Duration " + duration + "/1000 seconds.");
-
         }
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime)/1000000;
+        System.out.println("Duration " + duration + "/1000 seconds.");
         if (result == null) {
             System.out.println("Too long");
             result = new GameBoard();
@@ -195,7 +194,6 @@ public class GameBoardGenerator2 {
         result.add(new GameBoard());
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 2; j++) {
-                // System.out.println("Result size " + result.size());
                 for (GameBoard gb : result) {
                     // pre-con: all previous iterated i,j are covered in result list
                     GameBoard tempGb;
@@ -220,7 +218,10 @@ public class GameBoardGenerator2 {
                         for (int pCount = 0; pCount + primaryBlock.getSize() - 1 < 6; pCount++) {
                             if (secondaryBlock.getID().equals("z")) {
                                 tempGb = gb.duplicate();
-                                if (tempGb.setBlock("z", 2, 4, 2, true))
+                                if (tempGb.setBlock("z", 2, 4, 2, true) &&
+                                        tempGb.setBlock(primaryBlock.getID(), j == 0 ? primaryBlock.getRow() : pCount,
+                                                j == 0 ? pCount : primaryBlock.getCol(), primaryBlock.getSize(),
+                                                primaryBlock.isHorizontal()))
                                         tempResult.add(tempGb);
                             } else {
                                 for (int sCount = pCount + primaryBlock.getSize();
@@ -228,7 +229,10 @@ public class GameBoardGenerator2 {
                                     tempGb = gb.duplicate();
                                     if (tempGb.setBlock(secondaryBlock.getID(), j == 0 ? secondaryBlock.getRow() : sCount,
                                             j == 0 ? sCount : secondaryBlock.getCol(), secondaryBlock.getSize(),
-                                            secondaryBlock.isHorizontal()))
+                                            secondaryBlock.isHorizontal()) &&
+                                        tempGb.setBlock(primaryBlock.getID(), j == 0 ? primaryBlock.getRow() : pCount,
+                                            j == 0 ? pCount : primaryBlock.getCol(), primaryBlock.getSize(),
+                                            primaryBlock.isHorizontal()))
                                         tempResult.add(tempGb);
                                 }
                             }
@@ -258,6 +262,7 @@ public class GameBoardGenerator2 {
                 tempResult = new ArrayList<>();
             }
         }
+        System.out.println("Win list size " + result.size());
         //for(GameBoard gb: result) { System.out.println("****"); gb.printGrid();}
         return result;
     }
@@ -309,6 +314,7 @@ public class GameBoardGenerator2 {
         *   diff when a loop is just started/ended is that the open element always have empty arraylist
         */
         List <GameBoard> initWinBoardList = newRandomWinBoardList();
+
         int targetMoves = minMoves + (new Random ()).nextInt(maxMoves - minMoves);
         Queue <Node> queue = new LinkedList<>();
         List <Node> queueRecordList = new ArrayList <>();
@@ -380,13 +386,14 @@ public class GameBoardGenerator2 {
         // Conclusion: the most difficult puzzle in this graph, along w numOfMoves
         Node maxNode = queueRecordList.get(queueRecordList.size()-1);
         System.out.println("Claim max move: " + maxNode.dist);
-        /*
+/*
         // Backtracking
         System.out.println("Backward check . . .");
         for (Node x = maxNode; x != null; x = x.pred) {
             System.out.println("Claim max move: " + x.dist);
             x.board.printGrid();
-        }*/
+        }
+*/
         return (minMoves <= maxNode.dist && maxNode.dist <= maxMoves)
                 ? maxNode.board.duplicate() : null; // since prevLoc still exists
     }
