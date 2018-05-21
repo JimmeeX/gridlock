@@ -46,6 +46,8 @@ public class HelpController {
     @FXML
     private Label movesLabel;
     @FXML
+    private Label minMovesLabel;
+    @FXML
     private AnchorPane primaryField;
     @FXML
     private Pane boardField;
@@ -69,6 +71,30 @@ public class HelpController {
     public void initData(SystemSettings settings) {
         this.settings = settings;
         this.movesLabel.setText("Moves: 0");
+
+        this.initBoard();
+
+        this.board.setMinMoves();
+        this.minMovesLabel.setText("Goal: " + this.board.getMinMoves());
+
+        // Draw the Rectangles and add it to the Board
+        this.initNodeList();
+
+        // Deactivate Functionality of buttons and make them disappear.
+        this.deactivate();
+
+        // Initialise Animation Sequence
+        this.initAnimation();
+    }
+
+    @FXML
+    private void initialize() {
+        this.wrapper.setOpacity(0);
+        FadeTransition ft = this.fadeIn(this.wrapper);
+        ft.play();
+    }
+
+    private void initBoard() {
         this.board = new GameBoard();
         this.board.process("src/gridlock/resources/tut.txt");
 
@@ -90,13 +116,26 @@ public class HelpController {
                 movesLabel.setText("Moves: " + newValue.toString());
             }
         });
+    }
 
-        // Draw the Rectangles and add it to the Board
-        this.initialiseNodeList();
+    private void initNodeList() {
+        this.recNodeList = new ArrayList<>();
+        // Draw Rectangles and add to Pane (so Pane is its Parent).
+        for (Block block: this.board.getBlocks()) {
+            Rectangle rec = new Rectangle(0, 0);
+            rec.setUserData(block.getID());
+            if (block.getID().equals("z")) {
+                rec.setId("player");
+            } else {
+                rec.setId("obstacles");
+            }
+            setBlocks(block, rec);
+            this.recNodeList.add(rec);
+            this.boardField.getChildren().addAll(rec);
+        }
+    }
 
-        // Deactivate Functionality of buttons and make them disappear.
-        this.deactivate();
-
+    private void initAnimation() {
         this.sequenceId = new SimpleIntegerProperty();
         this.sequenceId.setValue(0);
 
@@ -151,30 +190,6 @@ public class HelpController {
 
         // Play Animation
         this.animations.get(0).play();
-    }
-
-    @FXML
-    private void initialize() {
-        this.wrapper.setOpacity(0);
-        FadeTransition ft = this.fadeIn(this.wrapper);
-        ft.play();
-    }
-
-    private void initialiseNodeList() {
-        this.recNodeList = new ArrayList<>();
-        // Draw Rectangles and add to Pane (so Pane is its Parent).
-        for (Block block: this.board.getBlocks()) {
-            Rectangle rec = new Rectangle(0, 0);
-            rec.setUserData(block.getID());
-            if (block.getID().equals("z")) {
-                rec.setId("player");
-            } else {
-                rec.setId("obstacles");
-            }
-            setBlocks(block, rec);
-            this.recNodeList.add(rec);
-            this.boardField.getChildren().addAll(rec);
-        }
     }
 
     private void addMouseGestures() {

@@ -12,7 +12,6 @@
    <children>
       <AnchorPane fx:id="wrapper" layoutY="-8.0" prefHeight="600.0" prefWidth="800.0">
          <children>
-            <Button fx:id="continueButton" alignment="CENTER" layoutX="658.0" layoutY="33.0" mnemonicParsing="false" onAction="#continueAnimation" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Continue" AnchorPane.leftAnchor="650.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0" />
             <Label id="tutorial" fx:id="helpText" alignment="CENTER" layoutX="-5.0" layoutY="25.0" prefHeight="40.0" prefWidth="500.0" text="Help" AnchorPane.leftAnchor="175.0" AnchorPane.rightAnchor="175.0" AnchorPane.topAnchor="25.0">
                <HBox.margin>
                   <Insets left="25.0" right="25.0" />
@@ -65,7 +64,25 @@
                   </GridPane>
                </children>
             </Pane>
-            <Label id="subtitle" fx:id="movesLabel" alignment="CENTER" layoutX="630.0" layoutY="104.0" prefHeight="40.0" prefWidth="150.0" text="Label" AnchorPane.leftAnchor="625.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="125.0" />
+            <VBox alignment="CENTER" layoutX="625.0" layoutY="94.0" AnchorPane.leftAnchor="650.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="15.0">
+               <children>
+                  <Button fx:id="continueButton" alignment="CENTER" mnemonicParsing="false" onAction="#continueAnimation" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Continue">
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Label id="subtitle" fx:id="minMovesLabel" alignment="CENTER" layoutX="694.0" layoutY="94.0" prefHeight="40.0" prefWidth="150.0" text="Label">
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <Label id="subtitle" fx:id="movesLabel" alignment="CENTER" layoutX="630.0" layoutY="104.0" prefHeight="40.0" prefWidth="150.0" text="Label" AnchorPane.leftAnchor="625.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="125.0">
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </VBox.margin>
+                  </Label>
+               </children>
+            </VBox>
             <Button id="button_controls" layoutX="650.0" layoutY="397.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Quit" AnchorPane.leftAnchor="650.0" AnchorPane.rightAnchor="25.0">
                <VBox.margin>
                   <Insets bottom="20.0" top="20.0" />
