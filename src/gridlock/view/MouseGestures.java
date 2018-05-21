@@ -2,6 +2,7 @@ package gridlock.view;
 
 import gridlock.model.GameBoard;
 import gridlock.model.SystemSettings;
+import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
@@ -9,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 
@@ -72,6 +74,33 @@ public class MouseGestures {
         node.setOnMousePressed(onMousePressedEventHandler);
         node.setOnMouseDragged(onMouseDraggedEventHandler);
         node.setOnMouseReleased(onMouseReleasedEventHandler);
+    }
+
+    public void moveNodeX(double distMinX) {
+        this.currObject.setTranslateX(distMinX - this.initialMinX);
+    }
+
+    public void moveNodeY(double distMinY) {
+        this.currObject.setTranslateY(distMinY - this.initialMinY);
+    }
+
+    public TranslateTransition animateMoveNodeX(double distMinX) {
+        Rectangle rec = (Rectangle)this.currObject;
+        TranslateTransition tt = new TranslateTransition(Duration.millis(250), rec);
+        tt.setToX(distMinX - this.initialMinX);
+        tt.setCycleCount(1);
+        tt.play();
+        return tt;
+    }
+
+    public TranslateTransition animateMoveNodeY(double distMinY) {
+        Rectangle rec = (Rectangle)this.currObject;
+        TranslateTransition tt = new TranslateTransition(Duration.millis(250), rec);
+        tt.setToY(distMinY - this.initialMinY);
+        tt.setCycleCount(1);
+        tt.setRate(1);
+        tt.play();
+        return tt;
     }
 
     private EventHandler<MouseEvent> onMouseEnteredEventHandler = event -> {
