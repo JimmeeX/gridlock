@@ -12,21 +12,25 @@ public class BoardGenerator implements Runnable {
     private ArrayList<GameBoard> hard;
 
     public BoardGenerator() {
-        easy = new ArrayList<>();
-        medium = new ArrayList<>();
-        hard = new ArrayList<>();
+        this.easy = new ArrayList<>();
+        this.medium = new ArrayList<>();
+        this.hard = new ArrayList<>();
     }
 
     public GameBoard getEasy() {
-        return easy.remove(0);
+        if (this.easy.size() > 0) return this.easy.remove(0);
+        System.out.println("haha");
+        return generateAPuzzle(Difficulty.EASY);
     }
 
     public GameBoard getMedium() {
-        return medium.remove(0);
+        if (this.medium.size() > 0) return this.medium.remove(0);
+        return generateAPuzzle(Difficulty.MEDIUM);
     }
 
     public GameBoard getHard() {
-        return hard.remove(0);
+        if (this.hard.size() > 0) return this.hard.remove(0);
+        return generateAPuzzle(Difficulty.HARD);
     }
 
     private class Node {
@@ -390,14 +394,14 @@ public class BoardGenerator implements Runnable {
         System.out.println("easy = " + easy.size() + " medium = " + medium.size() + " hard = " + hard.size());
 
         Random random = new Random();
-        int num = random.nextInt(98);
+        int num = random.nextInt(29999);
 
-        if (0 <= num && num <= 32) {
+        if (0 <= num && num <= 4999) {
             GameBoard ez = generateAPuzzle(Difficulty.EASY);
             System.out.println("EASY = ");
             ez.printGrid();
             this.easy.add(ez);
-        } else if (33 <= num && num <= 65) {
+        } else if (10000 <= num && num <= 19999) {
             GameBoard med = generateAPuzzle(Difficulty.MEDIUM);
             this.medium.add(med);
             System.out.println("MEDIUM = ");

@@ -61,10 +61,7 @@ public class SystemSettings implements Serializable {
 
         // Initialise the BoardGenerator
         this.bg = new BoardGenerator();
-        for (int i = 0; i < 5; i++) {
-            Thread levGen = new Thread(this.bg);
-            levGen.start();
-        }
+
         this.resetProgress();
     }
 

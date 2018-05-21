@@ -25,6 +25,7 @@ public class MainApp extends Application{
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("src/gridlock/resources/save.data")))) {
             this.settings = (SystemSettings) ois.readObject();
             this.settings.initSounds(1.0, 1.0);
+            startThreading();
             System.out.println("Data successfully loaded.");
         }
 
@@ -32,6 +33,7 @@ public class MainApp extends Application{
         catch (IOException e) {
             System.out.println("No save file found. Creating new File.");
             this.settings = new SystemSettings(1.0,1.0);
+            startThreading();
         }
 
         MenuController menuController = loader.getController();
@@ -54,6 +56,13 @@ public class MainApp extends Application{
             oos.writeObject(this.settings);
         }
         stage.close();
+    }
+
+    public void startThreading() {
+        for (int i = 0; i < 6; i++) {
+            Thread levGen = new Thread(this.settings.getBG());
+            levGen.start();
+        }
     }
 
     public static void main(String[] args) {
