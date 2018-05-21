@@ -90,6 +90,9 @@ public class GameController {
         // Initialise Board
         this.initBoard(oldBoard);
 
+        this.board.setMinMoves();
+        this.minMovesLabel.setText("Goal: " + this.board.getMinMoves());
+
         // Initialise Board Solver Thread
         this.initSolver();
 
