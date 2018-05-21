@@ -48,7 +48,7 @@
                         <Insets bottom="10.0" top="10.0" />
                      </VBox.margin>
                   </Button>
-                  <Button layoutX="382.0" layoutY="285.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Level Select">
+                  <Button fx:id="levelSelectButton" layoutX="382.0" layoutY="285.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Level Select">
                      <VBox.margin>
                         <Insets bottom="10.0" top="10.0" />
                      </VBox.margin>

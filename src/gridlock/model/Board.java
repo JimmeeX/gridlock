@@ -123,6 +123,41 @@ public class Board {
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * get all blocks initialised
+     * @return blocks arraylist
+     */
+    public ArrayList<Block> getBlocks() {
+        return this.blocks;
+    }
+
+    /** -prvt
+     * Check if the new position of a block collides with others and walls
+     * @param thisBlock
+     * @param newStartPosition
+     * @return
+     */
+    private boolean collide(Block thisBlock, Integer[] newStartPosition) {
+        for (Block block : this.blocks) {
+            if (!block.getID().equals(thisBlock.getID())) {
+                for (Integer[] position : block.getPosition()) {
+                    if (thisBlock.isHorizontal()
+                            ? position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize() - 1 &&
+                            position[0] == newStartPosition[0]
+                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize() - 1 &&
+                            position[1] == newStartPosition[1]) return true;
+                }
+            }
+        }
+        if (thisBlock.isHorizontal()
+                ? newStartPosition[1] + thisBlock.getSize() - 1 > 6
+                : newStartPosition[0] + thisBlock.getSize() - 1 > 6) return true;
+        return false;
+    }
+
+    /**
+>>>>>>> 948a78602a0a7f8a871fed6c46e064b7c16bfd1a
      * print the grid
      */
     public void printGrid() {
@@ -270,7 +305,6 @@ public class Board {
         }
         return true;
     }
-
 
     @Override
     public String toString() {

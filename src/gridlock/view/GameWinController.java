@@ -1,6 +1,5 @@
 package gridlock.view;
 
-import gridlock.model.Board;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
@@ -35,6 +34,8 @@ public class GameWinController {
     private Label movesLabel;
     @FXML
     private Button nextLevelButton;
+    @FXML
+    private Button levelSelectButton;
 
     public void initData(SystemSettings settings, Mode mode, Difficulty difficulty, Integer level, Integer numMoves) {
         this.settings = settings;
@@ -45,6 +46,9 @@ public class GameWinController {
         this.starsLabel.setText("3 Stars");
         this.movesLabel.setText("Moves: " + numMoves.toString());
 
+        if (mode.equals(Mode.SANDBOX)) {
+            this.levelSelectButton.setDisable(true);
+        }
         // Save Information
 
         // If Level 20, then disable nextLevelButton

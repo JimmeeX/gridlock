@@ -19,16 +19,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.BoxBlur;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
-import javafx.scene.effect.Reflection;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
@@ -37,7 +31,6 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.Timer;
 
 public class GameController {
     private SystemSettings settings;
@@ -77,6 +70,8 @@ public class GameController {
     private Button hintButton;
     @FXML
     private Button resetButton;
+    @FXML
+    private Button levelSelectButton;
 
     public void initData(SystemSettings settings, Mode mode, Difficulty difficulty, Integer level) {
         // Initialise Variables
@@ -98,8 +93,9 @@ public class GameController {
         }
         // TODO: Board Generator Threading
         else {
-            BoardGenerator bg = new BoardGenerator();
+            GameBoardGenerator bg = new GameBoardGenerator();
             this.board = bg.generateAPuzzle(this.difficulty);
+            this.levelSelectButton.setDisable(true);
         }
 
         // Add Listener for Win Game Condition

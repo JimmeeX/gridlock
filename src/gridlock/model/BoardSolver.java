@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 class BoardSolver {
 
-	Board board;
+    Board board;
 
 	public BoardSolver(Board board) {
 		this.board = board;
