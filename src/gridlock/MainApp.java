@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 
-public class MainApp extends Application {
+public class MainApp extends Application{
     private SystemSettings settings;
 
     @Override
@@ -57,32 +57,8 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-        BoardGenerator bg = new BoardGenerator();
-        //GameBoard b = bg.generateOneBoard("src/gridlock/resources/hard/" + 6 + ".txt");
-        //EASY
-//        Difficulty d = Difficulty.EASY;
-//        GameBoard easyStart = bg.generateAPuzzle(Difficulty.EASY);
-//        System.out.println("EASY = ");
-//        easyStart.printGrid();
 
-        //MEDIUM
-//        Difficulty d = Difficulty.MEDIUM;
-//        GameBoard med = bg.generateBoard(d);
-//        System.out.println("MEDIUM = ");
-//        medStart.printGrid();
-
-        //HARD
-        Difficulty d = Difficulty.HARD;
-        GameBoard hard = bg.generateWinBoard(d);
-        System.out.println("HARD = ");
-        GameBoard hardStart = bg.generateOneBoard(hard, 14,20);
-        while (hardStart == null) {
-            hard = bg.generateWinBoard(d);
-            //System.out.println("HARD = ");
-            hardStart = bg.generateOneBoard(hard, 14, 20);
-        }
-        hard.printGrid();
-        hardStart.printGrid();
         launch(args);
     }
+
 }
