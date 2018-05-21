@@ -1,20 +1,18 @@
 package gridlock.model;
 
-import sun.java2d.pipe.AAShapePipe;
-
 import java.util.*;
 import java.io.*;
 
-public class BoardGeneratorOld {
+public class ZBoardGeneratorOld {
 
     private class Node {
-        Board board;
+        GameBoard board;
         boolean isWin;
         List <Node> neighbors;
         int dist;
         Node pred;
 
-        Node (Board board) {
+        Node (GameBoard board) {
             this.board = board;
             Block zBlock = board.getBlock("z");
             if (zBlock != null && Arrays.equals(zBlock.getPosition().get(0), new Integer[] {2, 4})) this.isWin = true;
@@ -116,13 +114,13 @@ public class BoardGeneratorOld {
         }
     }
 
-    public Board generateOneBoard () {
+    public GameBoard generateOneBoard () {
         return generateOneBoard ("src/gridlock/endGameState.txt");
     }
 
-    public Board generateOneBoard (String file) {
+    public GameBoard generateOneBoard (String file) {
         long startTime = System.nanoTime();
-        Board winBoard = process(file);
+        GameBoard winBoard = process(file);
 
         // BFS: use lots of Node's equals function
         Node initWinNode = new Node (winBoard);
@@ -139,7 +137,7 @@ public class BoardGeneratorOld {
                 // Consider all possibility of its new position (diff than currently), the new board is a neighbor
                 Integer[] intv = curr.board.blockRange(b.getID());
                 for (int i = intv[0]; i <= intv[1]; i++) {
-                    Board duplicate = curr.board.duplicate();
+                    GameBoard duplicate = curr.board.duplicate();
                     if (b.isHorizontal()) {
                         if (i == b.getCol()) continue;
                         duplicate.makeMove(b.getID(), new Integer[]{b.getRow(), i}, true);
@@ -240,8 +238,8 @@ public class BoardGeneratorOld {
     /* -prvt
 	 * process input txt file
 	 */
-    private Board process (String file) {
-        Board board = new Board ();
+    private GameBoard process (String file) {
+        GameBoard board = new GameBoard();
         Scanner sc = null;
         try {
             sc = new Scanner(new File(file));
@@ -266,9 +264,9 @@ public class BoardGeneratorOld {
     /* -prvt
     * Bare: sometimes working sometimes not
     */
-    public Board newRandomWinBoard() {
+    public GameBoard newRandomWinBoard() {
         int currNumOfBlock = 0;
-        Board b = new Board ();
+        GameBoard b = new GameBoard();
         List <String []> grid = b.getGrid();
         if (b.setBlock("z", 2, 4, 2, true)) currNumOfBlock++;
         // cheat

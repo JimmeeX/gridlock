@@ -4,17 +4,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class BoardGenerator2 {
+public class ZBoardGenerator2 {
 
     private class Node {
-        Board board;
+        GameBoard board;
         boolean isOneStepToWin;
         List <Integer []> nextStepShouldCoverThisPositions;
         int dist;
         Node pred = null;
         String predBlockID = null;
 
-        Node (Board board) {
+        Node (GameBoard board) {
             this.board = board;
             Block zBlock = board.getBlock("z");
             if (zBlock != null && this.board.blockRange("z")[1] == 4 && zBlock.getCol() != 4)
@@ -39,7 +39,7 @@ public class BoardGenerator2 {
         }
     }
 
-    public Board generateOneBoard (String file) {
+    public GameBoard generateOneBoard (String file) {
         long startTime = System.nanoTime();
 
         Node initWinNode = new Node (process(file));
@@ -58,7 +58,7 @@ public class BoardGenerator2 {
                 Integer [] position = e.getValue();
 
                 System.out.println("XX " + id +  position[0] + position[1] + "\n");
-                Board duplicate = curr.board.duplicate();
+                GameBoard duplicate = curr.board.duplicate();
                 duplicate.makeMove(id, position, true);
                 Node newNode = new Node(duplicate);
                 if (curr != initWinNode && newNode.isOneStepToWin) continue;
@@ -180,8 +180,8 @@ public class BoardGenerator2 {
     /* -prvt
 	 * process input txt file
 	 */
-    private Board process (String file) {
-        Board board = new Board ();
+    private GameBoard process (String file) {
+        GameBoard board = new GameBoard();
         Scanner sc = null;
         try {
             sc = new Scanner(new File(file));
@@ -206,9 +206,9 @@ public class BoardGenerator2 {
     /* -prvt
     * Bare: sometimes working sometimes not
     */
-    public Board newRandomWinBoard() {
+    public GameBoard newRandomWinBoard() {
         int currNumOfBlock = 0;
-        Board b = new Board ();
+        GameBoard b = new GameBoard();
         List <String []> grid = b.getGrid();
         if (b.setBlock("z", 2, 4, 2, true)) currNumOfBlock++;
         // cheat

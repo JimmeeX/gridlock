@@ -130,4 +130,26 @@ public class Block {
         return newBlock;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Block other = (Block) obj;
+        if (!this.id.equals(other.id))
+            return false;
+        if (this.isHorizontal() != other.isHorizontal())
+            return false;
+        if (this.getSize() != other.getSize())
+            return false;
+        if (this.getRow() != other.getRow())
+            return false;
+        if (this.getCol() != other.getCol())
+            return false;
+        return true;
+    }
+
 }

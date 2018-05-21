@@ -16,16 +16,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.BoxBlur;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
-import javafx.scene.effect.Reflection;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
@@ -34,11 +28,10 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.Timer;
 
 public class GameController {
     private SystemSettings settings;
-    private Board board;
+    private GameBoard board;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
@@ -84,7 +77,7 @@ public class GameController {
         this.levelLabel.setText("Level " + this.level.toString());
         this.movesLabel.setText("Moves: 0");
 
-        this.board = new Board();
+        this.board = new GameBoard();
         if (mode.equals(Mode.CAMPAIGN)) {
             // Read Board from File
             String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
@@ -92,7 +85,7 @@ public class GameController {
         }
         // TODO: Board Generator
         else {
-            BoardGenerator2 bg = new BoardGenerator2();
+            ZBoardGenerator2 bg = new ZBoardGenerator2();
             this.board = bg.generateOneBoard("src/gridlock/endGameState.txt");
         }
 
@@ -144,14 +137,14 @@ public class GameController {
     }
 
     private void initialiseBoard(String file) {
-        this.board = new Board();
+        this.board = new GameBoard();
         if (this.mode.equals(Mode.CAMPAIGN))
         this.levelGenerator(this.difficulty);
         this.board.process(file);
     }
 
     private void levelGenerator(Difficulty difficulty) {
-        BoardSolver levGen = new BoardSolver();
+        ZBoardSolverOld levGen = new ZBoardSolverOld();
         levGen.process();
         if (difficulty.equals("EASY")) {
             levGen.process();

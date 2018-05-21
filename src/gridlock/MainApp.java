@@ -57,23 +57,23 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
-        BoardGenerator bg = new BoardGenerator();
+        GameBoardGenerator bg = new GameBoardGenerator();
         /*for (int i= 1; i<=20; i++) {
             Board b = bg.generateOneBoard("src/gridlock/resources/easy/" + i + ".txt");
         }*/
 
         //EASY
-        Board easyStart = bg.generateAPuzzle(Difficulty.EASY);
+        GameBoard easyStart = bg.generateAPuzzle(Difficulty.EASY);
         System.out.println("EASY = ");
         easyStart.printGrid();
 
         //MEDIUM
-        Board medStart = bg.generateAPuzzle(Difficulty.MEDIUM);
+        GameBoard medStart = bg.generateAPuzzle(Difficulty.MEDIUM);
         System.out.println("MEDIUM = ");
         medStart.printGrid();
 
         //HARD
-        Board hardStart = bg.generateAPuzzle(Difficulty.HARD);
+        GameBoard hardStart = bg.generateAPuzzle(Difficulty.HARD);
         System.out.println("HARD = ");
         hardStart.printGrid();
 

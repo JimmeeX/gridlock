@@ -1,20 +1,18 @@
 package gridlock.model;
 
-import sun.java2d.pipe.AAShapePipe;
-
 import java.util.*;
 import java.io.*;
 
-public class BoardGenerator {
+public class GameBoardGenerator {
 
     private class Node {
-        Board board;
+        GameBoard board;
         boolean isWin;
         boolean isVisited;
         int dist;
         Node pred;
 
-        Node (Board board) {
+        Node (GameBoard board) {
             this.board = board;
             Block zBlock = board.getBlock("z");
             if (zBlock != null && Arrays.equals(zBlock.getPosition().get(0), new Integer[] {2, 4})) this.isWin = true;
@@ -132,10 +130,10 @@ public class BoardGenerator {
         }
     }
 
-    public Board generateAPuzzle (Difficulty d) {
-        Board result = null;
+    public GameBoard generateAPuzzle (Difficulty d) {
+        GameBoard result = null;
         int retry = 0;
-        while (result == null && retry < 100) {
+        while (result == null && retry < 50) {
             result = generateOneBoard(generateWinBoard(d), lowestNumOfMoves(d), highestNumOfMoves(d));
             retry++;
         }
@@ -147,11 +145,11 @@ public class BoardGenerator {
         return result;
     }
 
-    public Board generateOneBoard (String file) {
+    public GameBoard generateOneBoard (String file) {
         return generateOneBoard (process(file), 0 ,60);
     }
-    private Board process (String file) {
-        Board board = new Board ();
+    private GameBoard process (String file) {
+        GameBoard board = new GameBoard();
         Scanner sc = null;
         try {
             sc = new Scanner(new File(file));
@@ -173,7 +171,7 @@ public class BoardGenerator {
         return board;
     }
 
-    public Board generateOneBoard (Board winBoard, int minMoves, int maxMoves) {
+    public GameBoard generateOneBoard (GameBoard winBoard, int minMoves, int maxMoves) {
         long startTime = System.nanoTime();
 
         /* BFS:
@@ -200,7 +198,7 @@ public class BoardGenerator {
                 // Consider all possibility of its new position (diff than currently), the new board is a neighbor
                 Integer[] intv = curr.board.blockRange(b.getID());
                 for (int i = intv[0]; i <= intv[1]; i++) {
-                    Board duplicate = curr.board.duplicate();
+                    GameBoard duplicate = curr.board.duplicate();
                     if (b.isHorizontal()) {
                         if (i == b.getCol()) continue;
                         duplicate.makeMove(b.getID(), new Integer[]{b.getRow(), i}, true);
@@ -291,9 +289,9 @@ public class BoardGenerator {
     /* -prvt
     * Bare: sometimes working sometimes not
     */
-    public Board newRandomWinBoard(double p, int minBlockNum, int maxBlockNum) {
+    public GameBoard newRandomWinBoard(double p, int minBlockNum, int maxBlockNum) {
         int currNumOfBlock = 0;
-        Board b = new Board ();
+        GameBoard b = new GameBoard();
         List <String []> grid = b.getGrid();
         if (b.setBlock("z", 2, 4, 2, true)) currNumOfBlock++;
 
@@ -334,7 +332,7 @@ public class BoardGenerator {
         return (Math.random() < probItem1) ? item1 : item2;
     }
 
-    private Board generateWinBoard (Difficulty d) {
+    private GameBoard generateWinBoard (Difficulty d) {
         double p;
         int minBlockNum;
         int maxBlockNum;

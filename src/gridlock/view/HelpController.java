@@ -1,7 +1,7 @@
 package gridlock.view;
 
 import gridlock.model.Block;
-import gridlock.model.Board;
+import gridlock.model.GameBoard;
 import gridlock.model.SystemSettings;
 import javafx.animation.*;
 import javafx.beans.property.IntegerProperty;
@@ -31,12 +31,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class HelpController {
     private SystemSettings settings;
-    private Board board;
+    private GameBoard board;
     private ArrayList<Node> recNodeList;
     private ArrayList<MouseGestures> mgList;
     private ArrayList<SequentialTransition> animations;
@@ -71,7 +70,7 @@ public class HelpController {
     public void initData(SystemSettings settings) {
         this.settings = settings;
         this.movesLabel.setText("Moves: 0");
-        this.board = new Board();
+        this.board = new GameBoard();
         this.board.process("src/gridlock/resources/tut.txt");
 
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
