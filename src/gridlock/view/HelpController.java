@@ -41,7 +41,6 @@ public class HelpController {
     private ArrayList<MouseGestures> mgList;
     private ArrayList<SequentialTransition> animations;
     private IntegerProperty sequenceId;
-//    private SequentialTransition animations;
 
     @FXML
     private AnchorPane wrapper;
@@ -78,6 +77,7 @@ public class HelpController {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
+                    disableButtons();
                     nextButton.setDisable(false);
                     animateWinSequence();
                 }
@@ -282,6 +282,7 @@ public class HelpController {
 
     private void animateWinSequence() {
         // Get the player node
+        this.disableButtons();
         for (Node node:this.recNodeList) {
             if (node.getUserData().equals("z")) {
                 // Make BoardField Object Invisible
@@ -564,7 +565,9 @@ public class HelpController {
 
                 this.mgList.set(i, mg);
                 tt.setOnFinished(moveEvent -> {
-                    this.enableButtons();
+                    if (!this.board.gameStateProperty().getValue()) {
+                        this.enableButtons();
+                    }
                 });
 
             }

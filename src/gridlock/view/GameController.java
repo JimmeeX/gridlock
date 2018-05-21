@@ -96,18 +96,18 @@ public class GameController {
             String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
             this.board.process(levelName);
         }
-        // TODO: Board Generator
+        // TODO: Board Generator Threading
         else {
             BoardGenerator bg = new BoardGenerator();
             this.board = bg.generateAPuzzle(this.difficulty);
         }
-
 
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
+                    disableButtons();
                     nextButton.setDisable(false);
                     // TODO: These are just test numbers for 1,2,3 stars
                     if (board.getNumMoves() <= 15) {
@@ -128,7 +128,6 @@ public class GameController {
         });
 
         // Initialise Solver in the background
-//        this.solverBlock = new Block("block", 0, 0);
         this.solverThread = new Service<Void>() {
             @Override
             protected Task<Void> createTask() {
@@ -142,13 +141,6 @@ public class GameController {
             }
         };
 
-        this.solverThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                hintButton.setDisable(false);
-            }
-        });
-
         // Add Listener for Board Moves
         this.board.numMovesProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -157,7 +149,6 @@ public class GameController {
                 solverThread.cancel();
                 solverThread.restart();
             }
-            // Probably Run A solver in the background. Once solve is ready, enable the hint button.
         });
 
         // Run the solver for the first time with the Initial Board state
@@ -281,6 +272,7 @@ public class GameController {
 
     private void animateWinSequence() {
         // Get the player node
+        this.disableButtons();
         for (Node node:this.recNodeList) {
             if (node.getUserData().equals("z")) {
                 // Make BoardField Object Invisible
@@ -414,7 +406,6 @@ public class GameController {
     @FXML
     private void showHint(ActionEvent event) {
         this.disableButtons();
-//        Block block = this.board.getHint();
         Integer[] newPosition = {this.solverBlock.getRow(), this.solverBlock.getCol()};
         this.board.makeMove(this.solverBlock.getID(), newPosition, true);
         this.board.updateNumMoves();
@@ -441,7 +432,9 @@ public class GameController {
 
                 this.mgList.set(i, mg);
                 tt.setOnFinished(moveEvent -> {
-                    this.enableButtons();
+                    if (!this.board.gameStateProperty().getValue()) {
+                        this.enableButtons();
+                    }
                 });
 
             }
@@ -465,9 +458,7 @@ public class GameController {
     private void enableButtons() {
         this.undoButton.setDisable(false);
         this.redoButton.setDisable(false);
-        if (!this.solverThread.isRunning()) {
-            this.hintButton.setDisable(false);
-        }
+        this.hintButton.setDisable(false);
         this.resetButton.setDisable(false);
     }
 

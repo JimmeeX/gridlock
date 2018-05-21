@@ -1,6 +1,6 @@
 package gridlock.model;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 class BoardSolver {
@@ -13,24 +13,28 @@ class BoardSolver {
 
 	public Block solvePuzzle() {
 		LinkedList<Board> queue = new LinkedList<>();
-		ArrayList<Board> visited = new ArrayList<>();
+		HashSet<Board> visited = new HashSet<>();
 		int numExpanded = 0;
 
 		queue.add(this.board);
 		while (!queue.isEmpty()) {
 			Board curr = queue.poll();
 			numExpanded++;
-			if (curr.checkGameOver()) {
-				Board nextBoard = curr.getPath().get(1);
-				return nextBoard.getLastMove();
-			}
 			if (visited.contains(curr)) continue;
 
 			visited.add(curr);
 
-			for (Board boards : curr.getNextPossible()) queue.add(boards);
+			for (Board boards : curr.getNextPossible()) {
+				if (boards.checkGameOver()) {
+					Board nextBoard = boards.getPath().get(1);
+					System.out.println("Hint found.");
+					return nextBoard.getLastMove();
+				}
+				queue.add(boards);
+			}
 		}
-		return null; // SOON
+		System.out.println("Hint not found :(");
+		return null;
 	}
 
 }

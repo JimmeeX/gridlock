@@ -28,6 +28,7 @@ public class Board {
         }
         this.path.add(this);
         this.lastMove = lastMove;
+        fillGrid();
     }
     /** -prvt
      * initialise the grid (size x size)
@@ -45,33 +46,13 @@ public class Board {
         }
     }
 
-    /**
-     * process input txt file
-     */
-    //@param fileName the file name to be processed
-    /*public void process(String fileName) {
-        Scanner sc = null;
-        try {
-            sc = new Scanner(new File(fileName));
-            for (int row = 0; row < 6; row++) {
-                for (int col = 0; col < 6; col++) {
-                    String id = sc.next();
-                    if (!id.equals("*")) {
-                        int blockID = blockExist(id);
-                        if (blockID != -1) {
-                            incrementSize(blockID, row, col);
-                            this.grid.get(row)[col] = id;
-                        } else setBlock(id, row, col);
-                    }
-                }
+    private void fillGrid() {
+        for (Block block : this.blocks) {
+            for (Integer[] position : block.getPosition()) {
+                this.grid.get(position[0])[position[1]] = block.getID();
             }
-            printGrid();
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            if (sc != null) sc.close();
         }
-    }*/
+    }
 
     public Block getBlock(String id) {
         for (Block block: this.blocks) {
@@ -142,72 +123,6 @@ public class Board {
     }
 
     /**
-     * get all blocks initialised
-     * @return blocks arraylist
-     */
-    public ArrayList<Block> getBlocks() {
-        return this.blocks;
-    }
-
-    /*
-    // Added by Edwin
-    public boolean addBlock(String id, int row, int col, int size, boolean isHorizontal) {
-        if (blockExist(id) != -1
-                || (size == 2 && (row > 4 || col > 4))
-                || (size == 3 && (row > 3 || col > 3))
-                || row < 0 || col < 0
-                || !this.grid.get(row)[col].equals("*")) return false;
-        // put scenario: check if the grid unit is empty
-        addBlock(id, row, col);
-        int idx = blockExist(id);
-        Block b = blocks.get(idx);
-        if (isHorizontal) {
-            for (int i = 1; i < size; i++) {
-                if (!this.grid.get(row)[col+i].equals("*")) {
-                    clearBlockIDFromGrid(b);
-                    blocks.remove(b);
-                    return false;
-                }
-                incrementSize(idx, row, col+i);
-            }
-        } else {
-            for (int i = 1; i < size; i++) {
-                if (!this.grid.get(row+i)[col].equals("*")) {
-                    clearBlockIDFromGrid(b);
-                    blocks.remove(b);
-                    return false;
-                }
-                incrementSize(idx, row+i, col);
-            }
-        }
-        return true;
-    }*/
-
-    /** -prvt
-     * Check if the new position of a block collides with others and walls
-     * @param thisBlock
-     * @param newStartPosition
-     * @return
-     */
-    private boolean collide(Block thisBlock, Integer[] newStartPosition) {
-        for (Block block : this.blocks) {
-            if (!block.getID().equals(thisBlock.getID())) {
-                for (Integer[] position : block.getPosition()) {
-                    if (thisBlock.isHorizontal()
-                            ? position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize() - 1 &&
-                            position[0] == newStartPosition[0]
-                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize() - 1 &&
-                            position[1] == newStartPosition[1]) return true;
-                }
-            }
-        }
-        if (thisBlock.isHorizontal()
-                ? newStartPosition[1] + thisBlock.getSize() - 1 > 6
-                : newStartPosition[0] + thisBlock.getSize() - 1 > 6) return true;
-        return false;
-    }
-
-    /**
      * print the grid
      */
     public void printGrid() {
@@ -218,7 +133,7 @@ public class Board {
             System.out.println();
         }
     }
-  
+
     /**
      * Print all blocks' details
      */
@@ -249,14 +164,11 @@ public class Board {
                 Integer[] newPos = new Integer[2];
                 newPos[0] = block.getRow();
                 newPos[1] = block.getCol();
-                // go as far left as it can go
-                while (newPos[1] > 0) {
-                    newPos[1]--;
-                    if (this.collide(block, newPos)) {
-                        newPos[1]++;
-                        break;
-                    }
-                    if (newPos[1] != block.getCol()) {
+                String[] row = this.grid.get(newPos[0]);
+                if (newPos[1] > 0 && row[newPos[1] - 1].equals("*")) {
+                    // go as far left as it can go
+                    while (newPos[1] > 0 && row[newPos[1] - 1].equals("*")) {
+                        newPos[1]--;
                         ArrayList<Block> copyBlocks = new ArrayList<>();
                         for (Block blockCopy: this.blocks) {
                             Block newBlock = blockCopy.duplicate();
@@ -269,29 +181,12 @@ public class Board {
                         Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                         next.add(newBoard);
                     }
-                }
-                if (newPos[1] != block.getCol()) {
-                    ArrayList<Block> copyBlocks = new ArrayList<>();
-                    for (Block blockCopy: this.blocks) {
-                        Block newBlock = blockCopy.duplicate();
-                        if (newBlock.getID().equals(block.getID())) {
-                            newBlock.setNewPosition(newPos);
-                            changedBlock = newBlock;
-                        }
-                        copyBlocks.add(newBlock);
-                    }
-                    Board newBoard = new Board(copyBlocks, this.path, changedBlock);
-                    next.add(newBoard);
                 }
                 // go as far right as it can go
                 newPos[1] = block.getCol();
-                while (newPos[1] < 6 - block.getSize()) {
-                    newPos[1]++;
-                    if (this.collide(block, newPos)) {
-                        newPos[1]--;
-                        break;
-                    }
-                    if (newPos[1] != block.getCol()) {
+                if (newPos[1] < 6 - block.getSize() && row[newPos[1] + block.getSize()].equals("*")) {
+                    while (newPos[1] < 6 - block.getSize() && row[newPos[1] + block.getSize()].equals("*")) {
+                        newPos[1]++;
                         ArrayList<Block> copyBlocks = new ArrayList<>();
                         for (Block blockCopy: this.blocks) {
                             Block newBlock = blockCopy.duplicate();
@@ -304,32 +199,15 @@ public class Board {
                         Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                         next.add(newBoard);
                     }
-                }
-                if (newPos[1] != block.getCol()) {
-                    ArrayList<Block> copyBlocks = new ArrayList<>();
-                    for (Block blockCopy: this.blocks) {
-                        Block newBlock = blockCopy.duplicate();
-                        if (newBlock.getID().equals(block.getID())) {
-                            newBlock.setNewPosition(newPos);
-                            changedBlock = newBlock;
-                        }
-                        copyBlocks.add(newBlock);
-                    }
-                    Board newBoard = new Board(copyBlocks, this.path, changedBlock);
-                    next.add(newBoard);
                 }
             } else {
                 Integer[] newPos = new Integer[2];
                 newPos[0] = block.getRow();
                 newPos[1] = block.getCol();
-                // go as far up as it can go
-                while (newPos[0] > 0) {
-                    newPos[0]--;
-                    if (this.collide(block, newPos)) {
-                        newPos[0]++;
-                        break;
-                    }
-                    if (newPos[0] != block.getRow()) {
+                if (newPos[0] > 0 && this.grid.get(newPos[0] - 1)[newPos[1]].equals("*")) {
+                    // go as far up as it can go
+                    while (newPos[0] > 0 && this.grid.get(newPos[0] - 1)[newPos[1]].equals("*")) {
+                        newPos[0]--;
                         ArrayList<Block> copyBlocks = new ArrayList<>();
                         for (Block blockCopy: this.blocks) {
                             Block newBlock = blockCopy.duplicate();
@@ -342,29 +220,12 @@ public class Board {
                         Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                         next.add(newBoard);
                     }
-                }
-                if (newPos[0] != block.getRow()) {
-                    ArrayList<Block> copyBlocks = new ArrayList<>();
-                    for (Block blockCopy: this.blocks) {
-                        Block newBlock = blockCopy.duplicate();
-                        if (newBlock.getID().equals(block.getID())) {
-                            newBlock.setNewPosition(newPos);
-                            changedBlock = newBlock;
-                        }
-                        copyBlocks.add(newBlock);
-                    }
-                    Board newBoard = new Board(copyBlocks, this.path, changedBlock);
-                    next.add(newBoard);
                 }
                 // go as far down as it can go
                 newPos[0] = block.getRow();
-                while (newPos[0] < 6 - block.getSize()) {
-                    newPos[0]++;
-                    if (this.collide(block, newPos)) {
-                        newPos[0]--;
-                        break;
-                    }
-                    if (newPos[0] != block.getRow()) {
+                if (newPos[0] < 6 - block.getSize() && this.grid.get(newPos[0] + block.getSize())[newPos[1]].equals("*")) {
+                    while (newPos[0] < 6 - block.getSize() && this.grid.get(newPos[0] + block.getSize())[newPos[1]].equals("*")) {
+                        newPos[0]++;
                         ArrayList<Block> copyBlocks = new ArrayList<>();
                         for (Block blockCopy: this.blocks) {
                             Block newBlock = blockCopy.duplicate();
@@ -377,23 +238,16 @@ public class Board {
                         Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                         next.add(newBoard);
                     }
-                }
-                if (newPos[0] != block.getRow()) {
-                    ArrayList<Block> copyBlocks = new ArrayList<>();
-                    for (Block blockCopy: this.blocks) {
-                        Block newBlock = blockCopy.duplicate();
-                        if (newBlock.getID().equals(block.getID())) {
-                            newBlock.setNewPosition(newPos);
-                            changedBlock = newBlock;
-                        }
-                        copyBlocks.add(newBlock);
-                    }
-                    Board newBoard = new Board(copyBlocks, this.path, changedBlock);
-                    next.add(newBoard);
                 }
             }
         }
         return next;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = ((this.blocks == null) ? 0 : this.blocks.hashCode());
+        return result;
     }
 
     @Override
