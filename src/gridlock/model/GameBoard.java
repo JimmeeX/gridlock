@@ -10,8 +10,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * the Board class designed to contain the blocks initialised, grid,
@@ -196,9 +195,9 @@ public class GameBoard {
 
     // Added by Edwin
     public boolean setBlock(String id, int row, int col, int size, boolean isHorizontal) {
+        System.out.println("euh");
         if (blockExist(id) != -1
-                || (size == 2 && (row > 4 || col > 4))
-                || (size == 3 && (row > 3 || col > 3))
+                || (isHorizontal ? col + size > 6 : row + size > 6)
                 || row < 0 || col < 0
                 || !this.grid.get(row)[col].equals("*")) return false;
         // put scenario: check if the grid unit is empty
@@ -394,6 +393,19 @@ public class GameBoard {
         for (String[] strArr : grid) newBoard.grid.add(strArr.clone());
         for (Block block : blocks) newBoard.getBlocks().add(block.duplicate());
         return newBoard;
+    }
+
+    // Added by Edwin
+    public List <Block> particularRowOrColumnsBlockList(int rowOrColumnIndex, boolean isRow) {
+        List <Block> particularROCsBlockList = new ArrayList<>();
+        for (Block b: blocks) {
+            if (b.isHorizontal() == isRow) {
+                if (isRow ? b.getRow() == rowOrColumnIndex : b.getCol() == rowOrColumnIndex) {
+                    particularROCsBlockList.add(b);
+                }
+            }
+        }
+        return particularROCsBlockList;
     }
 
     /**
