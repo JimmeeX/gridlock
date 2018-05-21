@@ -90,6 +90,11 @@ public class GameController {
         this.levelLabel.setText("Level " + this.level.toString());
         this.movesLabel.setText("Moves: 0");
 
+        for (int i = 0; i < 5; i++) {
+            Thread genThread = new Thread(this.settings.getBG());
+            genThread.start();
+        }
+
         this.board = new GameBoard();
         if (mode.equals(Mode.CAMPAIGN)) {
             // Read Board from File
@@ -98,10 +103,10 @@ public class GameController {
         }
         // TODO: Board Generator
         else {
-            BoardGenerator bg = new BoardGenerator();
-            this.board = bg.generateAPuzzle(this.difficulty);
+            if (this.difficulty.equals(this.difficulty.valueOf("EASY"))) this.board = this.settings.getEasy();
+            else if (this.difficulty.equals(this.difficulty.valueOf("MEDIUM"))) this.board = this.settings.getMedium();
+            else this.board = this.settings.getHard();
         }
-
 
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {

@@ -1,5 +1,6 @@
 package gridlock.view;
 
+import gridlock.model.BoardGenerator;
 import gridlock.model.SystemSettings;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyValue;

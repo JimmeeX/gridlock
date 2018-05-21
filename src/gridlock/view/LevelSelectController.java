@@ -1,5 +1,6 @@
 package gridlock.view;
 
+import gridlock.model.BoardGenerator;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import gridlock.model.SystemSettings;

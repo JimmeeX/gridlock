@@ -1,9 +1,6 @@
 package gridlock.view;
 
-import gridlock.model.Board;
-import gridlock.model.Difficulty;
-import gridlock.model.Mode;
-import gridlock.model.SystemSettings;
+import gridlock.model.*;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;

@@ -1,5 +1,6 @@
 package gridlock.view;
 
+import gridlock.model.BoardGenerator;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
@@ -38,7 +39,6 @@ public class PlaySettingsController {
 
     public void initData(SystemSettings settings) {
         this.settings = settings;
-
         ToggleButton selectedDifficulty = (ToggleButton) this.toggleDifficulty.getSelectedToggle();
         this.difficulty = Difficulty.valueOf(selectedDifficulty.getText().toUpperCase());
 
