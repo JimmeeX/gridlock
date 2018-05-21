@@ -19,7 +19,6 @@ public class BoardGenerator implements Runnable {
 
     public GameBoard getEasy() {
         if (this.easy.size() > 0) return this.easy.remove(0);
-        System.out.println("haha");
         return generateAPuzzle(Difficulty.EASY);
     }
 
