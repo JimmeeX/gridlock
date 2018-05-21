@@ -18,11 +18,14 @@ public class SystemSettings implements Serializable {
     private transient MediaPlayer moveBlockSound;
     private transient MediaPlayer buttonPressSound;
     private transient MediaPlayer victorySound;
+    private transient MediaPlayer bgMusic;
 
     // TODO: Do highscore instead of 0,1,2,3
     private Integer[] easyLevels;
     private Integer[] mediumLevels;
     private Integer[] hardLevels;
+
+    private transient GameBoardGenerator bg;
 
     public SystemSettings(Double soundVolume, Double musicVolume) {
         this.soundVolume = new SimpleDoubleProperty();
@@ -44,6 +47,11 @@ public class SystemSettings implements Serializable {
         this.victorySound = new MediaPlayer(victoryMedia);
         this.victorySound.setVolume(this.soundVolume.getValue());
 
+        Media bgMedia = new Media(new File("src/gridlock/static/audio/Limes-Jovial.mp3").toURI().toString());
+        this.bgMusic = new MediaPlayer(bgMedia);
+        this.bgMusic.setVolume(this.soundVolume.getValue());
+        this.bgMusic.setCycleCount(MediaPlayer.INDEFINITE);
+
         // Initialise Volume Listeners
         this.soundVolume.addListener(new ChangeListener<Number>() {
             @Override
@@ -52,10 +60,21 @@ public class SystemSettings implements Serializable {
             }
         });
 
+        this.musicVolume.addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                applyMusicVolumes(newValue.doubleValue());
+            }
+        });
+
         // Initialise to 20 0's
         this.easyLevels = new Integer[20];
         this.mediumLevels = new Integer[20];
         this.hardLevels = new Integer[20];
+
+        // Initialise the BoardGenerator
+        this.bg = new GameBoardGenerator();
+
         this.resetProgress();
     }
 
@@ -79,6 +98,11 @@ public class SystemSettings implements Serializable {
         this.victorySound = new MediaPlayer(victoryMedia);
         this.victorySound.setVolume(this.soundVolume.getValue());
 
+        Media bgMedia = new Media(new File("src/gridlock/static/audio/Limes-Jovial.mp3").toURI().toString());
+        this.bgMusic = new MediaPlayer(bgMedia);
+        this.bgMusic.setVolume(this.soundVolume.getValue());
+        this.bgMusic.setCycleCount(MediaPlayer.INDEFINITE);
+
         // Initialise Volume Listeners
         this.soundVolume.addListener(new ChangeListener<Number>() {
             @Override
@@ -86,6 +110,14 @@ public class SystemSettings implements Serializable {
                 applySoundVolumes(newValue.doubleValue());
             }
         });
+
+        this.musicVolume.addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                applyMusicVolumes(newValue.doubleValue());
+            }
+        });
+
     }
 
     public void setLevelComplete(Difficulty difficulty, Integer level, Integer value) {
@@ -146,6 +178,14 @@ public class SystemSettings implements Serializable {
         return musicVolume.get();
     }
 
+    public GameBoardGenerator getBG() { return this.bg; }
+
+    public GameBoard getEasy() { return this.bg.getEasy(); }
+
+    public GameBoard getMedium() { return this.bg.getMedium(); }
+
+    public GameBoard getHard() { return this.bg.getHard(); }
+
     public DoubleProperty musicVolumeProperty() {
         return musicVolume;
     }
@@ -169,10 +209,18 @@ public class SystemSettings implements Serializable {
         this.victorySound.play();
     }
 
+    public void playBgMusic() {
+        this.bgMusic.play();
+    }
+
     private void applySoundVolumes(Double volume) {
         this.buttonPressSound.setVolume(volume);
         this.moveBlockSound.setVolume(volume);
         this.victorySound.setVolume(volume);
+    }
+
+    private void applyMusicVolumes(Double volume) {
+        this.bgMusic.setVolume(volume);
     }
 
     @Override

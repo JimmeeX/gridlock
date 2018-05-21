@@ -93,6 +93,9 @@ public class GameController {
         this.board.setMinMoves();
         this.minMovesLabel.setText("Goal: " + this.board.getMinMoves());
 
+        // Initialise Board Generator Thread
+        this.initGenerator();
+
         // Initialise Board Solver Thread
         this.initSolver();
 
@@ -117,6 +120,13 @@ public class GameController {
             oldBoard.restart();
             this.board = oldBoard.duplicate();
         }
+
+//        // Alina
+//        for (int i = 0; i < 5; i++) {
+//            Thread genThread = new Thread(this.settings.getBG());
+//            genThread.start();
+//        }
+
         else {
             this.board = new GameBoard();
             if (mode.equals(Mode.CAMPAIGN)) {
@@ -126,11 +136,15 @@ public class GameController {
             }
             // TODO: Board Generator Threading
             else {
-                GameBoardGenerator bg = new GameBoardGenerator();
-                this.board = bg.generateAPuzzle(this.difficulty);
-                this.levelSelectButton.setDisable(true);
+                if (this.difficulty.equals(Difficulty.EASY)) this.board = this.settings.getEasy();
+                else if (this.difficulty.equals(Difficulty.MEDIUM)) this.board = this.settings.getMedium();
+                else this.board = this.settings.getHard();
+//                GameBoardGenerator bg = new GameBoardGenerator();
+//                this.board = bg.generateAPuzzle(this.difficulty);
+//                this.levelSelectButton.setDisable(true);
             }
         }
+
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -156,6 +170,13 @@ public class GameController {
             }
         });
 
+    }
+
+    private void initGenerator() {
+        for (int i = 0; i < 5; i++) {
+            Thread genThread = new Thread(this.settings.getBG());
+            genThread.start();
+        }
     }
 
     private void initSolver() {

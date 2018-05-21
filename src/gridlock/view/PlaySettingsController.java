@@ -38,7 +38,6 @@ public class PlaySettingsController {
 
     public void initData(SystemSettings settings) {
         this.settings = settings;
-
         ToggleButton selectedDifficulty = (ToggleButton) this.toggleDifficulty.getSelectedToggle();
         this.difficulty = Difficulty.valueOf(selectedDifficulty.getText().toUpperCase());
 

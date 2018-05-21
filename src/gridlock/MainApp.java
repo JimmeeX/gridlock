@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 
-public class MainApp extends Application {
+public class MainApp extends Application{
     private SystemSettings settings;
 
     @Override
@@ -25,6 +25,7 @@ public class MainApp extends Application {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("src/gridlock/resources/save.data")))) {
             this.settings = (SystemSettings) ois.readObject();
             this.settings.initSounds(1.0, 1.0);
+            startThreading();
             System.out.println("Data successfully loaded.");
         }
 
@@ -32,7 +33,10 @@ public class MainApp extends Application {
         catch (IOException e) {
             System.out.println("No save file found. Creating new File.");
             this.settings = new SystemSettings(1.0,1.0);
+            startThreading();
         }
+
+        this.settings.playBgMusic();
 
         MenuController menuController = loader.getController();
         menuController.initData(this.settings);
@@ -56,7 +60,15 @@ public class MainApp extends Application {
         stage.close();
     }
 
+    public void startThreading() {
+        for (int i = 0; i < 6; i++) {
+            Thread levGen = new Thread(this.settings.getBG());
+            levGen.start();
+        }
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
+
 }
