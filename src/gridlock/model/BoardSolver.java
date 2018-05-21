@@ -20,16 +20,15 @@ class BoardSolver {
 		while (!queue.isEmpty()) {
 			Board curr = queue.poll();
 			numExpanded++;
+			if (curr.checkGameOver()) {
+				Board nextBoard = curr.getPath().get(1);
+				return nextBoard.getLastMove();
+			}
 			if (visited.contains(curr)) continue;
 
 			visited.add(curr);
 
 			for (Board boards : curr.getNextPossible()) {
-				if (boards.checkGameOver()) {
-					Board nextBoard = boards.getPath().get(1);
-					System.out.println("Hint found.");
-					return nextBoard.getLastMove();
-				}
 				queue.add(boards);
 			}
 		}

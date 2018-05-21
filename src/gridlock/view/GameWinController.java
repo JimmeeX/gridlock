@@ -49,10 +49,9 @@ public class GameWinController {
         if (mode.equals(Mode.SANDBOX)) {
             this.levelSelectButton.setDisable(true);
         }
-        // Save Information
 
         // If Level 20, then disable nextLevelButton
-        if (this.level == 20) {
+        if (this.level == 20 && this.mode.equals(Mode.CAMPAIGN)) {
             nextLevelButton.setDisable(true);
         }
     }

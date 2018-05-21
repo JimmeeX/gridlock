@@ -70,6 +70,7 @@ public class Board {
      * @param id the block's id
      * @param row the row position of the block
      * @param col the col position of the block
+<<<<<<< HEAD
      */
 
     public void setBlock(String id, int row, int col){
@@ -109,6 +110,8 @@ public class Board {
 
     /**
      * get the grid
+=======
+>>>>>>> 3de6a0360186a1d6c61d6d25201c78d7720344ed
      */
     public ArrayList<String[]> getGrid () {
         return this.grid;
@@ -236,13 +239,14 @@ public class Board {
                     }
                 }
             } else {
-                Integer[] newPos = new Integer[2];
+
+            	Integer[] newPos = new Integer[2];
                 newPos[0] = block.getRow();
                 newPos[1] = block.getCol();
                 if (newPos[0] > 0 && this.grid.get(newPos[0] - 1)[newPos[1]].equals("*")) {
-                    // go as far up as it can go
-                    while (newPos[0] > 0 && this.grid.get(newPos[0] - 1)[newPos[1]].equals("*")) {
-                        newPos[0]--;
+	                // go as far up as it can go
+	                while (newPos[0] > 0 && this.grid.get(newPos[0] - 1)[newPos[1]].equals("*")) {
+	                    newPos[0]--;
                         ArrayList<Block> copyBlocks = new ArrayList<>();
                         for (Block blockCopy: this.blocks) {
                             Block newBlock = blockCopy.duplicate();
@@ -254,7 +258,7 @@ public class Board {
                         }
                         Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                         next.add(newBoard);
-                    }
+	                }
                 }
                 // go as far down as it can go
                 newPos[0] = block.getRow();
