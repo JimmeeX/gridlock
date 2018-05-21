@@ -266,7 +266,7 @@ public class GameBoardGenerator {
         // Conclusion: the most difficult puzzle in this graph, along w numOfMoves
         Node maxNode = initWinNode;
         for (Node n: adjacency.keySet()) if (n.dist > maxNode.dist) maxNode = n;
-        //maxNode.board.printGrid();
+        maxNode.board.printGrid();
         System.out.println("Claim Max move: " + maxNode.dist);
 
         // Backtracking
@@ -302,7 +302,7 @@ public class GameBoardGenerator {
         int row = random.nextInt(5);
         int col = randomBinaryChoice(4, 5, 0.5);
         int s = randomBinaryChoice(2, 3, 0.5);
-        System.out.println("col = " + col);
+        //System.out.println("col = " + col);
 
         if (b.setBlock("a", row, col, s, false)) currNumOfBlock++;
         // cheat
