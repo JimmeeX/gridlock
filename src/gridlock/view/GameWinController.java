@@ -1,6 +1,7 @@
 package gridlock.view;
 
 import gridlock.model.Difficulty;
+import gridlock.model.GameBoard;
 import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
 import javafx.animation.FadeTransition;
@@ -21,11 +22,11 @@ import javafx.util.Duration;
 
 public class GameWinController {
     private SystemSettings settings;
+    private GameBoard prevBoard;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
 
-    // Temp
     @FXML
     private AnchorPane wrapper;
     @FXML
@@ -37,8 +38,9 @@ public class GameWinController {
     @FXML
     private Button levelSelectButton;
 
-    public void initData(SystemSettings settings, Mode mode, Difficulty difficulty, Integer level, Integer numMoves) {
+    public void initData(SystemSettings settings, GameBoard prevBoard, Mode mode, Difficulty difficulty, Integer level, Integer numMoves) {
         this.settings = settings;
+        this.prevBoard = prevBoard;
         this.mode = mode;
         this.difficulty = difficulty;
         this.level = level;
@@ -101,7 +103,7 @@ public class GameWinController {
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(this.settings, this.mode, this.difficulty, this.level + 1);
+        gameController.initData(this.settings, null, this.mode, this.difficulty, this.level + 1);
 
         Stage popupWindow = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Stage owner = (Stage)popupWindow.getOwner();
@@ -138,7 +140,7 @@ public class GameWinController {
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(this.settings, this.mode, this.difficulty, this.level);
+        gameController.initData(this.settings, this.prevBoard, this.mode, this.difficulty, this.level);
 
         Stage popupWindow = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Stage owner = (Stage)popupWindow.getOwner();
