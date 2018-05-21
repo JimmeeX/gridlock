@@ -142,9 +142,14 @@ public class GameBoardGenerator2 {
 
         generateInitialHeuristics (d);
         while (result == null && retry < 50) {
+            long startTime = System.nanoTime();
             System.out.println("Retry " + retry);
             result = generateOneBoard();
             retry++;
+            long endTime = System.nanoTime();
+            long duration = (endTime - startTime)/1000000;
+            System.out.println("Duration " + duration + "/1000 seconds.");
+
         }
         if (result == null) {
             System.out.println("Too long");
@@ -298,8 +303,6 @@ public class GameBoardGenerator2 {
     }
 
     private GameBoard generateOneBoard () {
-        long startTime = System.nanoTime();
-
         /* BFS:
         * ) Queue is the open set
         * ) Adjacency is both the open set and closed set: the only thing that makes
@@ -376,11 +379,7 @@ public class GameBoardGenerator2 {
 
         // Conclusion: the most difficult puzzle in this graph, along w numOfMoves
         Node maxNode = queueRecordList.get(queueRecordList.size()-1);
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime)/1000000;
         System.out.println("Claim max move: " + maxNode.dist);
-        //System.out.println("Duration " + duration + "/1000 seconds.");
-
         /*
         // Backtracking
         System.out.println("Backward check . . .");
