@@ -13,8 +13,11 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -30,7 +33,9 @@ public class GameWinController {
     @FXML
     private AnchorPane wrapper;
     @FXML
-    private Label starsLabel;
+    private Canvas canvas;
+    @FXML
+    private Label minMovesLabel;
     @FXML
     private Label movesLabel;
     @FXML
@@ -38,15 +43,17 @@ public class GameWinController {
     @FXML
     private Button levelSelectButton;
 
-    public void initData(SystemSettings settings, GameBoard prevBoard, Mode mode, Difficulty difficulty, Integer level, Integer numMoves) {
+    public void initData(SystemSettings settings, GameBoard prevBoard, Mode mode, Difficulty difficulty, Integer level, Integer numMoves, Integer minMoves, Integer result) {
         this.settings = settings;
         this.prevBoard = prevBoard;
         this.mode = mode;
         this.difficulty = difficulty;
         this.level = level;
 
-        this.starsLabel.setText("3 Stars");
+        this.minMovesLabel.setText("Goal: " + minMoves.toString());
         this.movesLabel.setText("Moves: " + numMoves.toString());
+
+        this.drawMedals(result);
 
         if (mode.equals(Mode.SANDBOX)) {
             this.levelSelectButton.setDisable(true);
@@ -62,6 +69,25 @@ public class GameWinController {
     private void initialize() {
         this.wrapper.setOpacity(0);
         this.performFadeIn(this.wrapper);
+    }
+
+    private void drawMedals(Integer result) {
+        Image medalImage = new Image("file:src/gridlock/static/images/medals.png");
+        switch (result) {
+            case 1:
+                medalImage = new Image("file:src/gridlock/static/images/medal_bronze.png");
+                break;
+            case 2:
+                medalImage = new Image("file:src/gridlock/static/images/medal_silver.png");
+                break;
+            case 3:
+                medalImage = new Image("file:src/gridlock/static/images/medal_gold.png");
+                break;
+        }
+        GraphicsContext gc = this.canvas.getGraphicsContext2D();
+
+        gc.drawImage(medalImage, 25, 75, 100, 200);
+        gc.drawImage(medalImage, 500, 75, 100, 200);
     }
 
     @FXML

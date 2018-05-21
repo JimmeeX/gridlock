@@ -35,6 +35,8 @@ import java.util.ArrayList;
 public class GameController {
     private SystemSettings settings;
     private GameBoard board;
+    private Integer minMoves;
+    private Integer result;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
@@ -91,7 +93,8 @@ public class GameController {
         this.initBoard(oldBoard);
 
         this.board.setMinMoves();
-        this.minMovesLabel.setText("Goal: " + this.board.getMinMoves());
+        this.minMoves = this.board.getMinMoves();
+        this.minMovesLabel.setText("Goal: " + this.minMoves);
 
         // Initialise Board Generator Thread
         this.initGenerator();
@@ -121,12 +124,6 @@ public class GameController {
             this.board = oldBoard.duplicate();
         }
 
-//        // Alina
-//        for (int i = 0; i < 5; i++) {
-//            Thread genThread = new Thread(this.settings.getBG());
-//            genThread.start();
-//        }
-
         else {
             this.board = new GameBoard();
             if (mode.equals(Mode.CAMPAIGN)) {
@@ -134,14 +131,13 @@ public class GameController {
                 String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
                 this.board.process(levelName);
             }
-            // TODO: Board Generator Threading
             else {
                 if (this.difficulty.equals(Difficulty.EASY)) this.board = this.settings.getEasy();
                 else if (this.difficulty.equals(Difficulty.MEDIUM)) this.board = this.settings.getMedium();
                 else this.board = this.settings.getHard();
-//                GameBoardGenerator bg = new GameBoardGenerator();
-//                this.board = bg.generateAPuzzle(this.difficulty);
-//                this.levelSelectButton.setDisable(true);
+//                GameBoardGenerator gbg = new GameBoardGenerator();
+//                this.board = gbg.generateAPuzzle(this.difficulty);
+                this.levelSelectButton.setDisable(true);
             }
         }
 
@@ -152,16 +148,7 @@ public class GameController {
                 if (newValue) {
                     disableButtons();
                     nextButton.setDisable(false);
-                    if (mode.equals(Mode.CAMPAIGN)) {
-                        // TODO: These are just test numbers for 1,2,3 stars
-                        if (board.getNumMoves() <= 15) {
-                            settings.setLevelComplete(difficulty, level, 3);
-                        } else if (board.getNumMoves() <= 25) {
-                            settings.setLevelComplete(difficulty, level, 2);
-                        } else {
-                            settings.setLevelComplete(difficulty, level, 1);
-                        }
-                    }
+                    handleWin();
                     animateWinSequence();
                 }
                 else {
@@ -313,6 +300,20 @@ public class GameController {
         rec.setEffect(effect);
     }
 
+    private void handleWin() {
+        if (this.board.getNumMoves() == this.minMoves) {
+            this.result = 3;
+        }
+        else if (board.getNumMoves() <= Math.round(this.minMoves * 1.3)) {
+            this.result = 2;
+        } else {
+            this.result = 1;
+        }
+        if (this.mode.equals(Mode.CAMPAIGN)) {
+            this.settings.setLevelComplete(this.difficulty, this.level, this.result);
+        }
+    }
+
     private void animateWinSequence() {
         // Get the player node
         this.disableButtons();
@@ -398,7 +399,7 @@ public class GameController {
 
         // Attach Controller
         GameWinController gameWinController = loader.getController();
-        gameWinController.initData(this.settings, this.board, this.mode, this.difficulty, this.level, this.board.getNumMoves());
+        gameWinController.initData(this.settings, this.board, this.mode, this.difficulty, this.level, this.board.getNumMoves(), this.minMoves, this.result);
 
         gameWinStage.setScene(gameWinScene);
         gameWinStage.show();

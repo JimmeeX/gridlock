@@ -24,7 +24,7 @@ public class MainApp extends Application{
         // Try Reading from Serialized Data
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("src/gridlock/resources/save.data")))) {
             this.settings = (SystemSettings) ois.readObject();
-            this.settings.initSounds(0.5, 0.25);
+            this.settings.initSounds(0.5, 0.0);
             startThreading();
             System.out.println("Data successfully loaded.");
         }
@@ -32,7 +32,7 @@ public class MainApp extends Application{
         // If Reading Failed, Create new File
         catch (IOException e) {
             System.out.println("No save file found. Creating new File.");
-            this.settings = new SystemSettings(0.5,0.25);
+            this.settings = new SystemSettings(0.5,0.0);
             startThreading();
         }
 

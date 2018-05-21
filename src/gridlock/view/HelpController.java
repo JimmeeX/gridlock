@@ -2,6 +2,7 @@ package gridlock.view;
 
 import gridlock.model.Block;
 import gridlock.model.GameBoard;
+import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
 import javafx.animation.*;
 import javafx.beans.property.IntegerProperty;
@@ -36,6 +37,8 @@ import java.util.ArrayList;
 public class HelpController {
     private SystemSettings settings;
     private GameBoard board;
+    private Integer minMoves;
+    private Integer result;
     private ArrayList<Node> recNodeList;
     private ArrayList<MouseGestures> mgList;
     private ArrayList<SequentialTransition> animations;
@@ -75,7 +78,8 @@ public class HelpController {
         this.initBoard();
 
         this.board.setMinMoves();
-        this.minMovesLabel.setText("Goal: " + this.board.getMinMoves());
+        this.minMoves = this.board.getMinMoves();
+        this.minMovesLabel.setText("Goal: " + this.minMoves);
 
         // Draw the Rectangles and add it to the Board
         this.initNodeList();
@@ -104,7 +108,11 @@ public class HelpController {
                 if (newValue) {
                     disableButtons();
                     nextButton.setDisable(false);
+                    handleWin();
                     animateWinSequence();
+                }
+                else {
+                    nextButton.setDisable(true);
                 }
             }
         });
@@ -292,6 +300,17 @@ public class HelpController {
         this.redoButton.setDisable(true);
         this.hintButton.setDisable(true);
         this.resetButton.setDisable(true);
+    }
+
+    private void handleWin() {
+        if (this.board.getNumMoves() == this.minMoves) {
+            this.result = 3;
+        }
+        else if (board.getNumMoves() <= Math.round(this.minMoves * 1.3)) {
+            this.result = 2;
+        } else {
+            this.result = 1;
+        }
     }
 
     private void animateWinSequence() {
@@ -515,7 +534,7 @@ public class HelpController {
 
         // Attach Controller
         HelpWinController helpWinController = loader.getController();
-        helpWinController.initData(this.settings, this.board.getNumMoves());
+        helpWinController.initData(this.settings, this.board.getNumMoves(), this.minMoves, this.result);
 
         helpWinStage.setScene(helpWinScene);
         helpWinStage.show();
