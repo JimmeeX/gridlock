@@ -146,6 +146,7 @@ public class GameBoardGenerator {
             result = process("src/gridlock/resources/" + level + "/20.txt");
             System.out.println("Too long");
         }
+        result.setMinMoves();
         return result;
     }
 

@@ -537,7 +537,7 @@ public class HelpController {
     @FXML
     private void showHint(ActionEvent event) {
         this.disableButtons();
-        Block block = this.board.getHint();
+        Block block = this.board.getHint(false);
         Integer[] newPosition = {block.getRow(), block.getCol()};
         this.board.makeMove(block.getID(), newPosition, true);
         this.board.updateNumMoves();

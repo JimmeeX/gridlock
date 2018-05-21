@@ -163,7 +163,7 @@ public class GameController {
                 return new Task<Void>() {
                     @Override
                     protected Void call() throws Exception {
-                        solverBlock = board.getHint();
+                        solverBlock = board.getHint(false);
                         return null;
                     }
                 };
