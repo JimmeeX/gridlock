@@ -1,37 +1,61 @@
 package gridlock.model;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
+//do we really need an id for a block?
+//hmm I reckon the id is to look for the block
+//(say when we move a block, we refer to them by their id) - Alina
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+/**
+ * the Board class designed to contain the blocks initialised, grid,
+ * and other functionality of a board game (make move, undo move, etc)
+ */
 public class GameBoard {
-	private ArrayList<String[]> grid;
+    private ArrayList<String[]> grid;
     private ArrayList<Block> blocks;
-	private ArrayList<Block> prevLocations;
+    private ArrayList<Block> prevLocations;
     private ArrayList<Block> nextLocations;
+    private int minMoves;
 
     // Added by James :)
     private BooleanProperty gameState;
     private IntegerProperty numMoves;
-    
+
     public GameBoard() {
-    	initialiseGrid(6);
-    	this.blocks = new ArrayList<>();
-    	this.prevLocations = new ArrayList<>();
+        initialiseGrid(6);
+        this.blocks = new ArrayList<>();
+        this.prevLocations = new ArrayList<>();
         this.nextLocations = new ArrayList<>();
-        
+
         // Added by James :)
         // Board starts off as unsolved (ie, false)
         this.gameState = new SimpleBooleanProperty(false);
         this.numMoves = new SimpleIntegerProperty(0);
     }
-    
+
+    /** -prvt
+     * initialise the grid (size x size)
+     * @param size the length of the grid (square)
+     * @post this.grid.size() >= 0
+     */
+    private void initialiseGrid(int size) {
+        this.grid = new ArrayList<>();
+        for (int row = 0; row < size; row++) {
+            String[] newRow = new String[size];
+            for (int col = 0; col < size; col++) {
+                newRow[col] = "*";
+            }
+            this.grid.add(newRow);
+        }
+    }
+
     /**
      * process input txt file
      * @param fileName the file name to be processed
@@ -48,8 +72,7 @@ public class GameBoard {
                         if (blockID != -1) {
                             incrementSize(blockID, row, col);
                             this.grid.get(row)[col] = id;
-                        }
-                        else addBlock(id, row, col);
+                        } else setBlock(id, row, col);
                     }
                 }
             }
@@ -58,22 +81,7 @@ public class GameBoard {
         } finally {
             if (sc != null) sc.close();
         }
-    }
-    
-    /** -prvt
-     * initialise the grid (size x size)
-     * @param size the length of the grid (square)
-     * @post this.grid.size() >= 0
-     */
-    private void initialiseGrid(int size) {
-        this.grid = new ArrayList<>();
-        for (int row = 0; row < size; row++) {
-            String[] newRow = new String[size];
-            for (int col = 0; col < size; col++) {
-                newRow[col] = "*";
-            }
-            this.grid.add(newRow);
-        }
+        setMinMoves();
     }
 
     public Block getBlock(String id) {
@@ -95,18 +103,6 @@ public class GameBoard {
      */
 
     public void setBlock(String id, int row, int col){
-        Block newBlock = new Block(id, row, col);
-        this.grid.get(row)[col] = id;
-        this.blocks.add(newBlock);
-    }
-
-    /**
-     * add a new block to the grid
-     * @param id the block's id
-     * @param row the row position of the block
-     * @param col the col position of the block
-     */
-    public void addBlock(String id, int row, int col){
         Block newBlock = new Block(id, row, col);
         this.grid.get(row)[col] = id;
         this.blocks.add(newBlock);
@@ -148,6 +144,22 @@ public class GameBoard {
         return this.grid;
     }
 
+    /**
+     * get the size of the grid
+     * @return grid.size()
+     */
+    public int getGridSize() {
+        return this.grid.size();
+    }
+
+    /**
+     * get all blocks initialised
+     * @return blocks arraylist
+     */
+    public ArrayList<Block> getBlocks() {
+        return this.blocks;
+    }
+
     // Added by James :)
     public int getNumMoves() {
         return numMoves.get();
@@ -161,6 +173,27 @@ public class GameBoard {
     // Added by James :)
     public void updateNumMoves() {
         this.numMoves.setValue(this.prevLocations.size());
+    }
+
+    /**
+     * Check if the game is over (the "z" car is by the exit)
+     * Will send "true" to "gameState" if game is over
+     */
+    // Added by James :)
+    public void checkGameOver() {
+        this.gameState.setValue(false);
+        for (Block block: this.blocks) {
+            if (block.getID().equals("z")) {
+                if (block.getPosition().get(0)[1] == 4) {
+                    this.gameState.setValue(true);
+                }
+            }
+        }
+    }
+
+    // Added by James :)
+    public BooleanProperty gameStateProperty() {
+        return gameState;
     }
 
     // Added by Edwin
@@ -218,29 +251,13 @@ public class GameBoard {
             }
         }
     }
-    
-    /** -prvt
-     */
-    private void clearBlockIDFromGrid(Block block) {
-        for (Integer[] position: block.getPosition()) {
-            this.grid.get(position[0])[position[1]] = "*";
-        }
-    }
-    /** -prvt
-     */
-    private void addBlockIDToGrid(Block block) {
-        for (Integer[] position :block.getPosition()) {
-            this.grid.get(position[0])[position[1]] = block.getID();
-        }
-    }
-    
     /** -prvt
      * Check if the new position of a block collides with others and walls
      * @param thisBlock
      * @param newStartPosition
      * @return
      */
-    public boolean collide(Block thisBlock, Integer[] newStartPosition) {
+    private boolean collide(Block thisBlock, Integer[] newStartPosition) {
         for (Block block : this.blocks) {
             if (!block.getID().equals(thisBlock.getID())) {
                 for (Integer[] position : block.getPosition()) {
@@ -257,7 +274,21 @@ public class GameBoard {
                 : newStartPosition[0] + thisBlock.getSize() - 1 > 6) return true;
         return false;
     }
-    
+    /** -prvt
+     */
+    private void clearBlockIDFromGrid(Block block) {
+        for (Integer[] position: block.getPosition()) {
+            this.grid.get(position[0])[position[1]] = "*";
+        }
+    }
+    /** -prvt
+     */
+    private void addBlockIDToGrid(Block block) {
+        for (Integer[] position :block.getPosition()) {
+            this.grid.get(position[0])[position[1]] = block.getID();
+        }
+    }
+
     /**
      * undo the previous move made
      * @post this.nextLocations.size()++
@@ -313,26 +344,30 @@ public class GameBoard {
         this.prevLocations.clear();
         this.nextLocations.clear();
     }
-
-    // Added by James :)
-    public BooleanProperty gameStateProperty() {
-        return gameState;
+    
+    /**
+     * set minMoves required to finish current puzzle
+     */
+    public void setMinMoves() {
+    	getHint(true);
+    }
+    
+    public int getMinMoves() {
+    	return this.minMoves;
     }
 
     /**
-     * Check if the game is over (the "z" car is by the exit)
-     * Will send "true" to "gameState" if game is over
+     * get hint of the next block to move
+     * @return
      */
-    // Added by James :)
-    public void checkGameOver() {
-        this.gameState.setValue(false);
-        for (Block block: this.blocks) {
-            if (block.getID().equals("z")) {
-                if (block.getPosition().get(0)[1] == 4) {
-                    this.gameState.setValue(true);
-                }
-            }
+    public Block getHint(boolean getMinMoves) {
+        Board startBoard = new Board(this.blocks, new ArrayList<Board>(), null);
+        BoardSolver solver = new BoardSolver(startBoard);
+        Block changedBlock = solver.solvePuzzle();
+        if (getMinMoves) {
+        	this.minMoves = solver.getNumMoves();
         }
+        return changedBlock;
     }
 
     /**
@@ -397,8 +432,6 @@ public class GameBoard {
             System.out.println(block.toString());
         }
     }
-
-
     /**
      * Print all next-prev loc details
      */
@@ -415,27 +448,4 @@ public class GameBoard {
         }
     }
     
-    /**
-     * get the size of the grid
-     * @return grid.size()
-     */
-    public int getGridSize() {
-        return this.grid.size();
-    }
-    
-    /**
-     * get all blocks initialised
-     * @return blocks arraylist
-     */
-    public ArrayList<Block> getBlocks() {
-        return this.blocks;
-    }
-    
-    public Block getHint() {
-    	Board startBoard = new Board(this.blocks, new ArrayList<Board>(), null);
-    	BoardSolver solver = new BoardSolver(startBoard);
-    	return solver.solvePuzzle();
-    }
-    
 }
-

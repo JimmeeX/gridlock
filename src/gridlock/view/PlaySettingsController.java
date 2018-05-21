@@ -1,6 +1,5 @@
 package gridlock.view;
 
-import gridlock.model.BoardGenerator;
 import gridlock.model.Difficulty;
 import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
@@ -145,7 +144,7 @@ public class PlaySettingsController {
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(this.settings, selectedMode, selectedDifficulty, 1);
+        gameController.initData(this.settings, null, selectedMode, selectedDifficulty, 1);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(gameScene);

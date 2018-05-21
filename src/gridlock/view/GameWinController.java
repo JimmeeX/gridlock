@@ -1,6 +1,9 @@
 package gridlock.view;
 
-import gridlock.model.*;
+import gridlock.model.Difficulty;
+import gridlock.model.GameBoard;
+import gridlock.model.Mode;
+import gridlock.model.SystemSettings;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
@@ -10,8 +13,11 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -19,33 +25,42 @@ import javafx.util.Duration;
 
 public class GameWinController {
     private SystemSettings settings;
+    private GameBoard prevBoard;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
 
-    // Temp
     @FXML
     private AnchorPane wrapper;
     @FXML
-    private Label starsLabel;
+    private Canvas canvas;
+    @FXML
+    private Label minMovesLabel;
     @FXML
     private Label movesLabel;
     @FXML
     private Button nextLevelButton;
+    @FXML
+    private Button levelSelectButton;
 
-    public void initData(SystemSettings settings, Mode mode, Difficulty difficulty, Integer level, Integer numMoves) {
+    public void initData(SystemSettings settings, GameBoard prevBoard, Mode mode, Difficulty difficulty, Integer level, Integer numMoves, Integer minMoves, Integer result) {
         this.settings = settings;
+        this.prevBoard = prevBoard;
         this.mode = mode;
         this.difficulty = difficulty;
         this.level = level;
 
-        this.starsLabel.setText("3 Stars");
+        this.minMovesLabel.setText("Goal: " + minMoves.toString());
         this.movesLabel.setText("Moves: " + numMoves.toString());
 
-        // Save Information
+        this.drawMedals(result);
+
+        if (mode.equals(Mode.SANDBOX)) {
+            this.levelSelectButton.setDisable(true);
+        }
 
         // If Level 20, then disable nextLevelButton
-        if (this.level == 20) {
+        if (this.level == 20 && this.mode.equals(Mode.CAMPAIGN)) {
             nextLevelButton.setDisable(true);
         }
     }
@@ -54,6 +69,25 @@ public class GameWinController {
     private void initialize() {
         this.wrapper.setOpacity(0);
         this.performFadeIn(this.wrapper);
+    }
+
+    private void drawMedals(Integer result) {
+        Image medalImage = new Image("file:src/gridlock/static/images/medals.png");
+        switch (result) {
+            case 1:
+                medalImage = new Image("file:src/gridlock/static/images/medal_bronze.png");
+                break;
+            case 2:
+                medalImage = new Image("file:src/gridlock/static/images/medal_silver.png");
+                break;
+            case 3:
+                medalImage = new Image("file:src/gridlock/static/images/medal_gold.png");
+                break;
+        }
+        GraphicsContext gc = this.canvas.getGraphicsContext2D();
+
+        gc.drawImage(medalImage, 25, 75, 100, 200);
+        gc.drawImage(medalImage, 500, 75, 100, 200);
     }
 
     @FXML
@@ -95,7 +129,7 @@ public class GameWinController {
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(this.settings, this.mode, this.difficulty, this.level + 1);
+        gameController.initData(this.settings, null, this.mode, this.difficulty, this.level + 1);
 
         Stage popupWindow = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Stage owner = (Stage)popupWindow.getOwner();
@@ -132,7 +166,7 @@ public class GameWinController {
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(this.settings, this.mode, this.difficulty, this.level);
+        gameController.initData(this.settings, this.prevBoard, this.mode, this.difficulty, this.level);
 
         Stage popupWindow = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Stage owner = (Stage)popupWindow.getOwner();

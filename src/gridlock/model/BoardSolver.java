@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 class BoardSolver {
-
 	Board board;
 	int numMoves;
 
@@ -21,7 +20,7 @@ class BoardSolver {
 			Board curr = queue.poll();
 			if (curr.checkGameOver()) {
 				Board nextBoard = curr.getPath().get(1);
-				numMoves = nextBoard.getPathSize() - 1;
+				numMoves = curr.getPathSize() - 1;
 				return nextBoard.getLastMove();
 			}
 			if (visited.contains(curr)) continue;
@@ -34,7 +33,7 @@ class BoardSolver {
 		}
 		return null;
 	}
-
+	
 	public int getNumMoves() {
 		return numMoves;
 	}

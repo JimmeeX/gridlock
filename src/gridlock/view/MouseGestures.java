@@ -50,7 +50,7 @@ public class MouseGestures {
 
     public MouseGestures(SystemSettings settings, String id, GameBoard board, Pane boardField,
                          int gridX, int gridY, Boolean isHorizontal,
-                            Node recNode, ArrayList<Node> recNodeL) {
+                         Node recNode, ArrayList<Node> recNodeL) {
         this.settings = settings;
         this.id = id;
         this.board = board;

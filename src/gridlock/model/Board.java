@@ -45,13 +45,13 @@ public class Board {
             this.grid.add(newRow);
         }
     }
-    
+
     private void fillGrid() {
-    	for (Block block : this.blocks) {
-    		for (Integer[] position : block.getPosition()) {
-    			this.grid.get(position[0])[position[1]] = block.getID();
-    		}
-    	}
+        for (Block block : this.blocks) {
+            for (Integer[] position : block.getPosition()) {
+                this.grid.get(position[0])[position[1]] = block.getID();
+            }
+        }
     }
 
     public Block getBlock(String id) {
@@ -66,7 +66,11 @@ public class Board {
     }
 
     /**
-     * get the grid
+     * add a new block to the grid
+     * @param id the block's id
+     * @param row the row position of the block
+     * @param col the col position of the block
+<<<<<<< HEAD
      */
 
     public void setBlock(String id, int row, int col){
@@ -106,6 +110,8 @@ public class Board {
 
     /**
      * get the grid
+=======
+>>>>>>> 3de6a0360186a1d6c61d6d25201c78d7720344ed
      */
     public ArrayList<String[]> getGrid () {
         return this.grid;
@@ -118,8 +124,43 @@ public class Board {
     public int getGridSize() {
         return this.grid.size();
     }
-    
+
     /**
+<<<<<<< HEAD
+=======
+     * get all blocks initialised
+     * @return blocks arraylist
+     */
+    public ArrayList<Block> getBlocks() {
+        return this.blocks;
+    }
+
+    /** -prvt
+     * Check if the new position of a block collides with others and walls
+     * @param thisBlock
+     * @param newStartPosition
+     * @return
+     */
+    private boolean collide(Block thisBlock, Integer[] newStartPosition) {
+        for (Block block : this.blocks) {
+            if (!block.getID().equals(thisBlock.getID())) {
+                for (Integer[] position : block.getPosition()) {
+                    if (thisBlock.isHorizontal()
+                            ? position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize() - 1 &&
+                            position[0] == newStartPosition[0]
+                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize() - 1 &&
+                            position[1] == newStartPosition[1]) return true;
+                }
+            }
+        }
+        if (thisBlock.isHorizontal()
+                ? newStartPosition[1] + thisBlock.getSize() - 1 > 6
+                : newStartPosition[0] + thisBlock.getSize() - 1 > 6) return true;
+        return false;
+    }
+
+    /**
+>>>>>>> 948a78602a0a7f8a871fed6c46e064b7c16bfd1a
      * print the grid
      */
     public void printGrid() {
@@ -130,7 +171,7 @@ public class Board {
             System.out.println();
         }
     }
-  
+
     /**
      * Print all blocks' details
      */
@@ -163,9 +204,9 @@ public class Board {
                 newPos[1] = block.getCol();
                 String[] row = this.grid.get(newPos[0]);
                 if (newPos[1] > 0 && row[newPos[1] - 1].equals("*")) {
-	                // go as far left as it can go
-	                while (newPos[1] > 0 && row[newPos[1] - 1].equals("*")) {
-	                    newPos[1]--;
+                    // go as far left as it can go
+                    while (newPos[1] > 0 && row[newPos[1] - 1].equals("*")) {
+                        newPos[1]--;
                         ArrayList<Block> copyBlocks = new ArrayList<>();
                         for (Block blockCopy: this.blocks) {
                             Block newBlock = blockCopy.duplicate();
@@ -177,12 +218,12 @@ public class Board {
                         }
                         Board newBoard = new Board(copyBlocks, this.path, changedBlock);
                         next.add(newBoard);
-	                }
+                    }
                 }
                 // go as far right as it can go
                 newPos[1] = block.getCol();
                 if (newPos[1] < 6 - block.getSize() && row[newPos[1] + block.getSize()].equals("*")) {
-                	while (newPos[1] < 6 - block.getSize() && row[newPos[1] + block.getSize()].equals("*")) {
+                    while (newPos[1] < 6 - block.getSize() && row[newPos[1] + block.getSize()].equals("*")) {
                         newPos[1]++;
                         ArrayList<Block> copyBlocks = new ArrayList<>();
                         for (Block blockCopy: this.blocks) {
@@ -198,6 +239,7 @@ public class Board {
                     }
                 }
             } else {
+
             	Integer[] newPos = new Integer[2];
                 newPos[0] = block.getRow();
                 newPos[1] = block.getCol();
@@ -221,7 +263,7 @@ public class Board {
                 // go as far down as it can go
                 newPos[0] = block.getRow();
                 if (newPos[0] < 6 - block.getSize() && this.grid.get(newPos[0] + block.getSize())[newPos[1]].equals("*")) {
-                	while (newPos[0] < 6 - block.getSize() && this.grid.get(newPos[0] + block.getSize())[newPos[1]].equals("*")) {
+                    while (newPos[0] < 6 - block.getSize() && this.grid.get(newPos[0] + block.getSize())[newPos[1]].equals("*")) {
                         newPos[0]++;
                         ArrayList<Block> copyBlocks = new ArrayList<>();
                         for (Block blockCopy: this.blocks) {
@@ -242,10 +284,10 @@ public class Board {
     }
 
     @Override
-	public int hashCode() {
-		int result = ((this.blocks == null) ? 0 : this.blocks.hashCode());
-		return result;
-	}
+    public int hashCode() {
+        int result = ((this.blocks == null) ? 0 : this.blocks.hashCode());
+        return result;
+    }
 
     @Override
     public boolean equals (Object obj) {
@@ -267,7 +309,6 @@ public class Board {
         }
         return true;
     }
-
 
     @Override
     public String toString() {

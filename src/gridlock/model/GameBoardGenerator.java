@@ -2,16 +2,17 @@ package gridlock.model;
 
 import java.util.*;
 import java.io.*;
-
 import static java.lang.Thread.sleep;
 
-public class BoardGenerator implements Runnable {
+public class GameBoardGenerator implements Runnable {
+
+    private Node maxNode = null;
 
     private ArrayList<GameBoard> easy;
     private ArrayList<GameBoard> medium;
     private ArrayList<GameBoard> hard;
 
-    public BoardGenerator() {
+    public GameBoardGenerator() {
         this.easy = new ArrayList<>();
         this.medium = new ArrayList<>();
         this.hard = new ArrayList<>();
@@ -160,9 +161,23 @@ public class BoardGenerator implements Runnable {
 
     public GameBoard generateAPuzzle (Difficulty d) {
         GameBoard result = null;
-        while (result == null)
-            result = generateOneBoard (generateWinBoard(d), lowestNumOfMoves (d), highestNumOfMoves (d));
+        int retry = 0;
+        while (result == null && retry < 50) {
+            System.out.println("AAA");
+            result = generateOneBoard(generateWinBoard(d), lowestNumOfMoves(d), highestNumOfMoves(d));
+            retry++;
+        }
+        if (result == null) {
+            String level = d.equals(d.valueOf("EASY")) ? "easy" : d.equals(d.valueOf("MEDIUM")) ? "medium" : "hard";
+            result = process("src/gridlock/resources/" + level + "/20.txt");
+            System.out.println("Too long");
+        }
+        result.setMinMoves();
         return result;
+    }
+
+    public int getNumOfMovesOfLastPuzzle () {
+        return (maxNode == null) ? -1 : maxNode.dist;
     }
 
     public GameBoard generateOneBoard (String file) {
@@ -170,7 +185,7 @@ public class BoardGenerator implements Runnable {
     }
 
     private GameBoard process (String file) {
-        GameBoard board = new GameBoard ();
+        GameBoard board = new GameBoard();
         Scanner sc = null;
         try {
             sc = new Scanner(new File(file));
@@ -192,9 +207,8 @@ public class BoardGenerator implements Runnable {
         return board;
     }
 
-    public GameBoard generateOneBoard (GameBoard board, int minMoves, int maxMoves) {
+    public GameBoard generateOneBoard (GameBoard winBoard, int minMoves, int maxMoves) {
         long startTime = System.nanoTime();
-        GameBoard winBoard = board;
 
         /* BFS:
         * ) Queue is the open set
@@ -284,7 +298,7 @@ public class BoardGenerator implements Runnable {
         }
 
         // Conclusion: the most difficult puzzle in this graph, along w numOfMoves
-        Node maxNode = initWinNode;
+        maxNode = initWinNode;
         for (Node n: adjacency.keySet()) if (n.dist > maxNode.dist) maxNode = n;
         //maxNode.board.printGrid();
         //System.out.println("Claim Max move: " + maxNode.dist);
@@ -292,13 +306,13 @@ public class BoardGenerator implements Runnable {
         // Backtracking
         /*System.out.println("Backward check . . .");
         for (Node x = maxNode; x != null; x = x.pred) {
+            System.out.println("Claim max move: " + x.dist);
             x.board.printGrid();
-            System.out.println("Max move: " + x.dist);
         }*/
         endTime = System.nanoTime();
         duration = (endTime - startTime)/1000000;
         //System.out.println("Duration " + duration + "/1000 seconds.");
-        return (minMoves <= maxNode.dist && maxNode.dist <= maxMoves) ? maxNode.board : null;
+        return (minMoves <= maxNode.dist && maxNode.dist <= maxMoves) ? maxNode.board.duplicate() : null;
     }
 
     /* -prvt
@@ -314,20 +328,20 @@ public class BoardGenerator implements Runnable {
     * Bare: sometimes working sometimes not
     */
     public GameBoard newRandomWinBoard(double p, int minBlockNum, int maxBlockNum) {
+        assert (minBlockNum <= maxBlockNum); // PREVENTION HERE
+
         int currNumOfBlock = 0;
-        GameBoard b = new GameBoard ();
+        GameBoard b = new GameBoard();
         List <String []> grid = b.getGrid();
         if (b.setBlock("z", 2, 4, 2, true)) currNumOfBlock++;
+        // cheat
+        grid.get(2)[3] = "-";
 
         Random random = new Random();
         int row = random.nextInt(5);
         int col = randomBinaryChoice(4, 5, 0.5);
         int s = randomBinaryChoice(2, 3, 0.5);
-        //System.out.println("col = " + col);
-
         if (b.setBlock("a", row, col, s, false)) currNumOfBlock++;
-        // cheat
-        grid.get(2)[3] = "-";
 
         for (int i = 0; i < grid.size(); i++) {
             if (i == 2) continue;
@@ -349,7 +363,7 @@ public class BoardGenerator implements Runnable {
             }
         }
         grid.get(2)[3] = "*";
-        return (currNumOfBlock > minBlockNum && currNumOfBlock < maxBlockNum)
+        return (currNumOfBlock >= minBlockNum && currNumOfBlock <= maxBlockNum)
                 ? b : newRandomWinBoard(p, minBlockNum, maxBlockNum);
     }
 

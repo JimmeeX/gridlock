@@ -2,6 +2,7 @@ package gridlock.view;
 
 import gridlock.model.Block;
 import gridlock.model.GameBoard;
+import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
 import javafx.animation.*;
 import javafx.beans.property.IntegerProperty;
@@ -31,22 +32,24 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class HelpController {
     private SystemSettings settings;
     private GameBoard board;
+    private Integer minMoves;
+    private Integer result;
     private ArrayList<Node> recNodeList;
     private ArrayList<MouseGestures> mgList;
     private ArrayList<SequentialTransition> animations;
     private IntegerProperty sequenceId;
-//    private SequentialTransition animations;
 
     @FXML
     private AnchorPane wrapper;
     @FXML
     private Label movesLabel;
+    @FXML
+    private Label minMovesLabel;
     @FXML
     private AnchorPane primaryField;
     @FXML
@@ -71,6 +74,31 @@ public class HelpController {
     public void initData(SystemSettings settings) {
         this.settings = settings;
         this.movesLabel.setText("Moves: 0");
+
+        this.initBoard();
+
+        this.board.setMinMoves();
+        this.minMoves = this.board.getMinMoves();
+        this.minMovesLabel.setText("Goal: " + this.minMoves);
+
+        // Draw the Rectangles and add it to the Board
+        this.initNodeList();
+
+        // Deactivate Functionality of buttons and make them disappear.
+        this.deactivate();
+
+        // Initialise Animation Sequence
+        this.initAnimation();
+    }
+
+    @FXML
+    private void initialize() {
+        this.wrapper.setOpacity(0);
+        FadeTransition ft = this.fadeIn(this.wrapper);
+        ft.play();
+    }
+
+    private void initBoard() {
         this.board = new GameBoard();
         this.board.process("src/gridlock/resources/tut.txt");
 
@@ -78,8 +106,13 @@ public class HelpController {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
+                    disableButtons();
                     nextButton.setDisable(false);
+                    handleWin();
                     animateWinSequence();
+                }
+                else {
+                    nextButton.setDisable(true);
                 }
             }
         });
@@ -91,13 +124,26 @@ public class HelpController {
                 movesLabel.setText("Moves: " + newValue.toString());
             }
         });
+    }
 
-        // Draw the Rectangles and add it to the Board
-        this.initialiseNodeList();
+    private void initNodeList() {
+        this.recNodeList = new ArrayList<>();
+        // Draw Rectangles and add to Pane (so Pane is its Parent).
+        for (Block block: this.board.getBlocks()) {
+            Rectangle rec = new Rectangle(0, 0);
+            rec.setUserData(block.getID());
+            if (block.getID().equals("z")) {
+                rec.setId("player");
+            } else {
+                rec.setId("obstacles");
+            }
+            setBlocks(block, rec);
+            this.recNodeList.add(rec);
+            this.boardField.getChildren().addAll(rec);
+        }
+    }
 
-        // Deactivate Functionality of buttons and make them disappear.
-        this.deactivate();
-
+    private void initAnimation() {
         this.sequenceId = new SimpleIntegerProperty();
         this.sequenceId.setValue(0);
 
@@ -152,30 +198,6 @@ public class HelpController {
 
         // Play Animation
         this.animations.get(0).play();
-    }
-
-    @FXML
-    private void initialize() {
-        this.wrapper.setOpacity(0);
-        FadeTransition ft = this.fadeIn(this.wrapper);
-        ft.play();
-    }
-
-    private void initialiseNodeList() {
-        this.recNodeList = new ArrayList<>();
-        // Draw Rectangles and add to Pane (so Pane is its Parent).
-        for (Block block: this.board.getBlocks()) {
-            Rectangle rec = new Rectangle(0, 0);
-            rec.setUserData(block.getID());
-            if (block.getID().equals("z")) {
-                rec.setId("player");
-            } else {
-                rec.setId("obstacles");
-            }
-            setBlocks(block, rec);
-            this.recNodeList.add(rec);
-            this.boardField.getChildren().addAll(rec);
-        }
     }
 
     private void addMouseGestures() {
@@ -280,8 +302,20 @@ public class HelpController {
         this.resetButton.setDisable(true);
     }
 
+    private void handleWin() {
+        if (this.board.getNumMoves() == this.minMoves) {
+            this.result = 3;
+        }
+        else if (board.getNumMoves() <= Math.round(this.minMoves * 1.3)) {
+            this.result = 2;
+        } else {
+            this.result = 1;
+        }
+    }
+
     private void animateWinSequence() {
         // Get the player node
+        this.disableButtons();
         for (Node node:this.recNodeList) {
             if (node.getUserData().equals("z")) {
                 // Make BoardField Object Invisible
@@ -500,7 +534,7 @@ public class HelpController {
 
         // Attach Controller
         HelpWinController helpWinController = loader.getController();
-        helpWinController.initData(this.settings, this.board.getNumMoves());
+        helpWinController.initData(this.settings, this.board.getNumMoves(), this.minMoves, this.result);
 
         helpWinStage.setScene(helpWinScene);
         helpWinStage.show();
@@ -537,7 +571,7 @@ public class HelpController {
     @FXML
     private void showHint(ActionEvent event) {
         this.disableButtons();
-        Block block = this.board.getHint();
+        Block block = this.board.getHint(false);
         Integer[] newPosition = {block.getRow(), block.getCol()};
         this.board.makeMove(block.getID(), newPosition, true);
         this.board.updateNumMoves();
@@ -564,7 +598,9 @@ public class HelpController {
 
                 this.mgList.set(i, mg);
                 tt.setOnFinished(moveEvent -> {
-                    this.enableButtons();
+                    if (!this.board.gameStateProperty().getValue()) {
+                        this.enableButtons();
+                    }
                 });
 
             }
