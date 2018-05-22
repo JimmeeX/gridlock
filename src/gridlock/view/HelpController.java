@@ -2,7 +2,6 @@ package gridlock.view;
 
 import gridlock.model.Block;
 import gridlock.model.GameBoard;
-import gridlock.model.Mode;
 import gridlock.model.SystemSettings;
 import javafx.animation.*;
 import javafx.beans.property.IntegerProperty;
@@ -34,6 +33,11 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 
+/**
+ * "Help" from the Menu. Help.fxml is a tutorial designed to illustrated how to play the game.
+ * Accessible through Menu -> Help
+ * Quite similar to GameController, with less functionality and more animation.
+ */
 public class HelpController {
     private SystemSettings settings;
     private GameBoard board;
@@ -73,6 +77,13 @@ public class HelpController {
     @FXML
     private Label helpText;
 
+    /**
+     * Initialises Settings (mainly for the sounds to work). Used to pass information between controllers.
+     * Initialises Tutorial GameBoard
+     * Draws Blocks and Places them on Board.
+     * Initialises Animation Sequence
+     * @param settings Settings for the App.
+     */
     public void initData(SystemSettings settings) {
         this.settings = settings;
         this.movesLabel.setText("Moves: 0");
@@ -93,6 +104,9 @@ public class HelpController {
         this.initAnimation();
     }
 
+    /**
+     * Generates a fade in transition
+     */
     @FXML
     private void initialize() {
         this.wrapper.setOpacity(0);
@@ -100,6 +114,9 @@ public class HelpController {
         ft.play();
     }
 
+    /**
+     * Generates a board with added listeners.
+     */
     private void initBoard() {
         this.board = new GameBoard();
         this.board.process("src/gridlock/resources/tut.txt");
@@ -128,6 +145,9 @@ public class HelpController {
         });
     }
 
+    /**
+     * Draws Rectangles using the board attribute and adds them to the Pane.
+     */
     private void initNodeList() {
         this.recNodeList = new ArrayList<>();
         // Draw Rectangles and add to Pane (so Pane is its Parent).
@@ -145,6 +165,9 @@ public class HelpController {
         }
     }
 
+    /**
+     * Creates the main animation sequence for the tutorial.
+     */
     private void initAnimation() {
         this.sequenceId = new SimpleIntegerProperty();
         this.sequenceId.setValue(0);
@@ -182,7 +205,6 @@ public class HelpController {
                         hintButton.setDisable(false);
                         resetButton.setDisable(false);
 
-                        // Add Drag/Drop Functionality to the Rectangles
                         addMouseGestures();
                 }
                 if (newValue.intValue() == animations.size() - 1) {
@@ -198,10 +220,12 @@ public class HelpController {
         this.animations.add(this.animationSequence4());
         this.animations.add(this.animationSequence5());
 
-        // Play Animation
         this.animations.get(0).play();
     }
 
+    /**
+     * Adds Drag/Drop Functionality to the Rectangles.
+     */
     private void addMouseGestures() {
         ArrayList<Block> blockL = this.board.getBlocks();
         this.mgList = new ArrayList<>();
@@ -219,7 +243,9 @@ public class HelpController {
         }
     }
 
-    // Current Information
+    /**
+     * Updates the board when a non-user move is made (ie, undo, redo, reset).
+     */
     private void updateBoard() {
         this.disableGameButtons();
         ArrayList<Block> blockList = this.board.getBlocks();
@@ -250,6 +276,11 @@ public class HelpController {
         }
     }
 
+    /**
+     * Helper Function. Converts Block information from backend to Node information on frontend.
+     * @param b Block
+     * @param node Node
+     */
     private void setBlocks(Block b, Node node) {
         Rectangle rec = (Rectangle)node;
         int height, width, startRow, startCol;
@@ -278,6 +309,10 @@ public class HelpController {
         setEffects(rec);
     }
 
+    /**
+     * Function to set effects to the rectangle.
+     * @param rec Rectangle/Block on the Pane
+     */
     private void setEffects(Rectangle rec) {
         rec.setEffect(new BoxBlur());
 
@@ -286,6 +321,9 @@ public class HelpController {
         rec.setEffect(effect);
     }
 
+    /**
+     * Deactivate Game Buttons, and make them invisible. Called at the start of the tutorial.
+     */
     private void deactivate() {
         for (Node node: this.recNodeList) {
             node.setOpacity(0);
@@ -304,6 +342,9 @@ public class HelpController {
         this.resetButton.setDisable(true);
     }
 
+    /**
+     * Determines what medal is deserved from the user performance.
+     */
     private void handleWin() {
         if (this.board.getNumMoves() == this.minMoves) {
             this.result = 3;
@@ -315,6 +356,9 @@ public class HelpController {
         }
     }
 
+    /**
+     * Animation sequence for the player block to move to the right-most side once the game is solved.
+     */
     private void animateWinSequence() {
         // Get the player node
         this.disableAllButtons();
@@ -347,6 +391,10 @@ public class HelpController {
         }
     }
 
+    /**
+     * Tutorial Animation Sequence Phase 1. (Main goal of the game)
+     * @return Sequence of Animations for Phase 1
+     */
     private SequentialTransition animationSequence1() {
         // Goal Node Fade In
         Node playerNode = this.getPlayerNode();
@@ -367,6 +415,10 @@ public class HelpController {
         return new SequentialTransition(playerFadeIn, textFadeIn, pulse);
     }
 
+    /**
+     * Tutorial Animation Sequence Phase 2. (Horizontal Blocks)
+     * @return Sequence of Animations for Phase 2
+     */
     private SequentialTransition animationSequence2() {
         FadeTransition textOut = this.fadeOut(this.helpText);
         textOut.setOnFinished(event -> {
@@ -394,6 +446,10 @@ public class HelpController {
         return (new SequentialTransition(textOut, textIn, horizontalFadeIn, pause, horizontalPulse));
     }
 
+    /**
+     * Tutorial Animation Sequence Phase 3. (Vertical Blocks)
+     * @return Sequence of Animations for Phase 3
+     */
     private SequentialTransition animationSequence3() {
         FadeTransition textOut = this.fadeOut(this.helpText);
         textOut.setOnFinished(event -> {
@@ -423,6 +479,10 @@ public class HelpController {
         return (new SequentialTransition(textOut, textIn, verticalFadeIn, pause, verticalPulse));
     }
 
+    /**
+     * Tutorial Animation Sequence Phase 4. (Game Buttons: Undo, Reset, Hint, Redo)
+     * @return Sequence of Animations for Phase 4
+     */
     private SequentialTransition animationSequence4() {
         FadeTransition textOut = this.fadeOut(this.helpText);
         textOut.setOnFinished(event -> {
@@ -446,6 +506,10 @@ public class HelpController {
         return (new SequentialTransition(textOut, textIn, buttonIn, buttonPulse));
     }
 
+    /**
+     * Tutorial Animation Sequence Phase 5. (Finished Tutorial)
+     * @return Sequence of Animations for Phase 5.
+     */
     private SequentialTransition animationSequence5() {
         FadeTransition textOut = this.fadeOut(this.helpText);
         textOut.setOnFinished(event -> {
@@ -457,6 +521,10 @@ public class HelpController {
         return (new SequentialTransition(textOut, textIn));
     }
 
+    /**
+     * Helper Function to get the Player Node
+     * @return Node: Player Node
+     */
     private Node getPlayerNode() {
         for (Node node:this.recNodeList) {
             if (node.getUserData().equals("z")) {
@@ -466,6 +534,10 @@ public class HelpController {
         return null;
     }
 
+    /**
+     * Helper Function to get Horizontal Nodes (Excluding Player Node)
+     * @return ArrayList of Horizontal Nodes
+     */
     private ArrayList<Node> getHorizontalNodes() {
         ArrayList<Block> blockList = this.board.getBlocks();
         ArrayList<Node> nodeList = new ArrayList<>();
@@ -478,6 +550,10 @@ public class HelpController {
         return nodeList;
     }
 
+    /**
+     * Helper Function to get Vertical Nodes
+     * @return ArrayList of Vertical Nodes
+     */
     private ArrayList<Node> getVerticalNodes() {
         ArrayList<Block> blockList = this.board.getBlocks();
         ArrayList<Node> nodeList = new ArrayList<>();
@@ -489,6 +565,11 @@ public class HelpController {
         return nodeList;
     }
 
+    /**
+     * Animation. Fade in/out indefinitely to a specified Node.
+     * @param node Target Node for animation
+     * @return FadeTransition object
+     */
     private FadeTransition pulse(Node node){
         FadeTransition ft = new FadeTransition(Duration.millis(1500), node);
 
@@ -499,6 +580,10 @@ public class HelpController {
         return ft;
     }
 
+    /**
+     * Handles the Buttons which are responsible for changing scenes.
+     * @param event Button Press Event
+     */
     @FXML
     private void changeSceneControl(ActionEvent event) {
         FadeTransition ft = this.fadeOut(this.wrapper);
@@ -519,6 +604,11 @@ public class HelpController {
         });
     }
 
+    /**
+     * Shows HelpWin Scene once Tutorial is Solved.
+     * @param event Button Press Event
+     * @throws Exception Any Exception thrown when Scene Transition fails
+     */
     @FXML
     private void showHelpWin(ActionEvent event) throws Exception {
         this.playVictorySound();
@@ -547,6 +637,11 @@ public class HelpController {
         helpWinStage.show();
     }
 
+    /**
+     * Return back to Menu
+     * @param event Button Press Event
+     * @throws Exception Any Exception thrown when Scene Transition fails
+     */
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader();
@@ -561,6 +656,10 @@ public class HelpController {
         window.setScene(menuScene);
     }
 
+    /**
+     * Undo Move in the Game (goes to the most recent board state).
+     * @param event Undo Button Press Event
+     */
     @FXML
     private void undoMove(ActionEvent event) {
         this.board.undoMove();
@@ -568,6 +667,10 @@ public class HelpController {
         this.updateBoard();
     }
 
+    /**
+     * Redo Move in the Game (undo an undo).
+     * @param event Redo Button Press Event
+     */
     @FXML
     private void redoMove(ActionEvent event) {
         this.board.redoMove();
@@ -575,6 +678,10 @@ public class HelpController {
         this.updateBoard();
     }
 
+    /**
+     * Will animate the block to a new location as a step to solve the puzzle.
+     * @param event Hint Button Press Event
+     */
     @FXML
     private void showHint(ActionEvent event) {
         this.disableGameButtons();
@@ -614,6 +721,10 @@ public class HelpController {
         }
     }
 
+    /**
+     * Return to the initial state of the board.
+     * @param event Reset Button Press Event
+     */
     @FXML
     private void resetBoard(ActionEvent event) {
         this.board.restart();
@@ -621,6 +732,10 @@ public class HelpController {
         this.updateBoard();
     }
 
+    /**
+     * Goes to the next sequence in the animation.
+     * @param event Continue Button Press Event
+     */
     @FXML
     private void continueAnimation(ActionEvent event) {
         this.sequenceId.setValue(this.sequenceId.getValue()+1);
@@ -630,6 +745,10 @@ public class HelpController {
         this.animations.get(this.sequenceId.getValue()).play();
     }
 
+    /**
+     * Disable the game-related buttons (undo, redo, hint, reset).
+     * Usually called right before an animation sequence.
+     */
     private void disableGameButtons() {
         this.undoButton.setDisable(true);
         this.redoButton.setDisable(true);
@@ -637,6 +756,10 @@ public class HelpController {
         this.resetButton.setDisable(true);
     }
 
+    /**
+     * Enables the game-related buttons (undo, redo, hint, reset).
+     * Usually called once an animation sequence finishes.
+     */
     private void enableGameButtons() {
         this.undoButton.setDisable(false);
         this.redoButton.setDisable(false);
@@ -644,6 +767,9 @@ public class HelpController {
         this.resetButton.setDisable(false);
     }
 
+    /**
+     * Disables all buttons. Called once the game is complete.
+     */
     private void disableAllButtons() {
         this.undoButton.setDisable(true);
         this.undoButton.setOpacity(0.5);
@@ -657,7 +783,11 @@ public class HelpController {
         this.quitButton.setDisable(true);
     }
 
-
+    /**
+     * Animation: Fade Out to a target Node
+     * @param node The Target Node
+     * @return FadeTransition
+     */
     private FadeTransition fadeOut(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(1);
@@ -665,6 +795,11 @@ public class HelpController {
         return ft;
     }
 
+    /**
+     * Animation: Fade in to a target Node
+     * @param node Tje Target Node
+     * @return FadeTransition
+     */
     private FadeTransition fadeIn(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(0);
@@ -672,6 +807,12 @@ public class HelpController {
         return ft;
     }
 
+    /**
+     * Triggered when Mouse enters a Node.
+     * Used when mouse enters a button, which will increase the size of the button.
+     * Used in conjunction with buttonExitAnimation
+     * @param event Mouse Enter Event
+     */
     @FXML
     private void buttonEnterAnimation(MouseEvent event) {
         Node node = (Node)event.getSource();
@@ -687,6 +828,12 @@ public class HelpController {
         node.setCursor(Cursor.HAND);
     }
 
+    /**
+     * Triggered when Mouse exits a Node.
+     * Used when mouse enters a button, which will increase the size of the button.
+     * Used in conjunction with buttonEnterAnimation
+     * @param event Mouse Exit Event
+     */
     @FXML
     private void buttonExitAnimation(MouseEvent event) {
         Node node = (Node)event.getSource();
@@ -702,11 +849,17 @@ public class HelpController {
         node.setCursor(Cursor.DEFAULT);
     }
 
+    /**
+     * Plays buttonSound audio when a button is pressed.
+     */
     @FXML
     private void playButtonPressSound() {
         this.settings.playButtonPressSound();
     }
 
+    /**
+     * Plays victorySound audio when game is won.
+     */
     @FXML
     private void playVictorySound() {
         this.settings.playVictorySound();

@@ -6,7 +6,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -32,6 +31,10 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 
+/**
+ * The actual Game Interface. Contains a board, draggable blocks, undo, redo, hint, reset, and buttons to go back.
+ * Accessible through Menu -> Play -> (Choose Mode/Difficulty/Level)
+ */
 public class GameController {
     private SystemSettings settings;
     private GameBoard board;
@@ -79,6 +82,19 @@ public class GameController {
     @FXML
     private Button quitButton;
 
+    /**
+     * Initialises Settings (mainly for the sounds to work). Used to pass information between controllers.
+     * Initialises GameBoard
+     * Initialise Solver Thread
+     * Draws Blocks and Places them on Board.
+     * Adds Mouse Gestures to the Blocks
+     * Initialises any animations
+     * @param settings Settings for the App.
+     * @param oldBoard Board of the most recent completed level. (if user wants to restart the level after completion)
+     * @param mode CAMPAIGN; SANDBOX
+     * @param difficulty EASY; MEDIUM; HARD
+     * @param level Level Number
+     */
     public void initData(SystemSettings settings, GameBoard oldBoard, Mode mode, Difficulty difficulty, Integer level) {
         // Initialise Variables
         this.settings = settings;
@@ -111,12 +127,20 @@ public class GameController {
         this.initAnimations();
     }
 
+    /**
+     * Generates a fade in transition
+     */
     @FXML
     private void initialize() {
         this.wrapper.setOpacity(0);
         this.performFadeIn(this.wrapper);
     }
 
+    /**
+     * Generates a board with added listeners.
+     * CAMPAIGN will choose predefined board.
+     * SANDBOX will auto-generate a board.
+     */
     private void initBoard(GameBoard oldBoard) {
         if (oldBoard != null) {
             oldBoard.restart();
@@ -156,6 +180,9 @@ public class GameController {
 
     }
 
+    /**
+     * Initialises a thread to check for hints.
+     */
     private void initSolver() {
         // Initialise Solver in the background
         this.solverThread = new Service<Void>() {
@@ -185,6 +212,9 @@ public class GameController {
         this.solverThread.restart();
     }
 
+    /**
+     * Draws Rectangles using the board attribute and adds them to the Pane.
+     */
     private void initNodeList() {
         this.recNodeList = new ArrayList<>();
         // Draw Rectangles and add to Pane (so Pane is its Parent).
@@ -201,6 +231,9 @@ public class GameController {
         }
     }
 
+    /**
+     * Adds Drag/Drop Functionality to the Rectangles.
+     */
     private void initMouseGestures() {
         ArrayList<Block> blockL = this.board.getBlocks();
         this.mgList = new ArrayList<>();
@@ -219,11 +252,16 @@ public class GameController {
         }
     }
 
+    /**
+     * Add any on-going animations for the game.
+     */
     private void initAnimations() {
         this.pulse(this.goalArrow);
     }
 
-    // Current Information
+    /**
+     * Updates the board when a non-user move is made (ie, undo, redo, reset).
+     */
     private void updateBoard() {
         this.disableGameButtons();
         ArrayList<Block> blockList = this.board.getBlocks();
@@ -254,6 +292,11 @@ public class GameController {
         }
     }
 
+    /**
+     * Helper Function. Converts Block information from backend to Node information on frontend.
+     * @param b Block
+     * @param node Node
+     */
     private void setBlocks(Block b, Node node) {
         Rectangle rec = (Rectangle)node;
         int height, width, startRow, startCol;
@@ -282,6 +325,10 @@ public class GameController {
         setEffects(rec);
     }
 
+    /**
+     * Function to set effects to the rectangle.
+     * @param rec Rectangle/Block on the Pane
+     */
     private void setEffects(Rectangle rec) {
         rec.setEffect(new BoxBlur());
 
@@ -290,6 +337,10 @@ public class GameController {
         rec.setEffect(effect);
     }
 
+    /**
+     * Determines what medal is deserved from the user performance.
+     * Saves Level State (CAMPAIGN ONLY)
+     */
     private void handleWin() {
         if (this.board.getNumMoves() == this.minMoves) {
             this.result = 3;
@@ -304,6 +355,9 @@ public class GameController {
         }
     }
 
+    /**
+     * Animation sequence for the player block to move to the right-most side once the game is solved.
+     */
     private void animateWinSequence() {
         // Get the player node
         this.disableAllButtons();
@@ -337,7 +391,9 @@ public class GameController {
     }
 
     /**
-     * Pulsing Animation
+     * Animation. Fade in/out indefinitely to a specified Node.
+     * @param node Target Node for animation
+     * @return FadeTransition object
      */
     private FadeTransition pulse(Node node){
         FadeTransition ft = new FadeTransition(Duration.millis(1500), node);
@@ -350,6 +406,11 @@ public class GameController {
         return ft;
     }
 
+
+    /**
+     * Handles the Buttons which are responsible for changing scenes.
+     * @param event Button Press Event
+     */
     @FXML
     private void changeSceneControl(ActionEvent event) {
         FadeTransition ft = this.performFadeOut(this.wrapper);
@@ -372,6 +433,11 @@ public class GameController {
         });
     }
 
+    /**
+     * Shows GameWin Scene once Level is Solved.
+     * @param event Button Press Event
+     * @throws Exception Any Exception thrown when Scene Transition fails
+     */
     @FXML
     private void showGameWin(ActionEvent event) throws Exception {
         this.playVictorySound();
@@ -400,6 +466,11 @@ public class GameController {
         gameWinStage.show();
     }
 
+    /**
+     * Return back to Level Select
+     * @param event Levels Button Press Event
+     * @throws Exception Any Exception thrown when Scene Transition fails
+     */
     @FXML
     private void navToLevelSelect(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader();
@@ -414,6 +485,11 @@ public class GameController {
         window.setScene(levelSelectScene);
     }
 
+    /**
+     * Return back to Menu
+     * @param event Quit Button Press Event
+     * @throws Exception Any Exception thrown when Scene Transition fails
+     */
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader();
@@ -428,6 +504,10 @@ public class GameController {
         window.setScene(menuScene);
     }
 
+    /**
+     * Undo Move in the Game (goes to the most recent board state).
+     * @param event Undo Button Press Event
+     */
     @FXML
     private void undoMove(ActionEvent event) {
         this.board.undoMove();
@@ -435,6 +515,10 @@ public class GameController {
         this.updateBoard();
     }
 
+    /**
+     * Redo Move in the Game (undo an undo).
+     * @param event Redo Button Press Event
+     */
     @FXML
     private void redoMove(ActionEvent event) {
         this.board.redoMove();
@@ -442,6 +526,10 @@ public class GameController {
         this.updateBoard();
     }
 
+    /**
+     * Will animate the block to a new location as a step to solve the puzzle.
+     * @param event Hint Button Press Event
+     */
     @FXML
     private void showHint(ActionEvent event) {
         this.disableGameButtons();
@@ -480,6 +568,10 @@ public class GameController {
         }
     }
 
+    /**
+     * Return to the initial state of the board.
+     * @param event Reset Button Press Event
+     */
     @FXML
     private void resetBoard(ActionEvent event) {
         this.board.restart();
@@ -487,6 +579,10 @@ public class GameController {
         this.updateBoard();
     }
 
+    /**
+     * Disable the game-related buttons (undo, redo, hint, reset).
+     * Usually called right before an animation sequence.
+     */
     private void disableGameButtons() {
         this.undoButton.setDisable(true);
         this.redoButton.setDisable(true);
@@ -494,6 +590,10 @@ public class GameController {
         this.resetButton.setDisable(true);
     }
 
+    /**
+     * Enables the game-related buttons (undo, redo, hint, reset).
+     * Usually called once an animation sequence finishes.
+     */
     private void enableGameButtons() {
         this.undoButton.setDisable(false);
         this.redoButton.setDisable(false);
@@ -501,6 +601,9 @@ public class GameController {
         this.resetButton.setDisable(false);
     }
 
+    /**
+     * Disables all buttons. Called once the game is complete.
+     */
     private void disableAllButtons() {
         this.undoButton.setDisable(true);
         this.redoButton.setDisable(true);
@@ -510,6 +613,11 @@ public class GameController {
         this.quitButton.setDisable(true);
     }
 
+    /**
+     * Fade Out Animation (mostly used for Scene transitioning)
+     * @param node The target node to perform Fade Out
+     * @return Fade Transition Object
+     */
     private FadeTransition performFadeOut(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(1);
@@ -518,6 +626,11 @@ public class GameController {
         return ft;
     }
 
+    /**
+     * Fade In Animation (mostly used for Scene transitioning)
+     * @param node The target node to perform Fade In
+     * @return Fade Transition Object
+     */
     private FadeTransition performFadeIn(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(0);
@@ -526,6 +639,12 @@ public class GameController {
         return ft;
     }
 
+    /**
+     * Triggered when Mouse enters a Node.
+     * Used when mouse enters a button, which will increase the size of the button.
+     * Used in conjunction with buttonExitAnimation
+     * @param event Mouse Enter Event
+     */
     @FXML
     private void buttonEnterAnimation(MouseEvent event) {
         Node node = (Node)event.getSource();
@@ -541,6 +660,12 @@ public class GameController {
         node.setCursor(Cursor.HAND);
     }
 
+    /**
+     * Triggered when Mouse exits a Node.
+     * Used when mouse enters a button, which will increase the size of the button.
+     * Used in conjunction with buttonEnterAnimation
+     * @param event Mouse Exit Event
+     */
     @FXML
     private void buttonExitAnimation(MouseEvent event) {
         Node node = (Node)event.getSource();
@@ -556,11 +681,17 @@ public class GameController {
         node.setCursor(Cursor.DEFAULT);
     }
 
+    /**
+     * Plays buttonSound audio when a button is pressed.
+     */
     @FXML
     private void playButtonPressSound() {
         this.settings.playButtonPressSound();
     }
 
+    /**
+     * Plays victorySound audio when game is won.
+     */
     @FXML
     private void playVictorySound() {
         this.settings.playVictorySound();

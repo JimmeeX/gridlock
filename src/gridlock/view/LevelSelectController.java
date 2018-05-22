@@ -21,6 +21,10 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * Level Select Screen for CAMPAIGN Mode only. Shows 20 Levels to choose from.
+ * Accessed through Menu -> Play -> Choose Mode/Difficulty (if MODE is CAMPAIGN)
+ */
 public class LevelSelectController {
     private SystemSettings settings;
     private Mode mode;
@@ -38,6 +42,13 @@ public class LevelSelectController {
     @FXML
     private Label difficultyLabel;
 
+    /**
+     * Initialises Settings (mainly for the sounds to work). Used to pass information between controllers.
+     * Set Labels
+     * @param settings Settings for the App
+     * @param mode CAMPAIGN; SANDBOX
+     * @param difficulty EASY; MEDIUM; HARD
+     */
     public void initData(SystemSettings settings, Mode mode, Difficulty difficulty) {
         this.settings = settings;
         this.mode = mode;
@@ -49,6 +60,10 @@ public class LevelSelectController {
         this.applyLevelComplete();
     }
 
+    /**
+     * Generates a fade in transition
+     * Initialises Listeners for Toggle Groups
+     */
     @FXML
     private void initialize() {
         this.wrapper.setOpacity(0);
@@ -75,11 +90,13 @@ public class LevelSelectController {
         });
     }
 
+    /**
+     * Colours in the Levels based on what levels the user has completed in the past
+     */
     private void applyLevelComplete() {
         Integer[] levelData = this.settings.getLevelComplete(this.difficulty);
         for (int i = 0; i < levelData.length; i++) {
             ToggleButton levelButton = (ToggleButton)this.levels.getChildren().get(i);
-            // TODO: Maybe Make Style a bit prettier through css
             switch (levelData[i]) {
                 case 0:
                     levelButton.setStyle("-fx-background-color: black");
@@ -99,6 +116,10 @@ public class LevelSelectController {
         }
     }
 
+    /**
+     * Handles the Buttons which are responsible for changing scenes.
+     * @param event Button Press Event
+     */
     @FXML
     private void changeSceneControl(ActionEvent event) {
         FadeTransition ft = this.performFadeOut(this.wrapper);
@@ -118,6 +139,11 @@ public class LevelSelectController {
         });
     }
 
+    /**
+     * Return back to PlaySettings
+     * @param event Back Button Press Event
+     * @throws Exception Any exception thrown when scene transition fails.
+     */
     @FXML
     private void navToPlaySettings(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader();
@@ -132,8 +158,11 @@ public class LevelSelectController {
         window.setScene(playSettingsScene);
     }
 
+    /**
+     * Nav to the main game screen
+     * @throws Exception Any exception thrown when scene transition fails.
+     */
     @FXML
-
     private void navToGame() throws Exception {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("Game.fxml"));
@@ -147,18 +176,31 @@ public class LevelSelectController {
         window.setScene(gameScene);
     }
 
+    /**
+     * Changes the cursor to a hand when it enters the toggleButton.
+     * @param event Mouse Enter Event
+     */
     @FXML
     private void levelEnter(MouseEvent event) {
         Node node = (Node)event.getSource();
         node.setCursor(Cursor.HAND);
     }
 
+    /**
+     * Changes the cursor to default when it exits the toggleButton.
+     * @param event Mouse Exit Event
+     */
     @FXML
     private void levelExit(MouseEvent event) {
         Node node = (Node)event.getSource();
         node.setCursor(Cursor.DEFAULT);
     }
 
+    /**
+     * Fade Out Animation (mostly used for Scene transitioning)
+     * @param node The target node to perform Fade Out
+     * @return Fade Transition Object
+     */
     private FadeTransition performFadeOut(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(1);
@@ -167,6 +209,11 @@ public class LevelSelectController {
         return ft;
     }
 
+    /**
+     * Fade In Animation (mostly used for Scene transitioning)
+     * @param node The target node to perform Fade In
+     * @return Fade Transition Object
+     */
     private FadeTransition performFadeIn(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(0);
@@ -175,6 +222,12 @@ public class LevelSelectController {
         return ft;
     }
 
+    /**
+     * Triggered when Mouse enters a Node.
+     * Used when mouse enters a button, which will increase the size of the button.
+     * Used in conjunction with buttonExitAnimation
+     * @param event Mouse Enter Event
+     */
     @FXML
     private void buttonEnterAnimation(MouseEvent event) {
         Node node = (Node)event.getSource();
@@ -190,6 +243,12 @@ public class LevelSelectController {
         node.setCursor(Cursor.HAND);
     }
 
+    /**
+     * Triggered when Mouse exits a Node.
+     * Used when mouse enters a button, which will increase the size of the button.
+     * Used in conjunction with buttonEnterAnimation
+     * @param event Mouse Exit Event
+     */
     @FXML
     private void buttonExitAnimation(MouseEvent event) {
         Node node = (Node)event.getSource();
@@ -205,6 +264,9 @@ public class LevelSelectController {
         node.setCursor(Cursor.DEFAULT);
     }
 
+    /**
+     * Plays buttonSound audio when a button is pressed.
+     */
     @FXML
     private void playButtonPressSound() {
         this.settings.playButtonPressSound();
