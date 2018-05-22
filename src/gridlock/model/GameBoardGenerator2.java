@@ -188,7 +188,7 @@ public class GameBoardGenerator2 implements Runnable {
             minMoves = 4;
             maxMoves = 7;
             minBlocks = 4;
-            maxBlocks = 7;
+            maxBlocks = 6;
             fillInProb = 0.3;
             keyToReferToCampaignMode = "easy";
         } else if (d.equals(d.valueOf("MEDIUM"))) {
@@ -201,9 +201,9 @@ public class GameBoardGenerator2 implements Runnable {
         } else {
             minMoves = 14;
             maxMoves = 20;
-            minBlocks = 6;
-            maxBlocks = 12;
-            fillInProb = 0.5;
+            minBlocks = 8;
+            maxBlocks = 11;
+            fillInProb = 0.6;
             keyToReferToCampaignMode = "hard";
         }
     }
