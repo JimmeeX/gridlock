@@ -179,13 +179,27 @@ public class GameBoard {
      * Check if the game is over (the "z" car is by the exit)
      * Will send "true" to "gameState" if game is over
      */
-    // Added by James :)
+    // Added by James :) edited by Alina XD
     public void checkGameOver() {
         this.gameState.setValue(false);
-        for (Block block: this.blocks) {
-            if (block.getID().equals("z")) {
-                if (block.getPosition().get(0)[1] == 4) {
-                    this.gameState.setValue(true);
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                if (this.grid.get(i)[j].equals("z")) {
+                    int count = 0;
+                    int k = j + 2;
+                    int left = 6 - k;
+                    while (k < 6) {
+                        if (this.grid.get(i)[k].equals("*")) count++;
+                        k++;
+                    }
+                    if (count == left) {
+                        Integer[] lastPosition = new Integer[2];
+                        lastPosition[0] = i;
+                        lastPosition[1] = 4;
+                        this.makeMove("z",  lastPosition, true);
+                        this.gameState.setValue(true);
+                    }
+                    break;
                 }
             }
         }
@@ -338,8 +352,11 @@ public class GameBoard {
      * @post this.nextLocation.size() = 0
      */
     public void restart() {
+        System.out.println("size = " + this.prevLocations.size());
+        printGrid();
         while (this.prevLocations.size() > 0) {
             undoMove();
+            printGrid();
         }
         this.prevLocations.clear();
         this.nextLocations.clear();
@@ -365,7 +382,7 @@ public class GameBoard {
         BoardSolver solver = new BoardSolver(startBoard);
         Block changedBlock = solver.solvePuzzle();
         if (getMinMoves) {
-        	this.minMoves = solver.getNumMoves();
+        	this.minMoves = solver.getNumMoves() - 1;
         }
         return changedBlock;
     }
@@ -423,6 +440,7 @@ public class GameBoard {
             }
             System.out.println();
         }
+        System.out.println();
     }
     /**
      * Print all blocks' details

@@ -2,6 +2,10 @@ package gridlock.model;
 
 import java.util.*;
 import java.io.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import static java.lang.Thread.sleep;
 
 public class GameBoardGenerator implements Runnable {
@@ -12,6 +16,12 @@ public class GameBoardGenerator implements Runnable {
     private ArrayList<GameBoard> medium;
     private ArrayList<GameBoard> hard;
     private boolean running;
+    private final ReentrantLock mediumLock = new ReentrantLock();
+    private final ReentrantLock hardLock = new ReentrantLock();
+    private final Condition medNotFull = mediumLock.newCondition();
+    private final Condition medNotEmpty = mediumLock.newCondition();
+    private final Condition hardNotFull = hardLock.newCondition();
+    private final Condition hardNotEmpty = hardLock.newCondition();
 
     public GameBoardGenerator() {
         this.easy = new ArrayList<>();
@@ -405,27 +415,31 @@ public class GameBoardGenerator implements Runnable {
     @Override
     public void run() {
         this.running = true;
-        try {
-            while (this.running) {
-                Random random = new Random();
-                int num = random.nextInt(19999);
-                System.out.println(" medium = " + medium.size() + " hard = " + hard.size());
-
-                if (0 <= num && num <= 9999) {
-                    GameBoard med = generateAPuzzle(Difficulty.MEDIUM);
+        while (this.running) {
+            Random random = new Random();
+            int num = random.nextInt(19999);
+            //System.out.println(" medium = " + medium.size() + " hard = " + hard.size());
+            if (0 <= num && num <= 9999 && medium.size() <= 15) {
+                GameBoard med = generateAPuzzle(Difficulty.MEDIUM);
+                mediumLock.lock();
+                try {
                     this.medium.add(med);
-                    System.out.println("MEDIUM = ");
-                    med.printGrid();
-                } else {
-                    GameBoard h = generateAPuzzle(Difficulty.HARD);
-                    System.out.println("HARD = ");
-                    h.printGrid();
-                    this.hard.add(h);
+                } finally {
+                    mediumLock.unlock();
                 }
-                sleep(100);
+                //System.out.println("MEDIUM = ");
+                //med.printGrid();
+            } else if (hard.size() <= 15){
+                GameBoard h = generateAPuzzle(Difficulty.HARD);
+                hardLock.lock();
+                try {
+                    this.hard.add(h);
+                } finally {
+                    hardLock.unlock();
+                }
+                //System.out.println("HARD = ");
+                //h.printGrid();
             }
-        } catch (InterruptedException e){
-            System.out.println("exception detected");
         }
     }
 
