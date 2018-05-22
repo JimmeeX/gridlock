@@ -25,7 +25,7 @@ public class SystemSettings implements Serializable {
     private Integer[] mediumLevels;
     private Integer[] hardLevels;
 
-    private transient GameBoardGenerator bg; // 28, 76, 177, 185; mainapp 30
+    private transient GameBoardGenerator2 bg; // 28, 76, 177, 185; mainapp 30
 
     public SystemSettings(Double soundVolume, Double musicVolume) {
         this.soundVolume = new SimpleDoubleProperty();
@@ -73,7 +73,7 @@ public class SystemSettings implements Serializable {
         this.hardLevels = new Integer[20];
 
         // Initialise the BoardGenerator
-        this.bg = new GameBoardGenerator(); // Trial... (not commited yet)
+        this.bg = new GameBoardGenerator2(); // Trial... (not commited yet)
 
         this.resetProgress();
     }
@@ -174,7 +174,7 @@ public class SystemSettings implements Serializable {
         this.soundVolume.set(soundVolume);
     }
 
-    public void setBoardGenerator(GameBoardGenerator newBG) {
+    public void setBoardGenerator(GameBoardGenerator2 newBG) {
         this.bg = newBG;
     }
 
@@ -182,7 +182,7 @@ public class SystemSettings implements Serializable {
         return musicVolume.get();
     }
 
-    public GameBoardGenerator getBG() { return this.bg; }
+    public GameBoardGenerator2 getBG() { return this.bg; }
 
     public GameBoard getEasy() { return this.bg.getEasy(); }
 
