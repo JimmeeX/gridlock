@@ -107,6 +107,10 @@ public class GameController {
         this.levelLabel.setText("Level " + this.level.toString());
         this.movesLabel.setText("Moves: 0");
 
+        if (this.mode.equals(Mode.SANDBOX)) {
+            this.levelSelectButton.setDisable(true);
+        }
+
         // Initialise Board
         this.initBoard(oldBoard);
 
@@ -160,7 +164,6 @@ public class GameController {
                 }
                 else if (this.difficulty.equals(Difficulty.MEDIUM)) this.board = this.settings.getMedium();
                 else this.board = this.settings.getHard();
-                this.levelSelectButton.setDisable(true);
             }
         }
 
