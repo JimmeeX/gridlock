@@ -27,7 +27,7 @@ public class MainApp extends Application{
         loader.setLocation(getClass().getResource("view/Menu.fxml"));
         Parent menuParent = loader.load();
         Scene menuScene = new Scene(menuParent);
-        
+
         this.initSettings();
 
         this.settings.playBgMusic();
