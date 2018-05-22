@@ -129,7 +129,9 @@ public class GameController {
                 this.board.process(levelName);
             }
             else {
-                if (this.difficulty.equals(Difficulty.EASY)) this.board = this.settings.getEasy();
+                if (this.difficulty.equals(Difficulty.EASY)) {
+                    this.board = this.settings.getEasy();
+                }
                 else if (this.difficulty.equals(Difficulty.MEDIUM)) this.board = this.settings.getMedium();
                 else this.board = this.settings.getHard();
                 this.levelSelectButton.setDisable(true);
