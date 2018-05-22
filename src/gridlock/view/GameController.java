@@ -377,7 +377,8 @@ public class GameController {
         Stage gameWinStage = new Stage();
         gameWinStage.initStyle(StageStyle.UNDECORATED);
         gameWinStage.initModality(Modality.APPLICATION_MODAL);
-        gameWinStage.initOwner(((Node)event.getSource()).getScene().getWindow());
+        Stage owner = (Stage)((Node)event.getSource()).getScene().getWindow();
+        gameWinStage.initOwner(owner);
 
         // Load Screen
         FXMLLoader loader = new FXMLLoader();
@@ -390,6 +391,10 @@ public class GameController {
         gameWinController.initData(this.settings, this.board, this.mode, this.difficulty, this.level, this.board.getNumMoves(), this.minMoves, this.result);
 
         gameWinStage.setScene(gameWinScene);
+
+        gameWinStage.setX(owner.getX() + (owner.getWidth() - 600) / 2);
+        gameWinStage.setY(owner.getY() + (owner.getHeight() - 400) / 2);
+
         gameWinStage.show();
     }
 
