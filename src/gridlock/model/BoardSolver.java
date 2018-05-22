@@ -21,7 +21,6 @@ class BoardSolver {
 			if (curr.checkGameOver()) {
 				Board nextBoard = curr.getPath().get(1);
 				numMoves = curr.getPathSize() - 1;
-				System.out.println("Hint found.");
 				return nextBoard.getLastMove();
 			}
 			if (visited.contains(curr)) continue;
@@ -32,7 +31,6 @@ class BoardSolver {
 				queue.add(boards);
 			}
 		}
-		System.out.println("Hint not found :(");
 		return null;
 	}
 	
