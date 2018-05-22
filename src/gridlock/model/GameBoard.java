@@ -189,7 +189,6 @@ public class GameBoard {
                     int k = j + 2;
                     int left = 6 - k;
                     while (k < 6) {
-                        System.out.println("grid = " + this.grid.get(i)[k] + " row = " + i + " col = " + k);
                         if (this.grid.get(i)[k].equals("*")) count++;
                         k++;
                     }
