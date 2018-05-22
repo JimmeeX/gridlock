@@ -25,7 +25,7 @@ public class SystemSettings implements Serializable {
     private Integer[] mediumLevels;
     private Integer[] hardLevels;
 
-    private transient GameBoardGenerator bg;
+    private transient GameBoardGenerator bg; // 28, 76, 177, 185; mainapp 30
 
     public SystemSettings(Double soundVolume, Double musicVolume) {
         this.soundVolume = new SimpleDoubleProperty();

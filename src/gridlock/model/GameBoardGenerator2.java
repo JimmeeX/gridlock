@@ -201,9 +201,9 @@ public class GameBoardGenerator2 implements Runnable {
             keyToReferToCampaignMode = "medium";
         } else {
             minMoves = 14;
-            maxMoves = 20;
+            maxMoves = 50;
             minBlocks = 8;
-            maxBlocks = 11;
+            maxBlocks = 12;
             fillInProb = 0.6;
             keyToReferToCampaignMode = "hard";
         }
