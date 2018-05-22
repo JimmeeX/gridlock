@@ -69,6 +69,8 @@ public class HelpController {
     @FXML
     private Button continueButton;
     @FXML
+    private Button quitButton;
+    @FXML
     private Label helpText;
 
     public void initData(SystemSettings settings) {
@@ -106,7 +108,7 @@ public class HelpController {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
-                    disableButtons();
+                    disableAllButtons();
                     nextButton.setDisable(false);
                     handleWin();
                     animateWinSequence();
@@ -219,7 +221,7 @@ public class HelpController {
 
     // Current Information
     private void updateBoard() {
-        this.disableButtons();
+        this.disableGameButtons();
         ArrayList<Block> blockList = this.board.getBlocks();
         for (int i = 0; i < blockList.size(); i++) {
             Block block = blockList.get(i);
@@ -243,7 +245,7 @@ public class HelpController {
             }
             this.mgList.set(i, mg);
             tt.setOnFinished(event -> {
-                this.enableButtons();
+                this.enableGameButtons();
             });
         }
     }
@@ -315,7 +317,7 @@ public class HelpController {
 
     private void animateWinSequence() {
         // Get the player node
-        this.disableButtons();
+        this.disableAllButtons();
         for (Node node:this.recNodeList) {
             if (node.getUserData().equals("z")) {
                 // Make BoardField Object Invisible
@@ -519,10 +521,6 @@ public class HelpController {
 
     @FXML
     private void showHelpWin(ActionEvent event) throws Exception {
-        // Update last move
-        this.board.updateNumMoves();
-        this.result++;
-
         this.playVictorySound();
         // Initialise Popup Stage
         Stage helpWinStage = new Stage();
@@ -579,12 +577,9 @@ public class HelpController {
 
     @FXML
     private void showHint(ActionEvent event) {
-        this.disableButtons();
+        this.disableGameButtons();
         Block block = this.board.getHint(false);
         Integer[] newPosition = {block.getRow(), block.getCol()};
-        this.board.makeMove(block.getID(), newPosition, true);
-        this.board.updateNumMoves();
-        this.board.checkGameOver();
         // Find the ID of this block
         for (int i = 0; i < this.mgList.size(); i++) {
             if (block.getID().equals(this.recNodeList.get(i).getUserData())) {
@@ -608,7 +603,10 @@ public class HelpController {
                 this.mgList.set(i, mg);
                 tt.setOnFinished(moveEvent -> {
                     if (!this.board.gameStateProperty().getValue()) {
-                        this.enableButtons();
+                        this.enableGameButtons();
+                        this.board.makeMove(block.getID(), newPosition, true);
+                        this.board.updateNumMoves();
+                        this.board.checkGameOver();
                     }
                 });
 
@@ -632,18 +630,31 @@ public class HelpController {
         this.animations.get(this.sequenceId.getValue()).play();
     }
 
-    private void disableButtons() {
+    private void disableGameButtons() {
         this.undoButton.setDisable(true);
         this.redoButton.setDisable(true);
         this.hintButton.setDisable(true);
         this.resetButton.setDisable(true);
     }
 
-    private void enableButtons() {
+    private void enableGameButtons() {
         this.undoButton.setDisable(false);
         this.redoButton.setDisable(false);
         this.hintButton.setDisable(false);
         this.resetButton.setDisable(false);
+    }
+
+    private void disableAllButtons() {
+        this.undoButton.setDisable(true);
+        this.undoButton.setOpacity(0.5);
+        this.redoButton.setDisable(true);
+        this.redoButton.setOpacity(0.5);
+        this.hintButton.setDisable(true);
+        this.hintButton.setOpacity(0.5);
+        this.resetButton.setDisable(true);
+        this.resetButton.setOpacity(0.5);
+        this.continueButton.setDisable(true);
+        this.quitButton.setDisable(true);
     }
 
 

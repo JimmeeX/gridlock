@@ -76,6 +76,8 @@ public class GameController {
     private Button resetButton;
     @FXML
     private Button levelSelectButton;
+    @FXML
+    private Button quitButton;
 
     public void initData(SystemSettings settings, GameBoard oldBoard, Mode mode, Difficulty difficulty, Integer level) {
         // Initialise Variables
@@ -141,7 +143,7 @@ public class GameController {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
-                    disableButtons();
+                    disableGameButtons();
                     nextButton.setDisable(false);
                     handleWin();
                     animateWinSequence();
@@ -223,7 +225,7 @@ public class GameController {
 
     // Current Information
     private void updateBoard() {
-        this.disableButtons();
+        this.disableGameButtons();
         ArrayList<Block> blockList = this.board.getBlocks();
         for (int i = 0; i < blockList.size(); i++) {
             Block block = blockList.get(i);
@@ -247,7 +249,7 @@ public class GameController {
             }
             this.mgList.set(i, mg);
             tt.setOnFinished(event -> {
-                this.enableButtons();
+                this.enableGameButtons();
             });
         }
     }
@@ -304,7 +306,7 @@ public class GameController {
 
     private void animateWinSequence() {
         // Get the player node
-        this.disableButtons();
+        this.disableAllButtons();
         for (Node node:this.recNodeList) {
             if (node.getUserData().equals("z")) {
                 // Make BoardField Object Invisible
@@ -442,11 +444,8 @@ public class GameController {
 
     @FXML
     private void showHint(ActionEvent event) {
-        this.disableButtons();
+        this.disableGameButtons();
         Integer[] newPosition = {this.solverBlock.getRow(), this.solverBlock.getCol()};
-        this.board.makeMove(this.solverBlock.getID(), newPosition, true);
-        this.board.updateNumMoves();
-        this.board.checkGameOver();
         // Find the ID of this block
         for (int i = 0; i < this.mgList.size(); i++) {
             if (this.solverBlock.getID().equals(this.recNodeList.get(i).getUserData())) {
@@ -470,7 +469,10 @@ public class GameController {
                 this.mgList.set(i, mg);
                 tt.setOnFinished(moveEvent -> {
                     if (!this.board.gameStateProperty().getValue()) {
-                        this.enableButtons();
+                        this.enableGameButtons();
+                        this.board.makeMove(this.solverBlock.getID(), newPosition, true);
+                        this.board.updateNumMoves();
+                        this.board.checkGameOver();
                     }
                 });
 
@@ -485,18 +487,27 @@ public class GameController {
         this.updateBoard();
     }
 
-    private void disableButtons() {
+    private void disableGameButtons() {
         this.undoButton.setDisable(true);
         this.redoButton.setDisable(true);
         this.hintButton.setDisable(true);
         this.resetButton.setDisable(true);
     }
 
-    private void enableButtons() {
+    private void enableGameButtons() {
         this.undoButton.setDisable(false);
         this.redoButton.setDisable(false);
         this.hintButton.setDisable(false);
         this.resetButton.setDisable(false);
+    }
+
+    private void disableAllButtons() {
+        this.undoButton.setDisable(true);
+        this.redoButton.setDisable(true);
+        this.hintButton.setDisable(true);
+        this.resetButton.setDisable(true);
+        this.levelSelectButton.setDisable(true);
+        this.quitButton.setDisable(true);
     }
 
     private FadeTransition performFadeOut(Node node) {
