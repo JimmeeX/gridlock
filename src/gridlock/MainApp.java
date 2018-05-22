@@ -33,7 +33,7 @@ public class MainApp extends Application{
 
         MenuController menuController = loader.getController();
         menuController.initData(this.settings);
-        
+
         primaryStage.setOnCloseRequest(e -> {
             try {closeProgram(primaryStage);}
             catch (Exception exception) {System.out.println("Saving data failed");}
