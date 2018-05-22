@@ -13,20 +13,16 @@ import java.util.ArrayList;
 public class Board {
     private ArrayList<String[]> grid;
     private ArrayList<Block> blocks;
-    private ArrayList<Board> path;
+    private Board prevBoard;
     private Block lastMove;
 
     /**
      * Board class constructor
      */
-    public Board(ArrayList<Block> blocks, ArrayList<Board> prev, Block lastMove) {
+    public Board(ArrayList<Block> blocks, Board prevBoard, Block lastMove) {
         initialiseGrid(6);
         this.blocks = blocks;
-        path = new ArrayList<>();
-        for (Board parentBoard: prev) {
-            this.path.add(parentBoard);
-        }
-        this.path.add(this);
+        this.prevBoard = prevBoard;
         this.lastMove = lastMove;
         fillGrid();
     }
@@ -135,30 +131,6 @@ public class Board {
         return this.blocks;
     }
 
-    /** -prvt
-     * Check if the new position of a block collides with others and walls
-     * @param thisBlock
-     * @param newStartPosition
-     * @return
-     */
-    private boolean collide(Block thisBlock, Integer[] newStartPosition) {
-        for (Block block : this.blocks) {
-            if (!block.getID().equals(thisBlock.getID())) {
-                for (Integer[] position : block.getPosition()) {
-                    if (thisBlock.isHorizontal()
-                            ? position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize() - 1 &&
-                            position[0] == newStartPosition[0]
-                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize() - 1 &&
-                            position[1] == newStartPosition[1]) return true;
-                }
-            }
-        }
-        if (thisBlock.isHorizontal()
-                ? newStartPosition[1] + thisBlock.getSize() - 1 > 6
-                : newStartPosition[0] + thisBlock.getSize() - 1 > 6) return true;
-        return false;
-    }
-
     /**
 >>>>>>> 948a78602a0a7f8a871fed6c46e064b7c16bfd1a
      * print the grid
@@ -216,7 +188,7 @@ public class Board {
                             }
                             copyBlocks.add(newBlock);
                         }
-                        Board newBoard = new Board(copyBlocks, this.path, changedBlock);
+                        Board newBoard = new Board(copyBlocks, this, changedBlock);
                         next.add(newBoard);
                     }
                 }
@@ -234,7 +206,7 @@ public class Board {
                             }
                             copyBlocks.add(newBlock);
                         }
-                        Board newBoard = new Board(copyBlocks, this.path, changedBlock);
+                        Board newBoard = new Board(copyBlocks, this, changedBlock);
                         next.add(newBoard);
                     }
                 }
@@ -256,7 +228,7 @@ public class Board {
                             }
                             copyBlocks.add(newBlock);
                         }
-                        Board newBoard = new Board(copyBlocks, this.path, changedBlock);
+                        Board newBoard = new Board(copyBlocks, this, changedBlock);
                         next.add(newBoard);
 	                }
                 }
@@ -274,13 +246,17 @@ public class Board {
                             }
                             copyBlocks.add(newBlock);
                         }
-                        Board newBoard = new Board(copyBlocks, this.path, changedBlock);
+                        Board newBoard = new Board(copyBlocks, this, changedBlock);
                         next.add(newBoard);
                     }
                 }
             }
         }
         return next;
+    }
+    
+    public Board getPrevBoard() {
+    	return this.prevBoard;
     }
 
     @Override
@@ -314,14 +290,6 @@ public class Board {
     public String toString() {
         printBlocks();
         return this.getClass().getName();
-    }
-
-    public int getPathSize() {
-        return this.path.size();
-    }
-
-    public ArrayList<Board> getPath() {
-        return this.path;
     }
 
     public Block getLastMove() {

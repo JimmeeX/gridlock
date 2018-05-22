@@ -361,7 +361,7 @@ public class GameBoard {
      * @return
      */
     public Block getHint(boolean getMinMoves) {
-        Board startBoard = new Board(this.blocks, new ArrayList<Board>(), null);
+        Board startBoard = new Board(this.blocks, null, null);
         BoardSolver solver = new BoardSolver(startBoard);
         Block changedBlock = solver.solvePuzzle();
         if (getMinMoves) {
