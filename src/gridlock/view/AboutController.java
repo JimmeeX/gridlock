@@ -16,22 +16,37 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * "About" from the Menu. About.fxml illustrates the team members and their roles. Nothing more.
+ * Accessible through Menu -> About
+ */
 public class AboutController {
     private SystemSettings settings;
 
     @FXML
     private AnchorPane wrapper;
 
+    /**
+     * Initialises Settings (mainly for the sounds to work)
+     * @param settings Settings for the App.
+     */
     public void initData(SystemSettings settings) {
         this.settings = settings;
     }
 
+    /**
+     * Generates a fade in transition when changing to the "About" page
+     */
     @FXML
     private void initialize() {
         this.wrapper.setOpacity(0);
         this.performFadeIn(this.wrapper);
     }
 
+    /**
+     * Handles the Buttons which are responsible for changing scenes.
+     * @param event
+     */
     @FXML
     private void changeSceneControl(ActionEvent event) {
         FadeTransition ft = this.performFadeOut(this.wrapper);

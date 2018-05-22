@@ -351,7 +351,7 @@ public class HelpController {
         FadeTransition playerFadeIn = this.fadeIn(playerNode);
 
         // Text Phase 1 Fade In
-        this.helpText.setText("1. This is the player block. The goal is to drag the player block to the goal on the right.");
+        this.helpText.setText("1. This is the player block. To win, drag it to the goal on the right.");
         FadeTransition textFadeIn = this.fadeIn(this.helpText);
 
         // Pulsing Goal Block
@@ -490,7 +490,7 @@ public class HelpController {
     private FadeTransition pulse(Node node){
         FadeTransition ft = new FadeTransition(Duration.millis(1500), node);
 
-        ft.setFromValue(1);//Specifies the start opacity value for this FadeTransition
+        ft.setFromValue(1);
         ft.setToValue(0);
         ft.setCycleCount(Timeline.INDEFINITE);
         ft.setAutoReverse(true);
@@ -625,7 +625,6 @@ public class HelpController {
         if (this.sequenceId.getValue() != 0) {
             this.animations.get(this.sequenceId.getValue() - 1).stop();
         }
-//        if (this.sequenceId.getValue() != )
         this.animations.get(this.sequenceId.getValue()).play();
     }
 
