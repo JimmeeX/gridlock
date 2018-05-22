@@ -37,8 +37,6 @@ public class LevelSelectController {
     private Label modeLabel;
     @FXML
     private Label difficultyLabel;
-    @FXML
-    private Label levelLabel;
 
     public void initData(SystemSettings settings, Mode mode, Difficulty difficulty) {
         this.settings = settings;
@@ -47,10 +45,6 @@ public class LevelSelectController {
 
         this.modeLabel.setText(mode.toString());
         this.difficultyLabel.setText(difficulty.toString());
-
-        ToggleButton selectedLevel = (ToggleButton) this.toggleLevel.getSelectedToggle();
-        this.level = Integer.parseInt(selectedLevel.getText());
-        this.levelLabel.setText(selectedLevel.getText());
 
         this.applyLevelComplete();
     }
@@ -63,14 +57,20 @@ public class LevelSelectController {
         this.toggleLevel.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                if (toggleLevel.getSelectedToggle() == null) {
-                    oldValue.setSelected(true);
-                }
-                else {
-                    ToggleButton selectedLevel = (ToggleButton) toggleLevel.getSelectedToggle();
-                    level = Integer.parseInt(selectedLevel.getText());
-                    levelLabel.setText(selectedLevel.getText());
-                }
+                ToggleButton selectedLevel = (ToggleButton) toggleLevel.getSelectedToggle();
+                level = Integer.parseInt(selectedLevel.getText());
+
+                // Go to that Level
+                FadeTransition ft = performFadeOut(wrapper);
+                ft.setOnFinished (fadeEvent -> {
+                    try {
+                        navToGame();
+                    }
+                    catch (Exception e) {
+                        System.out.println(e);
+                        System.out.println("Scene Transition Failed");
+                    }
+                });
             }
         });
     }
@@ -106,9 +106,6 @@ public class LevelSelectController {
             try {
                 Button button = (Button) event.getSource();
                 switch (button.getText()) {
-                    case "Start":
-                        this.navToGame(event);
-                        break;
                     case "Back":
                         this.navToPlaySettings(event);
                         break;
@@ -137,7 +134,7 @@ public class LevelSelectController {
 
     @FXML
 
-    private void navToGame(ActionEvent event) throws Exception {
+    private void navToGame() throws Exception {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("Game.fxml"));
         Parent gameParent = loader.load();
@@ -146,7 +143,7 @@ public class LevelSelectController {
         GameController gameController = loader.getController();
         gameController.initData(this.settings, null, this.mode, this.difficulty, this.level);
 
-        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage window = (Stage) this.modeLabel.getScene().getWindow();
         window.setScene(gameScene);
     }
 
