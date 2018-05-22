@@ -17,6 +17,7 @@ public class GameBoardGenerator2 implements Runnable {
     private ArrayList<GameBoard> easy;
     private ArrayList<GameBoard> medium;
     private ArrayList<GameBoard> hard;
+    private boolean running;
 
     public GameBoardGenerator2() {
         this.easy = new ArrayList<>();
@@ -184,14 +185,14 @@ public class GameBoardGenerator2 implements Runnable {
     }
 
     private void generateInitialHeuristics (Difficulty d) {
-        if (d.equals(d.valueOf("EASY"))) {
+        if (d.equals(Difficulty.EASY)) {
             minMoves = 4;
             maxMoves = 7;
             minBlocks = 4;
             maxBlocks = 6;
             fillInProb = 0.3;
             keyToReferToCampaignMode = "easy";
-        } else if (d.equals(d.valueOf("MEDIUM"))) {
+        } else if (d.equals(Difficulty.MEDIUM)) {
             minMoves = 8;
             maxMoves = 13;
             minBlocks = 7;
@@ -430,33 +431,33 @@ public class GameBoardGenerator2 implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("easy = " + easy.size() + " medium = " + medium.size() + " hard = " + hard.size());
-
-        Random random = new Random();
-        int num = random.nextInt(29999);
-
-        if (0 <= num && num <= 4999) {
-            GameBoard ez = generateAPuzzle(Difficulty.EASY);
-            System.out.println("EASY = ");
-            ez.printGrid();
-            this.easy.add(ez);
-        } else if (10000 <= num && num <= 19999) {
-            GameBoard med = generateAPuzzle(Difficulty.MEDIUM);
-            System.out.println("MEDIUM = ");
-            med.printGrid();
-            this.medium.add(med);
-        } else {
-            GameBoard h = generateAPuzzle(Difficulty.HARD);
-            System.out.println("HARD = ");
-            h.printGrid();
-            this.hard.add(h);
-        }
-
+        this.running = true;
         try {
-            sleep(10);
+            while (this.running) {
+                Random random = new Random();
+                int num = random.nextInt(19999);
+                System.out.println(" medium = " + medium.size() + " hard = " + hard.size());
+
+                if (0 <= num && num <= 9999) {
+                    GameBoard med = generateAPuzzle(Difficulty.MEDIUM);
+                    this.medium.add(med);
+                    System.out.println("MEDIUM = ");
+                    med.printGrid();
+                } else {
+                    GameBoard h = generateAPuzzle(Difficulty.HARD);
+                    System.out.println("HARD = ");
+                    h.printGrid();
+                    this.hard.add(h);
+                }
+                sleep(100);
+            }
         } catch (InterruptedException e){
             System.out.println("exception detected");
         }
+    }
+
+    public void stopThread() {
+        this.running = false;
     }
 
 }

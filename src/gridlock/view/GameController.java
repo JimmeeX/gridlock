@@ -96,9 +96,6 @@ public class GameController {
         this.minMoves = this.board.getMinMoves();
         this.minMovesLabel.setText("Goal: " + this.minMoves);
 
-        // Initialise Board Generator Thread
-        this.initGenerator();
-
         // Initialise Board Solver Thread
         this.initSolver();
 
@@ -135,8 +132,6 @@ public class GameController {
                 if (this.difficulty.equals(Difficulty.EASY)) this.board = this.settings.getEasy();
                 else if (this.difficulty.equals(Difficulty.MEDIUM)) this.board = this.settings.getMedium();
                 else this.board = this.settings.getHard();
-//                GameBoardGenerator gbg = new GameBoardGenerator();
-//                this.board = gbg.generateAPuzzle(this.difficulty);
                 this.levelSelectButton.setDisable(true);
             }
         }
@@ -157,13 +152,6 @@ public class GameController {
             }
         });
 
-    }
-
-    private void initGenerator() {
-        for (int i = 0; i < 5; i++) {
-            Thread genThread = new Thread(this.settings.getBG());
-            genThread.start();
-        }
     }
 
     private void initSolver() {
