@@ -156,6 +156,8 @@ public class MenuController {
      */
     @FXML
     private void quitGame(ActionEvent event) throws IOException {
+        // stop threading
+        this.settings.getBG().stopThread();
         // Save Data
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("src/gridlock/resources/save.data")))) {
             oos.writeObject(this.settings);

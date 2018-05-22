@@ -179,13 +179,25 @@ public class GameBoard {
      * Check if the game is over (the "z" car is by the exit)
      * Will send "true" to "gameState" if game is over
      */
-    // Added by James :)
+    // Added by James :) edited by Alina XD
     public void checkGameOver() {
         this.gameState.setValue(false);
-        for (Block block: this.blocks) {
-            if (block.getID().equals("z")) {
-                if (block.getPosition().get(0)[1] == 4) {
-                    this.gameState.setValue(true);
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                if (this.grid.get(i)[j].equals("z")) {
+                    int count = 0;
+                    int k = j + 2;
+                    int left = 6 - k;
+                    while (k < 6) {
+                        System.out.println("grid = " + this.grid.get(i)[k] + " row = " + i + " col = " + k);
+                        if (this.grid.get(i)[k].equals("*")) count++;
+                        k++;
+                    }
+                    if (count == left) {
+                        this.prevLocations.add(new Block("z", i, j));
+                        this.gameState.setValue(true);
+                    }
+                    break;
                 }
             }
         }
