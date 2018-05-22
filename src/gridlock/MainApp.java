@@ -9,6 +9,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainApp extends Application{
     private SystemSettings settings;
@@ -25,7 +27,7 @@ public class MainApp extends Application{
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("src/gridlock/resources/save.data")))) {
             this.settings = (SystemSettings) ois.readObject();
             this.settings.initSounds(0.5, 0.0);
-            startThreading();
+            this.settings.setBoardGenerator(new GameBoardGenerator());
             System.out.println("Data successfully loaded.");
         }
 
@@ -33,13 +35,13 @@ public class MainApp extends Application{
         catch (IOException e) {
             System.out.println("No save file found. Creating new File.");
             this.settings = new SystemSettings(0.5,0.0);
-            startThreading();
         }
 
         this.settings.playBgMusic();
 
         MenuController menuController = loader.getController();
         menuController.initData(this.settings);
+
 
         primaryStage.setOnCloseRequest(e -> {
             try {closeProgram(primaryStage);}
@@ -50,9 +52,11 @@ public class MainApp extends Application{
         primaryStage.setScene(menuScene);
         primaryStage.setResizable(false);
         primaryStage.show();
+        startThreading();
     }
 
     private void closeProgram(Stage stage) throws Exception {
+        this.settings.getBG().stopThread();
         // Save Data
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("src/gridlock/resources/save.data")))) {
             oos.writeObject(this.settings);
@@ -61,7 +65,7 @@ public class MainApp extends Application{
     }
 
     public void startThreading() {
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 2; i++) {
             Thread levGen = new Thread(this.settings.getBG());
             levGen.start();
         }

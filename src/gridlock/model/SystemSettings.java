@@ -174,6 +174,10 @@ public class SystemSettings implements Serializable {
         this.soundVolume.set(soundVolume);
     }
 
+    public void setBoardGenerator(GameBoardGenerator newBG) {
+        this.bg = newBG;
+    }
+
     public double getMusicVolume() {
         return musicVolume.get();
     }
