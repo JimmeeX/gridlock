@@ -372,10 +372,6 @@ public class GameController {
 
     @FXML
     private void showGameWin(ActionEvent event) throws Exception {
-        // Update Last Move
-        this.board.updateNumMoves();
-        this.result++;
-
         this.playVictorySound();
         // Initialise Popup Stage
         Stage gameWinStage = new Stage();

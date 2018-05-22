@@ -193,7 +193,10 @@ public class GameBoard {
                         k++;
                     }
                     if (count == left) {
-                        this.prevLocations.add(new Block("z", i, j));
+                        Integer[] lastPosition = new Integer[2];
+                        lastPosition[0] = i;
+                        lastPosition[1] = 4;
+                        this.makeMove("z",  lastPosition, true);
                         this.gameState.setValue(true);
                     }
                     break;
@@ -349,8 +352,11 @@ public class GameBoard {
      * @post this.nextLocation.size() = 0
      */
     public void restart() {
+        System.out.println("size = " + this.prevLocations.size());
+        printGrid();
         while (this.prevLocations.size() > 0) {
             undoMove();
+            printGrid();
         }
         this.prevLocations.clear();
         this.nextLocations.clear();
@@ -376,7 +382,7 @@ public class GameBoard {
         BoardSolver solver = new BoardSolver(startBoard);
         Block changedBlock = solver.solvePuzzle();
         if (getMinMoves) {
-        	this.minMoves = solver.getNumMoves();
+        	this.minMoves = solver.getNumMoves() - 1;
         }
         return changedBlock;
     }
@@ -434,6 +440,7 @@ public class GameBoard {
             }
             System.out.println();
         }
+        System.out.println();
     }
     /**
      * Print all blocks' details
