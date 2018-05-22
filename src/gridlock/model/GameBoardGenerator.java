@@ -2,8 +2,35 @@ package gridlock.model;
 
 import java.util.*;
 import java.io.*;
+import static java.lang.Thread.sleep;
 
-public class GameBoardGenerator {
+public class GameBoardGenerator implements Runnable {
+
+    private ArrayList<GameBoard> easy;
+    private ArrayList<GameBoard> medium;
+    private ArrayList<GameBoard> hard;
+
+    public GameBoardGenerator() {
+        this.easy = new ArrayList<>();
+        this.medium = new ArrayList<>();
+        this.hard = new ArrayList<>();
+    }
+
+    public GameBoard getEasy() {
+        if (this.easy.size() > 0) return this.easy.remove(0);
+        System.out.println("haha");
+        return generateAPuzzle(Difficulty.EASY);
+    }
+
+    public GameBoard getMedium() {
+        if (this.medium.size() > 0) return this.medium.remove(0);
+        return generateAPuzzle(Difficulty.MEDIUM);
+    }
+
+    public GameBoard getHard() {
+        if (this.hard.size() > 0) return this.hard.remove(0);
+        return generateAPuzzle(Difficulty.HARD);
+    }
 
     private class Node {
         GameBoard board;
@@ -144,6 +171,7 @@ public class GameBoardGenerator {
             result = process("src/gridlock/resources/" + level + "/20.txt");
             System.out.println("Too long");
         }
+        result.setMinMoves();
         return result;
     }
 
@@ -267,6 +295,8 @@ public class GameBoardGenerator {
         // Conclusion: the most difficult puzzle in this graph, along w numOfMoves
         Node maxNode = initWinNode;
         for (Node n: adjacency.keySet()) if (n.dist > maxNode.dist) maxNode = n;
+        //maxNode.board.printGrid();
+        //System.out.println("Claim Max move: " + maxNode.dist);
 
         // Backtracking
         /*System.out.println("Backward check . . .");
@@ -279,6 +309,7 @@ public class GameBoardGenerator {
         //System.out.println("Duration " + duration + "/1000 seconds.");
         return (minMoves <= maxNode.dist && maxNode.dist <= maxMoves) ? maxNode.board.duplicate() : null;
     }
+
     /* -prvt
      * Checking if a node list contains a node based on reference
      */
@@ -335,7 +366,7 @@ public class GameBoardGenerator {
         return (Math.random() < probItem1) ? item1 : item2;
     }
 
-    private GameBoard generateWinBoard (Difficulty d) {
+    public GameBoard generateWinBoard (Difficulty d) {
         double p;
         int minBlockNum;
         int maxBlockNum;
@@ -346,39 +377,16 @@ public class GameBoardGenerator {
         } else if (d.equals(d.valueOf("MEDIUM"))) {
             p = 0.5;
             minBlockNum = 7;
-            maxBlockNum = 8;
+            maxBlockNum = 9;
         } else {
-            p = 0.5;
+            p = 0.6;
             minBlockNum = 10;
             maxBlockNum = 13;
         }
-	    return newRandomWinBoard(p, minBlockNum, maxBlockNum);
-    }
-
-    public boolean checkTrivialCase(GameBoard board) {
-        board.printGrid();
-
-        for (int j = 0; j < board.getGridSize(); j++) {
-            ArrayList<String> id = new ArrayList<>();
-            ArrayList<Integer> size = new ArrayList<>();
-            int count = 0;
-            for (int i = 0; i < board.getGridSize() - 1; i++) {
-                System.out.println(board.getGrid().get(i)[j]);
-                //check
-            }
-            if (count != 0) {
-                size.add(count);
-            }
-            for (int k = 0; k < size.size(); k++) {
-                System.out.println("  id = " + id.get(k) + " size " + size.get(k));
-            }
-            System.out.println("");
-            if (size.size() == 2 && size.get(0) == 3) return false;
-            if (size.size() == 3 && size.get(0) == 2 && size.get(1) == 2 && size.get(2) == 2) return false;
-            id.clear();
-            size.clear();
-        }
-        return true;
+	    GameBoard board = newRandomWinBoard(p, minBlockNum, maxBlockNum);
+        //board.printGrid();
+        //while (!isValid(board)) board = newRandomWinBoard(p, minBlockNum, maxBlockNum);
+        return board;
     }
 
     private int lowestNumOfMoves (Difficulty d) {
@@ -387,5 +395,36 @@ public class GameBoardGenerator {
 
     private int highestNumOfMoves (Difficulty d) {
         return d.equals(d.valueOf("EASY")) ? 7 : d.equals(d.valueOf("MEDIUM")) ? 13 : 20;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("easy = " + easy.size() + " medium = " + medium.size() + " hard = " + hard.size());
+
+        Random random = new Random();
+        int num = random.nextInt(29999);
+
+        if (0 <= num && num <= 4999) {
+            GameBoard ez = generateAPuzzle(Difficulty.EASY);
+            System.out.println("EASY = ");
+            ez.printGrid();
+            this.easy.add(ez);
+        } else if (10000 <= num && num <= 19999) {
+            GameBoard med = generateAPuzzle(Difficulty.MEDIUM);
+            System.out.println("MEDIUM = ");
+            med.printGrid();
+            this.medium.add(med);
+        } else {
+            GameBoard h = generateAPuzzle(Difficulty.HARD);
+            System.out.println("HARD = ");
+            h.printGrid();
+            this.hard.add(h);
+        }
+
+        try {
+            sleep(10);
+        } catch (InterruptedException e){
+            System.out.println("exception detected");
+        }
     }
 }

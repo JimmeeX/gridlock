@@ -21,6 +21,7 @@ public class GameBoard {
     private ArrayList<Block> blocks;
     private ArrayList<Block> prevLocations;
     private ArrayList<Block> nextLocations;
+    private int minMoves;
 
     // Added by James :)
     private BooleanProperty gameState;
@@ -79,6 +80,7 @@ public class GameBoard {
         } finally {
             if (sc != null) sc.close();
         }
+        setMinMoves();
     }
 
     public Block getBlock(String id) {
@@ -340,15 +342,30 @@ public class GameBoard {
         this.prevLocations.clear();
         this.nextLocations.clear();
     }
+    
+    /**
+     * set minMoves required to finish current puzzle
+     */
+    public void setMinMoves() {
+    	getHint(true);
+    }
+    
+    public int getMinMoves() {
+    	return this.minMoves;
+    }
 
     /**
      * get hint of the next block to move
      * @return
      */
-    public Block getHint() {
+    public Block getHint(boolean getMinMoves) {
         Board startBoard = new Board(this.blocks, new ArrayList<Board>(), null);
         BoardSolver solver = new BoardSolver(startBoard);
-        return solver.solvePuzzle();
+        Block changedBlock = solver.solvePuzzle();
+        if (getMinMoves) {
+        	this.minMoves = solver.getNumMoves();
+        }
+        return changedBlock;
     }
 
     /**

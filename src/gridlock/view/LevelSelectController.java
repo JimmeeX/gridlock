@@ -144,7 +144,7 @@ public class LevelSelectController {
         Scene gameScene = new Scene(gameParent);
 
         GameController gameController = loader.getController();
-        gameController.initData(this.settings, this.mode, this.difficulty, this.level);
+        gameController.initData(this.settings, null, this.mode, this.difficulty, this.level);
 
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(gameScene);

@@ -35,6 +35,8 @@ import java.util.ArrayList;
 public class GameController {
     private SystemSettings settings;
     private GameBoard board;
+    private Integer minMoves;
+    private Integer result;
     private Mode mode;
     private Difficulty difficulty;
     private Integer level;
@@ -55,6 +57,8 @@ public class GameController {
     @FXML
     private Label movesLabel;
     @FXML
+    private Label minMovesLabel;
+    @FXML
     private AnchorPane primaryField;
     @FXML
     private Pane boardField;
@@ -70,8 +74,10 @@ public class GameController {
     private Button hintButton;
     @FXML
     private Button resetButton;
+    @FXML
+    private Button levelSelectButton;
 
-    public void initData(SystemSettings settings, Mode mode, Difficulty difficulty, Integer level) {
+    public void initData(SystemSettings settings, GameBoard oldBoard, Mode mode, Difficulty difficulty, Integer level) {
         // Initialise Variables
         this.settings = settings;
         this.mode = mode;
@@ -83,35 +89,66 @@ public class GameController {
         this.levelLabel.setText("Level " + this.level.toString());
         this.movesLabel.setText("Moves: 0");
 
-        this.board = new GameBoard();
-        if (mode.equals(Mode.CAMPAIGN)) {
-            // Read Board from File
-            String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
-            this.board.process(levelName);
-        }
-        // TODO: Board Generator
-        else {
-            GameBoardGenerator2 bg = new GameBoardGenerator2(); // Trial...
-            this.board = bg.generateAPuzzle(this.difficulty);
+        // Initialise Board
+        this.initBoard(oldBoard);
+
+        this.board.setMinMoves();
+        this.minMoves = this.board.getMinMoves();
+        this.minMovesLabel.setText("Goal: " + this.minMoves);
+
+        // Initialise Board Generator Thread
+        this.initGenerator();
+
+        // Initialise Board Solver Thread
+        this.initSolver();
+
+        // Draw the Rectangles and add it to the Board
+        this.initNodeList();
+
+        // Add Drag/Drop Functionality to the Rectangles
+        this.initMouseGestures();
+
+        // Add Animations
+        this.initAnimations();
+    }
+
+    @FXML
+    private void initialize() {
+        this.wrapper.setOpacity(0);
+        this.performFadeIn(this.wrapper);
+    }
+
+    private void initBoard(GameBoard oldBoard) {
+        if (oldBoard != null) {
+            oldBoard.restart();
+            this.board = oldBoard.duplicate();
         }
 
+        else {
+            this.board = new GameBoard();
+            if (mode.equals(Mode.CAMPAIGN)) {
+                // Read Board from File
+                String levelName = "src/gridlock/resources/" + this.difficulty.toString().toLowerCase() + "/" + this.level.toString() + ".txt";
+                this.board.process(levelName);
+            }
+            else {
+                if (this.difficulty.equals(Difficulty.EASY)) this.board = this.settings.getEasy();
+                else if (this.difficulty.equals(Difficulty.MEDIUM)) this.board = this.settings.getMedium();
+                else this.board = this.settings.getHard();
+//                GameBoardGenerator gbg = new GameBoardGenerator();
+//                this.board = gbg.generateAPuzzle(this.difficulty);
+                this.levelSelectButton.setDisable(true);
+            }
+        }
 
         // Add Listener for Win Game Condition
         this.board.gameStateProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
+                    disableButtons();
                     nextButton.setDisable(false);
-                    // TODO: These are just test numbers for 1,2,3 stars
-                    if (board.getNumMoves() <= 15) {
-                        settings.setLevelComplete(difficulty, level, 3);
-                    }
-                    else if (board.getNumMoves() <= 25) {
-                        settings.setLevelComplete(difficulty, level, 2);
-                    }
-                    else {
-                        settings.setLevelComplete(difficulty, level, 1);
-                    }
+                    handleWin();
                     animateWinSequence();
                 }
                 else {
@@ -120,27 +157,29 @@ public class GameController {
             }
         });
 
+    }
+
+    private void initGenerator() {
+        for (int i = 0; i < 5; i++) {
+            Thread genThread = new Thread(this.settings.getBG());
+            genThread.start();
+        }
+    }
+
+    private void initSolver() {
         // Initialise Solver in the background
-//        this.solverBlock = new Block("block", 0, 0);
         this.solverThread = new Service<Void>() {
             @Override
             protected Task<Void> createTask() {
                 return new Task<Void>() {
                     @Override
                     protected Void call() throws Exception {
-                        solverBlock = board.getHint();
+                        solverBlock = board.getHint(false);
                         return null;
                     }
                 };
             }
         };
-
-        this.solverThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                hintButton.setDisable(false);
-            }
-        });
 
         // Add Listener for Board Moves
         this.board.numMovesProperty().addListener(new ChangeListener<Number>() {
@@ -150,28 +189,13 @@ public class GameController {
                 solverThread.cancel();
                 solverThread.restart();
             }
-            // Probably Run A solver in the background. Once solve is ready, enable the hint button.
         });
 
         // Run the solver for the first time with the Initial Board state
         this.solverThread.restart();
-
-        // Draw the Rectangles and add it to the Board
-        this.initialiseNodeList();
-
-        // Add Drag/Drop Functionality to the Rectangles
-        this.addMouseGestures();
-
-        this.pulse(this.goalArrow);
     }
 
-    @FXML
-    private void initialize() {
-        this.wrapper.setOpacity(0);
-        this.performFadeIn(this.wrapper);
-    }
-
-    private void initialiseNodeList() {
+    private void initNodeList() {
         this.recNodeList = new ArrayList<>();
         // Draw Rectangles and add to Pane (so Pane is its Parent).
         for (Block block: this.board.getBlocks()) {
@@ -187,7 +211,7 @@ public class GameController {
         }
     }
 
-    private void addMouseGestures() {
+    private void initMouseGestures() {
         ArrayList<Block> blockL = this.board.getBlocks();
         this.mgList = new ArrayList<>();
         for(int i = 0; i < blockL.size(); i++) {
@@ -203,6 +227,10 @@ public class GameController {
             }
             this.boardField.getChildren().addAll(this.recNodeList.get(i));
         }
+    }
+
+    private void initAnimations() {
+        this.pulse(this.goalArrow);
     }
 
     // Current Information
@@ -272,8 +300,23 @@ public class GameController {
         rec.setEffect(effect);
     }
 
+    private void handleWin() {
+        if (this.board.getNumMoves() == this.minMoves) {
+            this.result = 3;
+        }
+        else if (board.getNumMoves() <= Math.round(this.minMoves * 1.3)) {
+            this.result = 2;
+        } else {
+            this.result = 1;
+        }
+        if (this.mode.equals(Mode.CAMPAIGN)) {
+            this.settings.setLevelComplete(this.difficulty, this.level, this.result);
+        }
+    }
+
     private void animateWinSequence() {
         // Get the player node
+        this.disableButtons();
         for (Node node:this.recNodeList) {
             if (node.getUserData().equals("z")) {
                 // Make BoardField Object Invisible
@@ -356,7 +399,7 @@ public class GameController {
 
         // Attach Controller
         GameWinController gameWinController = loader.getController();
-        gameWinController.initData(this.settings, this.mode, this.difficulty, this.level, this.board.getNumMoves());
+        gameWinController.initData(this.settings, this.board, this.mode, this.difficulty, this.level, this.board.getNumMoves(), this.minMoves, this.result);
 
         gameWinStage.setScene(gameWinScene);
         gameWinStage.show();
@@ -407,7 +450,6 @@ public class GameController {
     @FXML
     private void showHint(ActionEvent event) {
         this.disableButtons();
-//        Block block = this.board.getHint();
         Integer[] newPosition = {this.solverBlock.getRow(), this.solverBlock.getCol()};
         this.board.makeMove(this.solverBlock.getID(), newPosition, true);
         this.board.updateNumMoves();
@@ -434,7 +476,9 @@ public class GameController {
 
                 this.mgList.set(i, mg);
                 tt.setOnFinished(moveEvent -> {
-                    this.enableButtons();
+                    if (!this.board.gameStateProperty().getValue()) {
+                        this.enableButtons();
+                    }
                 });
 
             }
@@ -458,9 +502,7 @@ public class GameController {
     private void enableButtons() {
         this.undoButton.setDisable(false);
         this.redoButton.setDisable(false);
-        if (!this.solverThread.isRunning()) {
-            this.hintButton.setDisable(false);
-        }
+        this.hintButton.setDisable(false);
         this.resetButton.setDisable(false);
     }
 

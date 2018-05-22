@@ -10,8 +10,11 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -22,17 +25,43 @@ public class HelpWinController {
     @FXML
     private AnchorPane wrapper;
     @FXML
+    private Canvas canvas;
+    @FXML
     private Label movesLabel;
+    @FXML
+    private Label minMovesLabel;
 
-    public void initData(SystemSettings settings, Integer numMoves) {
+    public void initData(SystemSettings settings, Integer numMoves, Integer minMoves, Integer result) {
         this.settings = settings;
+        this.minMovesLabel.setText("Goal: " + minMoves.toString());
         this.movesLabel.setText("Moves: " + numMoves.toString());
+
+        this.drawMedals(result);
     }
 
     @FXML
     private void initialize() {
         this.wrapper.setOpacity(0);
         this.performFadeIn(this.wrapper);
+    }
+
+    private void drawMedals(Integer result) {
+        Image medalImage = new Image("file:src/gridlock/static/images/medals.png");
+        switch (result) {
+            case 1:
+                medalImage = new Image("file:src/gridlock/static/images/medal_bronze.png");
+                break;
+            case 2:
+                medalImage = new Image("file:src/gridlock/static/images/medal_silver.png");
+                break;
+            case 3:
+                medalImage = new Image("file:src/gridlock/static/images/medal_gold.png");
+                break;
+        }
+        GraphicsContext gc = this.canvas.getGraphicsContext2D();
+
+        gc.drawImage(medalImage, 25, 75, 100, 200);
+        gc.drawImage(medalImage, 500, 75, 100, 200);
     }
 
     @FXML

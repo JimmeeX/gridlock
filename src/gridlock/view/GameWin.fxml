@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
+<?import javafx.scene.canvas.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.shape.*?>
 <?import java.lang.*?>
@@ -12,9 +14,10 @@
    <children>
       <AnchorPane fx:id="wrapper" prefHeight="400.0" prefWidth="600.0">
          <children>
+            <Canvas fx:id="canvas" height="400.0" width="600.0" />
             <VBox alignment="CENTER" layoutX="200.0" layoutY="107.0" prefHeight="237.0" prefWidth="277.0" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="100.0">
                <children>
-                  <Label id="subtitle" fx:id="starsLabel" text="Label">
+                  <Label id="subtitle" fx:id="minMovesLabel" text="Label">
                      <VBox.margin>
                         <Insets top="10.0" />
                      </VBox.margin>
@@ -27,7 +30,7 @@
                </children>
             </VBox>
             <Label id="title" alignment="CENTER" layoutX="156.0" layoutY="24.0" text="You Win!" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="10.0" />
-            <VBox alignment="CENTER" layoutX="50.0" layoutY="248.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="200.0">
+            <VBox alignment="CENTER" layoutX="50.0" layoutY="248.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="300.0">
                <children>
                   <Button layoutX="52.0" layoutY="229.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Restart" AnchorPane.rightAnchor="348.0">
                      <VBox.margin>
@@ -41,14 +44,14 @@
                   </Button>
                </children>
             </VBox>
-            <VBox alignment="CENTER" layoutX="348.0" layoutY="232.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="200.0">
+            <VBox alignment="CENTER" layoutX="348.0" layoutY="232.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="50.0">
                <children>
                   <Button fx:id="nextLevelButton" layoutX="348.0" layoutY="222.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Next Level" AnchorPane.topAnchor="222.0">
                      <VBox.margin>
                         <Insets bottom="10.0" top="10.0" />
                      </VBox.margin>
                   </Button>
-                  <Button layoutX="382.0" layoutY="285.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Level Select">
+                  <Button fx:id="levelSelectButton" layoutX="382.0" layoutY="285.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Level Select">
                      <VBox.margin>
                         <Insets bottom="10.0" top="10.0" />
                      </VBox.margin>

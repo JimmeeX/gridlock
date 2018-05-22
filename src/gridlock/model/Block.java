@@ -123,23 +123,24 @@ public class Block {
         Block newBlock = new Block(this.id, row, col);
         for (int i = 1; i < this.position.size(); i++) {
             Integer[] newPosition = new Integer[2];
-            newPosition[0] = this.position.get(i)[0];
-            newPosition[1] = this.position.get(i)[1];
+            Integer[] currPosition = this.position.get(i);
+            newPosition[0] = currPosition[0];
+            newPosition[1] = currPosition[1];
             newBlock.addPosition(newPosition);
         }
         return newBlock;
     }
     
-    /*@Override
+    @Override
 	public int hashCode() {
 		int hash = 1;
-		hash = hash * 2 + ((this.id == null) ? 0 : this.id.hashCode());
+		hash = hash * 2 + this.id.hashCode();
 		hash = hash * 3 + (this.isHorizontal() ? 0 : 1);
 		hash = hash * 5 + this.getSize();
-		hash = hash * 7 + this.getCol();
-		hash = hash * 11 + this.getRow();
+		hash = hash * 7 + this.getRow();
+		hash = hash * 11 + this.getCol();
 		return hash;
-	}*/
+	}
     
     @Override
     public boolean equals(Object obj) {
@@ -160,12 +161,6 @@ public class Block {
 			return false;
 		if (this.getCol() != other.getCol())
 			return false;
-		/*System.out.println(this.id + " = " + other.id);
-		System.out.println(this.isHorizontal() + " = " + other.isHorizontal());
-		System.out.println(this.getSize() + " = " + other.getSize());
-		System.out.println(this.getRow() + " = " + other.getRow());
-		System.out.println(this.getCol() + " = " + other.getCol());
-		*/
 		return true;
     }
 

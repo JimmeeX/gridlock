@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 
-public class MainApp extends Application {
+public class MainApp extends Application{
     private SystemSettings settings;
 
     @Override
@@ -24,15 +24,19 @@ public class MainApp extends Application {
         // Try Reading from Serialized Data
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("src/gridlock/resources/save.data")))) {
             this.settings = (SystemSettings) ois.readObject();
-            this.settings.initSounds(1.0, 1.0);
+            this.settings.initSounds(0.5, 0.0);
+            startThreading();
             System.out.println("Data successfully loaded.");
         }
 
         // If Reading Failed, Create new File
         catch (IOException e) {
             System.out.println("No save file found. Creating new File.");
-            this.settings = new SystemSettings(1.0,1.0);
+            this.settings = new SystemSettings(0.5,0.0);
+            startThreading();
         }
+
+        this.settings.playBgMusic();
 
         MenuController menuController = loader.getController();
         menuController.initData(this.settings);
@@ -56,12 +60,19 @@ public class MainApp extends Application {
         stage.close();
     }
 
+    public void startThreading() {
+        for (int i = 0; i < 6; i++) {
+            Thread levGen = new Thread(this.settings.getBG());
+            levGen.start();
+        }
+    }
+
     public static void main(String[] args) {
-        GameBoardGenerator2 bg = new GameBoardGenerator2();
+        //GameBoardGenerator2 bg = new GameBoardGenerator2();
         /*for (int i= 1; i<=20; i++) {
             Board b = bg.generateOneBoard("src/gridlock/resources/easy/" + i + ".txt");
         }*/
-/*
+        /*
         //EASY
         GameBoard easyStart = bg.generateAPuzzle(Difficulty.EASY);
         System.out.println("EASY = ");
@@ -75,8 +86,8 @@ public class MainApp extends Application {
         //HARD
         GameBoard hardStart = bg.generateAPuzzle(Difficulty.HARD);
         System.out.println("HARD = ");
-        hardStart.printGrid();
-*/
+        hardStart.printGrid();*/
         launch(args);
     }
+
 }
