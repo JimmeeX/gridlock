@@ -54,7 +54,7 @@ public class MainApp extends Application{
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("src/gridlock/resources/save.data")))) {
             this.settings = (SystemSettings) ois.readObject();
             this.settings.initSounds(0.5, 0.0);
-            this.settings.setBoardGenerator(new GameBoardGenerator());
+            this.settings.setBoardGenerator(new GameBoardGenerator2());
             System.out.println("Data successfully loaded.");
         }
 
