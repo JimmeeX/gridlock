@@ -5,7 +5,7 @@ import java.io.*;
 
 import static java.lang.Thread.sleep;
 
-public class GameBoardGenerator2 {
+public class GameBoardGenerator2 implements Runnable {
 
     private int minMoves;
     private int maxMoves;
