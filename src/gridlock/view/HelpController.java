@@ -524,7 +524,8 @@ public class HelpController {
         Stage helpWinStage = new Stage();
         helpWinStage.initStyle(StageStyle.UNDECORATED);
         helpWinStage.initModality(Modality.APPLICATION_MODAL);
-        helpWinStage.initOwner(((Node)event.getSource()).getScene().getWindow());
+        Stage owner = (Stage)((Node)event.getSource()).getScene().getWindow();
+        helpWinStage.initOwner(owner);
 
         // Load Screen
         FXMLLoader loader = new FXMLLoader();
@@ -537,6 +538,10 @@ public class HelpController {
         helpWinController.initData(this.settings, this.board.getNumMoves(), this.minMoves, this.result);
 
         helpWinStage.setScene(helpWinScene);
+
+        helpWinStage.setX(owner.getX() + (owner.getWidth() - 600) / 2);
+        helpWinStage.setY(owner.getY() + (owner.getHeight() - 400) / 2);
+
         helpWinStage.show();
     }
 

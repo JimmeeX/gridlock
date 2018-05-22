@@ -3,6 +3,8 @@ package gridlock.model;
 import java.util.*;
 import java.io.*;
 
+import static java.lang.Thread.sleep;
+
 public class GameBoardGenerator2 {
 
     private int minMoves;
@@ -11,6 +13,29 @@ public class GameBoardGenerator2 {
     private int maxBlocks;
     private double fillInProb;
     private String keyToReferToCampaignMode;
+
+    private ArrayList<GameBoard> easy;
+    private ArrayList<GameBoard> medium;
+    private ArrayList<GameBoard> hard;
+
+    public GameBoardGenerator2() {
+        this.easy = new ArrayList<>();
+        this.medium = new ArrayList<>();
+        this.hard = new ArrayList<>();
+    }
+
+    public GameBoard getEasy() {
+        if (this.easy.size() > 0) return this.easy.remove(0);
+        return generateAPuzzle(Difficulty.EASY);
+    }
+    public GameBoard getMedium() {
+        if (this.medium.size() > 0) return this.medium.remove(0);
+        return generateAPuzzle(Difficulty.MEDIUM);
+    }
+    public GameBoard getHard() {
+        if (this.hard.size() > 0) return this.hard.remove(0);
+        return generateAPuzzle(Difficulty.HARD);
+    }
 
     private class Node {
         GameBoard board;
@@ -397,13 +422,41 @@ public class GameBoardGenerator2 {
         return (minMoves <= maxNode.dist && maxNode.dist <= maxMoves)
                 ? maxNode.board.duplicate() : null; // since prevLoc still exists
     }
-    /* -prvt
-     * Checking if a node list contains a node based on reference
-     */
     private boolean containsRef(List <Node> nl, Node n) {
         if (n == null) return (this == null);
         for (Node x : nl) if (x == n) return true;
         return false;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("easy = " + easy.size() + " medium = " + medium.size() + " hard = " + hard.size());
+
+        Random random = new Random();
+        int num = random.nextInt(29999);
+
+        if (0 <= num && num <= 4999) {
+            GameBoard ez = generateAPuzzle(Difficulty.EASY);
+            System.out.println("EASY = ");
+            ez.printGrid();
+            this.easy.add(ez);
+        } else if (10000 <= num && num <= 19999) {
+            GameBoard med = generateAPuzzle(Difficulty.MEDIUM);
+            System.out.println("MEDIUM = ");
+            med.printGrid();
+            this.medium.add(med);
+        } else {
+            GameBoard h = generateAPuzzle(Difficulty.HARD);
+            System.out.println("HARD = ");
+            h.printGrid();
+            this.hard.add(h);
+        }
+
+        try {
+            sleep(10);
+        } catch (InterruptedException e){
+            System.out.println("exception detected");
+        }
     }
 
 }
