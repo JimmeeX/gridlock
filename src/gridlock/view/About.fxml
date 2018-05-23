@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
@@ -61,7 +62,10 @@
                   </VBox>
                </children>
             </GridPane>
-            <Label id="subtitle" layoutX="179.0" layoutY="101.0" text="Developed by The Ignorant Partridges" />
+            <Label id="subtitle" alignment="CENTER" layoutX="179.0" layoutY="101.0" text="Developed by The Ignorant Partridges" textAlignment="CENTER">
+               <padding>
+                  <Insets left="27.0" />
+               </padding></Label>
           </children>
       </AnchorPane>
    </children>
