@@ -64,7 +64,7 @@
             </GridPane>
             <Label id="subtitle" alignment="CENTER" layoutX="179.0" layoutY="101.0" text="Developed by The Ignorant Partridges" textAlignment="CENTER">
                <padding>
-                  <Insets left="27.0" />
+                  <Insets left="40.0" />
                </padding></Label>
           </children>
       </AnchorPane>
