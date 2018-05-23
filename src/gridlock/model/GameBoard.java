@@ -140,14 +140,6 @@ public class GameBoard {
     }
 
     /**
-     * get the number of moves in integer
-     * @return the number of moves
-     */
-    public int getNumMoves() {
-        return this.prevLocations.size();
-    }
-
-    /**
      * Added by James :)
      * get the number of moves IntegerProperty
      * @return the numberOfMoves

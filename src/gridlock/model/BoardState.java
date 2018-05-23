@@ -19,7 +19,6 @@ public class BoardState {
 	 */
 	public BoardState(ArrayList<Block> blocks, ArrayList<BoardState> prev, Block lastMove) {
 		this.board = new Board();
-		this.board.setGrid();
 		this.board.setBlocks(blocks);
 		path = new ArrayList<>();
 		for (BoardState parentBoard: prev) {
@@ -27,6 +26,7 @@ public class BoardState {
 		}
 		this.path.add(this);
 		this.lastMove = lastMove;
+		this.board.setGrid();
 	}
 
 	/**
@@ -84,6 +84,7 @@ public class BoardState {
 	 */
 	public ArrayList<BoardState> getNextPossible() {
 		ArrayList<BoardState> next = new ArrayList<>();
+		Block changedBlock = null;
 		for (Block block : this.board.getBlocks()) {
 			Integer[] newPos = new Integer[2];
 			newPos[0] = block.getRow();
@@ -94,7 +95,7 @@ public class BoardState {
 					// go as far left as it can go
 					while (newPos[1] > 0 && row[newPos[1] - 1].equals("*")) {
 						newPos[1]--;
-						next.add(createNewBoard(block, newPos));
+						next.add(createNewBoard(block, newPos, changedBlock));
 					}
 				}
 				// go as far right as it can go
@@ -102,7 +103,7 @@ public class BoardState {
 				if (newPos[1] < 6 - block.getSize() && row[newPos[1] + block.getSize()].equals("*")) {
 					while (newPos[1] < 6 - block.getSize() && row[newPos[1] + block.getSize()].equals("*")) {
 						newPos[1]++;
-						next.add(createNewBoard(block, newPos));
+						next.add(createNewBoard(block, newPos, changedBlock));
 					}
 				}
 			} else {
@@ -110,7 +111,7 @@ public class BoardState {
 					// go as far up as it can go
 					while (newPos[0] > 0 && this.board.getGridRow(newPos[0] - 1)[newPos[1]].equals("*")) {
 						newPos[0]--;
-						next.add(createNewBoard(block, newPos));
+						next.add(createNewBoard(block, newPos, changedBlock));
 					}
 				}
 				// go as far down as it can go
@@ -120,7 +121,7 @@ public class BoardState {
 					while (newPos[0] < 6 - block.getSize() && this.board.getGridRow
 							(newPos[0] + block.getSize())[newPos[1]].equals("*")) {
 						newPos[0]++;
-						next.add(createNewBoard(block, newPos));
+						next.add(createNewBoard(block, newPos, changedBlock));
 					}
 				}
 			}
@@ -134,9 +135,8 @@ public class BoardState {
 	 * @param newPosition the new position [row,col] the block is moved into
 	 * @return the new Board
 	 */
-	private BoardState createNewBoard(Block block, Integer[] newPosition) {
+	private BoardState createNewBoard(Block block, Integer[] newPosition, Block changedBlock) {
 		ArrayList<Block> copyBlocks = new ArrayList<>();
-		Block changedBlock = null;
 		for (Block blockCopy: this.board.getBlocks()) {
 			Block newBlock = blockCopy.duplicate();
 			if (newBlock.getID().equals(block.getID())) {

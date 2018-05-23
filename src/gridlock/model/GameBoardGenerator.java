@@ -234,7 +234,6 @@ public class GameBoardGenerator implements Runnable {
      * @return an end board state
      */
     private GameBoard setEndBoard(double p, int minBlockNum, int maxBlockNum) {
-        //JAVA DOES NOT USE ASSERT SAYS WAYNE - ALINA
         assert (minBlockNum <= maxBlockNum);
 
         int currNumOfBlock = 0;
@@ -317,7 +316,7 @@ public class GameBoardGenerator implements Runnable {
      * @return the min number of moves
      */
     private int minMoves (Difficulty d) {
-        return d.equals(d.valueOf("EASY")) ? 3 : d.equals(d.valueOf("MEDIUM")) ? 8 : 14;
+        return d.equals(d.valueOf("EASY")) ? 4 : d.equals(d.valueOf("MEDIUM")) ? 8 : 14;
     }
 
     /**
