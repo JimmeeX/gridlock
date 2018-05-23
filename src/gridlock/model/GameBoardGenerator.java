@@ -2,28 +2,33 @@ package gridlock.model;
 
 import java.util.*;
 import java.io.*;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static java.lang.Thread.sleep;
-
+/**
+ * the GameBoardGenerator Class to generate different puzzle levels
+ * and implements multithreading for generating medium and hard levels
+ * added by Edwin
+ */
 public class GameBoardGenerator implements Runnable {
 
     private Node maxNode = null;
-
     private ArrayList<GameBoard> medium;
     private ArrayList<GameBoard> hard;
     private boolean running;
     private final ReentrantLock lock = new ReentrantLock();
-    private final Condition notFull = lock.newCondition();
-    private final Condition notEmpty = lock.newCondition();
 
+    /**
+     * Constructor Class for GameBoardGenerator
+     */
     public GameBoardGenerator() {
         this.medium = new ArrayList<>();
         this.hard = new ArrayList<>();
     }
 
+    /**
+     * get the easy level
+     * @return
+     */
     public GameBoard getEasy() {
         return generateAPuzzle(Difficulty.EASY);
     }
@@ -192,14 +197,6 @@ public class GameBoardGenerator implements Runnable {
         }
         result.setMinMoves();
         return result;
-    }
-
-    public int getNumOfMovesOfLastPuzzle () {
-        return (maxNode == null) ? -1 : maxNode.dist;
-    }
-
-    public GameBoard generateOneBoard (String file) {
-        return generateOneBoard (process(file), 0 ,60);
     }
 
     private GameBoard process (String file) {
