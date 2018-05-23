@@ -5,6 +5,7 @@ import java.util.ArrayList;
 /**
  * Block class designed to store a block's information such as
  * its id and position on the grid
+ * Added by Alina
  */
 public class Block {
 

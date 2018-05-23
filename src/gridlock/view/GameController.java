@@ -107,11 +107,16 @@ public class GameController {
         this.levelLabel.setText("Level " + this.level.toString());
         this.movesLabel.setText("Moves: 0");
 
+        if (this.mode.equals(Mode.SANDBOX)) {
+            this.levelSelectButton.setDisable(true);
+        }
+
         // Initialise Board
         this.initBoard(oldBoard);
 
         this.board.setMinMoves();
         this.minMoves = this.board.getMinMoves();
+        System.out.println(minMoves);
         this.minMovesLabel.setText("Goal: " + this.minMoves);
 
         // Initialise Board Solver Thread
@@ -160,7 +165,6 @@ public class GameController {
                 }
                 else if (this.difficulty.equals(Difficulty.MEDIUM)) this.board = this.settings.getMedium();
                 else this.board = this.settings.getHard();
-                this.levelSelectButton.setDisable(true);
             }
         }
 
@@ -344,10 +348,10 @@ public class GameController {
      * Saves Level State (CAMPAIGN ONLY)
      */
     private void handleWin() {
-        if (this.board.getNumMoves() == this.minMoves) {
+        if (this.board.numMovesProperty().getValue() == this.minMoves) {
             this.result = 3;
         }
-        else if (board.getNumMoves() <= Math.round(this.minMoves * 1.3)) {
+        else if (board.numMovesProperty().getValue() <= Math.round(this.minMoves * 1.3)) {
             this.result = 2;
         } else {
             this.result = 1;
@@ -458,7 +462,7 @@ public class GameController {
 
         // Attach Controller
         GameWinController gameWinController = loader.getController();
-        gameWinController.initData(this.settings, this.board, this.mode, this.difficulty, this.level, this.board.getNumMoves(), this.minMoves, this.result);
+        gameWinController.initData(this.settings, this.board, this.mode, this.difficulty, this.level, this.board.numMovesProperty().getValue(), this.minMoves, this.result);
 
         gameWinStage.setScene(gameWinScene);
 
