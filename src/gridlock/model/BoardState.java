@@ -106,20 +106,19 @@ public class BoardState {
 					}
 				}
 			} else {
-				String[] row = this.board.getGridRow(newPos[0] - 1);
-				if (newPos[0] > 0 && row[newPos[1]].equals("*")) {
+				if (newPos[0] > 0 && this.board.getGridRow(newPos[0] - 1)[newPos[1]].equals("*")) {
 					// go as far up as it can go
-					while (newPos[0] > 0 && row[newPos[1]].equals("*")) {
+					while (newPos[0] > 0 && this.board.getGridRow(newPos[0] - 1)[newPos[1]].equals("*")) {
 						newPos[0]--;
-
 						next.add(createNewBoard(block, newPos));
 					}
 				}
 				// go as far down as it can go
 				newPos[0] = block.getRow();
-				row = this.board.getGridRow(newPos[0] + block.getSize());
-				if (newPos[0] < 6 - block.getSize() && row[newPos[1]].equals("*")) {
-					while (newPos[0] < 6 - block.getSize() && row[newPos[1]].equals("*")) {
+				if (newPos[0] < 6 - block.getSize() && this.board.getGridRow
+						(newPos[0] + block.getSize())[newPos[1]].equals("*")) {
+					while (newPos[0] < 6 - block.getSize() && this.board.getGridRow
+							(newPos[0] + block.getSize())[newPos[1]].equals("*")) {
 						newPos[0]++;
 						next.add(createNewBoard(block, newPos));
 					}
