@@ -200,6 +200,7 @@ public class GameBoardGenerator2 implements Runnable {
             result.process("src/gridlock/resources/" + keyToReferToCampaignMode + "/20.txt");
             //+ "/" + (int)(1 + (new Random ()).nextInt(19))
         }
+        result.setMinMoves();
         return result;
     }
 

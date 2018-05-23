@@ -27,7 +27,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" selected="true" text="1">
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="1">
                      <toggleGroup>
                         <ToggleGroup fx:id="toggleLevel" />
                      </toggleGroup>
@@ -53,8 +53,7 @@
                   <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="20" toggleGroup="$toggleLevel" GridPane.columnIndex="4" GridPane.rowIndex="3" />
                </children>
             </GridPane>
-            <Button id="button_controls" layoutX="100.0" layoutY="526.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="500.0" />
-            <Button id="button_controls" layoutX="500.0" layoutY="526.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Start" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="100.0" />
+            <Button id="button_controls" layoutX="100.0" layoutY="526.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" />
             <HBox alignment="CENTER" layoutX="100.0" layoutY="125.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0">
                <children>
                   <Label id="subtitle" fx:id="modeLabel" alignment="CENTER" layoutX="217.0" layoutY="104.0" prefHeight="40.0" prefWidth="150.0" text="Label" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="125.0">
@@ -63,11 +62,6 @@
                      </HBox.margin>
                   </Label>
                   <Label id="subtitle" fx:id="difficultyLabel" alignment="CENTER" layoutX="300.0" layoutY="125.0" prefHeight="40.0" prefWidth="150.0" text="Label" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="125.0">
-                     <HBox.margin>
-                        <Insets left="20.0" right="20.0" />
-                     </HBox.margin>
-                  </Label>
-                  <Label id="subtitle" fx:id="levelLabel" alignment="CENTER" layoutX="572.0" layoutY="125.0" prefHeight="40.0" prefWidth="150.0" text="Label">
                      <HBox.margin>
                         <Insets left="20.0" right="20.0" />
                      </HBox.margin>

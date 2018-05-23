@@ -20,6 +20,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * Once the Tutorial Puzzle has been solved, HelpWin.fxml will be called, to show the Win Screen.
+ */
 public class HelpWinController {
     private SystemSettings settings;
     @FXML
@@ -31,6 +34,15 @@ public class HelpWinController {
     @FXML
     private Label minMovesLabel;
 
+    /**
+     * Initialises Settings (mainly for the sounds to work). Used to pass information between controllers.
+     * Set Labels
+     * Draw Medals
+     * @param settings Settings for the App
+     * @param numMoves Number of Moves to solve the Tutorial puzzle
+     * @param minMoves Minimum Number of Moves required to solve the tutorial puzzle
+     * @param result Whether a gold, silver, or bronze medal will be rewarded.
+     */
     public void initData(SystemSettings settings, Integer numMoves, Integer minMoves, Integer result) {
         this.settings = settings;
         this.minMovesLabel.setText("Goal: " + minMoves.toString());
@@ -39,12 +51,20 @@ public class HelpWinController {
         this.drawMedals(result);
     }
 
+    /**
+     * Generates a fade in transition
+     */
     @FXML
     private void initialize() {
         this.wrapper.setOpacity(0);
         this.performFadeIn(this.wrapper);
     }
 
+    /**
+     * Draws Image Medals on a canvas to display in the winScreen. Will draw either Gold, Silver or Bronze medal
+     * based on performance.
+     * @param result 1: Bronze; 2: Silver 3: Gold
+     */
     private void drawMedals(Integer result) {
         Image medalImage = new Image("file:src/gridlock/static/images/medals.png");
         switch (result) {
@@ -64,6 +84,10 @@ public class HelpWinController {
         gc.drawImage(medalImage, 500, 75, 100, 200);
     }
 
+    /**
+     * Handles the Buttons which are responsible for changing scenes.
+     * @param event Button Press Event
+     */
     @FXML
     private void changeSceneControl(ActionEvent event) {
         FadeTransition ft = this.performFadeOut(this.wrapper);
@@ -86,6 +110,11 @@ public class HelpWinController {
         });
     }
 
+    /**
+     * Go through the tutorial again.
+     * @param event Restart Button Press Event
+     * @throws Exception Any exception thrown when scene transition fails.
+     */
     @FXML
     private void restartLevel(ActionEvent event) throws Exception {
         // On owner stage, reload the same level
@@ -105,6 +134,11 @@ public class HelpWinController {
         popupWindow.close();
     }
 
+    /**
+     * Return back to Menu
+     * @param event Back Button Press Event
+     * @throws Exception Any exception thrown when scene transition fails.
+     */
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader();
@@ -123,6 +157,11 @@ public class HelpWinController {
         popupWindow.close();
     }
 
+    /**
+     * Fade Out Animation (mostly used for Scene transitioning)
+     * @param node The target node to perform Fade Out
+     * @return Fade Transition Object
+     */
     private FadeTransition performFadeOut(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(1);
@@ -131,6 +170,11 @@ public class HelpWinController {
         return ft;
     }
 
+    /**
+     * Fade In Animation (mostly used for Scene transitioning)
+     * @param node The target node to perform Fade In
+     * @return Fade Transition Object
+     */
     private FadeTransition performFadeIn(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(0);
@@ -139,6 +183,12 @@ public class HelpWinController {
         return ft;
     }
 
+    /**
+     * Triggered when Mouse enters a Node.
+     * Used when mouse enters a button, which will increase the size of the button.
+     * Used in conjunction with buttonExitAnimation
+     * @param event Mouse Enter Event
+     */
     @FXML
     private void buttonEnterAnimation(MouseEvent event) {
         Node node = (Node)event.getSource();
@@ -154,6 +204,12 @@ public class HelpWinController {
         node.setCursor(Cursor.HAND);
     }
 
+    /**
+     * Triggered when Mouse exits a Node.
+     * Used when mouse enters a button, which will increase the size of the button.
+     * Used in conjunction with buttonEnterAnimation
+     * @param event Mouse Exit Event
+     */
     @FXML
     private void buttonExitAnimation(MouseEvent event) {
         Node node = (Node)event.getSource();
@@ -169,6 +225,9 @@ public class HelpWinController {
         node.setCursor(Cursor.DEFAULT);
     }
 
+    /**
+     * Plays buttonSound audio when a button is pressed.
+     */
     @FXML
     private void playButtonPressSound() {
         this.settings.playButtonPressSound();

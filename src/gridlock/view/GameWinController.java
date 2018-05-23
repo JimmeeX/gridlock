@@ -23,6 +23,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * Once a Puzzle has been solved, GameWin.fxml will be called, to show the Win Screen as a popup.
+ */
 public class GameWinController {
     private SystemSettings settings;
     private GameBoard prevBoard;
@@ -43,6 +46,19 @@ public class GameWinController {
     @FXML
     private Button levelSelectButton;
 
+    /**
+     * Initialises Settings (mainly for the sounds to work). Used to pass information between controllers.
+     * Set Labels
+     * Draw Medals
+     * @param settings Settings for the App
+     * @param prevBoard Board of the solved level, in case the user wants to redo it.
+     * @param mode CAMPAIGN or SANDBOX
+     * @param difficulty EASY, MEDIUM, or HARD
+     * @param level Level Completed
+     * @param numMoves Number of Moves to solve the Tutorial puzzle
+     * @param minMoves Minimum Number of Moves required to solve the tutorial puzzle
+     * @param result Whether a gold, silver, or bronze medal will be rewarded.
+     */
     public void initData(SystemSettings settings, GameBoard prevBoard, Mode mode, Difficulty difficulty, Integer level, Integer numMoves, Integer minMoves, Integer result) {
         this.settings = settings;
         this.prevBoard = prevBoard;
@@ -65,12 +81,20 @@ public class GameWinController {
         }
     }
 
+    /**
+     * Generates a fade in transition
+     */
     @FXML
     private void initialize() {
         this.wrapper.setOpacity(0);
         this.performFadeIn(this.wrapper);
     }
 
+    /**
+     * Draws Image Medals on a canvas to display in the winScreen. Will draw either Gold, Silver or Bronze medal
+     * based on performance.
+     * @param result 1: Bronze; 2: Silver 3: Gold
+     */
     private void drawMedals(Integer result) {
         Image medalImage = new Image("file:src/gridlock/static/images/medals.png");
         switch (result) {
@@ -90,6 +114,10 @@ public class GameWinController {
         gc.drawImage(medalImage, 500, 75, 100, 200);
     }
 
+    /**
+     * Handles the Buttons which are responsible for changing scenes.
+     * @param event Button Press Event
+     */
     @FXML
     private void changeSceneControl(ActionEvent event) {
         FadeTransition ft = this.performFadeOut(this.wrapper);
@@ -118,7 +146,11 @@ public class GameWinController {
         });
     }
 
-
+    /**
+     * Go play the next level.
+     * @param event Next Level Button Press Event
+     * @throws Exception Any exception thrown when scene transition fails.
+     */
     @FXML
     private void navToNextLevel(ActionEvent event) throws Exception {
         // Restart Level but for the next level
@@ -140,6 +172,11 @@ public class GameWinController {
 
     }
 
+    /**
+     * Go Back to Level Select Screen (only for CAMPAIGN)
+     * @param event Level Select Button Press Event
+     * @throws Exception Any exception thrown when scene transition fails.
+     */
     @FXML
     private void navToLevelSelect(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader();
@@ -157,6 +194,11 @@ public class GameWinController {
         popupWindow.close();
     }
 
+    /**
+     * Go through the level again.
+     * @param event Restart Button Press Event
+     * @throws Exception Any exception thrown when scene transition fails.
+     */
     @FXML
     private void restartLevel(ActionEvent event) throws Exception {
         // On owner stage, reload the same level
@@ -176,6 +218,11 @@ public class GameWinController {
         popupWindow.close();
     }
 
+    /**
+     * Return back to Menu
+     * @param event Back Button Press Event
+     * @throws Exception Any exception thrown when scene transition fails.
+     */
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader();
@@ -194,6 +241,11 @@ public class GameWinController {
         popupWindow.close();
     }
 
+    /**
+     * Fade Out Animation (mostly used for Scene transitioning)
+     * @param node The target node to perform Fade Out
+     * @return Fade Transition Object
+     */
     private FadeTransition performFadeOut(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(1);
@@ -202,6 +254,11 @@ public class GameWinController {
         return ft;
     }
 
+    /**
+     * Fade In Animation (mostly used for Scene transitioning)
+     * @param node The target node to perform Fade In
+     * @return Fade Transition Object
+     */
     private FadeTransition performFadeIn(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(0);
@@ -210,6 +267,12 @@ public class GameWinController {
         return ft;
     }
 
+    /**
+     * Triggered when Mouse enters a Node.
+     * Used when mouse enters a button, which will increase the size of the button.
+     * Used in conjunction with buttonExitAnimation
+     * @param event Mouse Enter Event
+     */
     @FXML
     private void buttonEnterAnimation(MouseEvent event) {
         Node node = (Node)event.getSource();
@@ -225,6 +288,12 @@ public class GameWinController {
         node.setCursor(Cursor.HAND);
     }
 
+    /**
+     * Triggered when Mouse exits a Node.
+     * Used when mouse enters a button, which will increase the size of the button.
+     * Used in conjunction with buttonEnterAnimation
+     * @param event Mouse Exit Event
+     */
     @FXML
     private void buttonExitAnimation(MouseEvent event) {
         Node node = (Node)event.getSource();
@@ -240,6 +309,9 @@ public class GameWinController {
         node.setCursor(Cursor.DEFAULT);
     }
 
+    /**
+     * Plays buttonSound audio when a button is pressed.
+     */
     @FXML
     private void playButtonPressSound() {
         this.settings.playButtonPressSound();

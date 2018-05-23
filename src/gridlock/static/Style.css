@@ -8,7 +8,8 @@
 /*}*/
 
 .root {
-    -fx-font-family: "Bodoni MT", Didot, "Didot LT STD", "Book Antiqua", Garamond, "Times New Roman", serif;
+    /*-fx-font-family: "Bodoni MT", Didot;*/
+    -fx-font-family: Impact, Charcoal, sans-serif;
     -fx-background-color: #424953;
     -fx-background-image: url("images/003.jpg");
     -fx-background-size: 800px 600px;
@@ -69,7 +70,7 @@
     -fx-arc-width: 0;
     -fx-arc-height: 0;
     /*-fx-fill: #F0F8FF;*/
-    -fx-fill: #E3D8F1;
+    -fx-fill: #FFB8A0;
     /*-fx-stroke: white;*/
     /*-fx-effect: dropshadow(gaussian, white, 25, 0, 0, 0);*/
 }
@@ -81,7 +82,8 @@
 }
 
 #goal {
-    -fx-fill: #2F3840;
+    -fx-fill: #494949;
+    /*-fx-background-image: url("images/geometric.jpg");*/
     -fx-stroke: transparent;
     /*-fx-effect: dropshadow(gaussian, #343232, 5, 0, 0, 0);*/
 }
