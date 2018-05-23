@@ -5,9 +5,8 @@ import java.io.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * the GameBoardGenerator Class to generate different puzzle levels
- * and implements multithreading for generating medium and hard levels
- * added by Edwin
+ * GameBoardGenerator Class is designed to implement different level puzzle generator
+ * and uses multithreading to generate medium and hard levels while the main program is running
  */
 public class GameBoardGenerator implements Runnable {
 
@@ -18,7 +17,7 @@ public class GameBoardGenerator implements Runnable {
     private final ReentrantLock lock = new ReentrantLock();
 
     /**
-     * Constructor Class for GameBoardGenerator
+     * Constructor for GameBoardGenerator class
      */
     public GameBoardGenerator() {
         this.medium = new ArrayList<>();
@@ -26,13 +25,18 @@ public class GameBoardGenerator implements Runnable {
     }
 
     /**
-     * get the easy level
-     * @return
+     * get an easy level puzzle
+     * @return a GameBoard of level easy
      */
     public GameBoard getEasy() {
-        return generateAPuzzle(Difficulty.EASY);
+        return generatePuzzle(Difficulty.EASY);
     }
 
+    /**
+     * get a medium level puzzle
+     * @return a GameBoard of level medium
+     * @post medium.size()--
+     */
     public GameBoard getMedium() {
         GameBoard med;
         if (this.medium.size() > 0) {
@@ -40,11 +44,16 @@ public class GameBoardGenerator implements Runnable {
             med = this.medium.remove(0);
             this.lock.unlock();
         } else {
-            med = generateAPuzzle(Difficulty.MEDIUM);
+            med = generatePuzzle(Difficulty.MEDIUM);
         }
         return med;
     }
 
+    /**
+     * get a hard level puzzle
+     * @return a GameBoard of level hard
+     * @post hard.size()--
+     */
     public GameBoard getHard() {
         GameBoard h;
         if (this.hard.size() > 0) {
@@ -52,153 +61,38 @@ public class GameBoardGenerator implements Runnable {
             h = this.hard.remove(0);
             this.lock.unlock();
         } else {
-            h = generateAPuzzle(Difficulty.HARD);
+            h = generatePuzzle(Difficulty.HARD);
         }
         return h;
     }
 
-    private class Node {
-        GameBoard board;
-        boolean isWin;
-        boolean isVisited;
-        int dist;
-        Node pred;
-
-        Node (GameBoard board) {
-            this.board = board;
-            Block zBlock = board.getBlock("z");
-            if (zBlock != null && Arrays.equals(zBlock.getPosition().get(0), new Integer[] {2, 4})) this.isWin = true;
-                else this.isWin = false;
-            this.isVisited = false;
-            this.dist = 60; // so far there has not been puzzle with >= 49
-            this.pred = null;
-        }
-
-        /**
-         * Two nodes are equal, iff each block (with same id)'s range is exactly equal
-         * AND for each block id A, and for every other blocks with diff orientation whose range
-         * intersects A, A in both nodes are in same hemispheres
-         * Execption holds when a node is a win node. In this case if the z block is located differently,
-         * assume they are different.
-         *
-         * @param obj
-         * @return
-         */
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            // Assume for now there is no inheritance of Node
-            if (!obj.getClass().equals(this.getClass())) return false;
-            Node n = (Node) obj;
-            for (int i = 0; i < 6; i++) {
-                for (int j = 0; j < 6; j++) {
-                    if (!(this.board.getGrid().get(i)[j].equals(n.board.getGrid().get(i)[j]))) return false;
-                }
-            }
-            return true;
-        }
-
-        @ Override
-        public int hashCode () {
-            // For first eleven block IDs (z, a, b, c, d, ...),  ordered and filled with
-            // its changeable row/col val. 0-5 values, prime 7, size: 7^11 = 1.9 * 10^9
-            int prime = 7;
-            int result = 1; // recommended as non-zero
-            for (int i = 0; i < 11; i++) {
-                String id = Character.toString((char)('a' + (i == 10 ? 25 : i)));
-                Block b = this.board.getBlock(id);
-                int digit = (b == null ? 5 :
-                            b.isHorizontal() ? b.getCol() : b.getRow());
-                result = prime * result + digit;
-            }
-            return result;
-        }
-
-        public boolean isNeighbor (Node n) {
-            // Decide if n is a neighbor (assuming only one move is performed), either:
-            // * If one win and one not, accept directly
-            // * If they are ranged differently, accept directly
-            // * If same, check if thay are same hemisphere or not. Yes <=> reject
-            return (!(isBothYesorNoWinCriteria(n) && isSameRange(n) && isSameHemisphere(n)));
-        }
-
-        private boolean isBothYesorNoWinCriteria (Node n) {
-            // false only if one is winning and the other is not
-            return ((this.isWin && n.isWin) || (!this.isWin && !n.isWin));
-        }
-
-        private boolean isSameRange(Node n) {
-            // After ensuring n is "proper", comparing range
-            for (Block thisBlock : this.board.getBlocks()) {
-                String id = thisBlock.getID();
-                Block thatBlock = n.board.getBlock(id);
-                int thisRow = thisBlock.getRow();
-                int thisCol = thisBlock.getCol();
-                int thatRow = thatBlock.getRow();
-                int thatCol = thatBlock.getCol();
-                Integer[] br1 = this.board.blockRange(id);
-                Integer[] br2 = n.board.blockRange(id);
-                //System.out.println("id " + id + " br1 " + Arrays.toString(br1) + " br2 " + Arrays.toString(br2));
-                //System.out.println("loc1 " + thisRow + thisCol + " loc2 " + thatRow + thatCol);
-                if (br1[0] != br2[0] || br1[1] != br2[1]) return false;
-                //System.out.println("pass range");
-            }
-            return true;
-        }
-
-        private boolean isSameHemisphere(Node n) {
-            // After ensuring n is same ranges, comparing hemisphere
-            for (Block thisBlock : this.board.getBlocks()) {
-                String id = thisBlock.getID();
-                Block thatBlock = n.board.getBlock(id);
-                int thisRow = thisBlock.getRow();
-                int thisCol = thisBlock.getCol();
-                int thatRow = thatBlock.getRow();
-                int thatCol = thatBlock.getCol();
-                //System.out.println("id " + id + " this pos " + thisRow + thisCol + " that pos " + thatRow + thatCol);
-                for (Block otherOrientationBlock : this.board.getBlocks()) {
-                    boolean a = thisBlock.isHorizontal();
-                    // To reduce nodes: otherOri should "intersect thisBlock's range"
-                    if (a == otherOrientationBlock.isHorizontal()) continue;
-                    int otherRow = otherOrientationBlock.getRow();
-                    int otherCol = otherOrientationBlock.getCol();
-                    Integer[] thisBr = this.board.blockRange(id);
-                    Integer[] otherBr = this.board.blockRange(otherOrientationBlock.getID());
-                    //System.out.println("id-other " + otherOrientationBlock.getID() + " other position " + otherRow + otherCol);
-                    //System.out.println("thisbr " + Arrays.toString(thisBr) + " otherbr " + Arrays.toString(otherBr));
-                    //System.out.println("thisblock itself is horizontal: " + String.valueOf(a));
-                    if (a) {
-                        if (thisBr[0] <= otherCol && thisBr[1] + thisBlock.getSize()-1 >= otherCol
-                                && otherBr[0] <= thisRow && otherBr[1] + otherOrientationBlock.getSize()-1 >= thisRow
-                                && (thisCol-otherCol)*(thatCol-otherCol) <= 0) return false;
-                    } else {
-                        if (thisBr[0] <= otherRow && thisBr[1] + thisBlock.getSize()-1 >= otherRow
-                                && otherBr[0] <= thisCol && otherBr[1] + otherOrientationBlock.getSize()-1 >= thisCol
-                                && (thisRow-otherRow)*(thatRow-otherRow) <= 0) return false;
-                    }
-                }
-                //System.out.println("pass hemi");
-            }
-            return true;
-        }
-    }
-
-    public GameBoard generateAPuzzle (Difficulty d) {
+    /**
+     * generate a puzzle of a certain level of difficulty
+     * @param d the level difficulty
+     * @return the puzzle board
+     */
+    public GameBoard generatePuzzle (Difficulty d) {
         GameBoard result = null;
         int retry = 0;
         while (result == null && retry < 50) {
-            result = generateOneBoard(generateWinBoard(d), lowestNumOfMoves(d), highestNumOfMoves(d));
+            result = generateBoard(generateEndBoard(d), minMoves(d), maxMoves(d));
             retry++;
         }
         if (result == null) {
             String level = d.equals(d.valueOf("EASY")) ? "easy" : d.equals(d.valueOf("MEDIUM")) ? "medium" : "hard";
-            result = process("src/gridlock/resources/" + level + "/20.txt");
-            System.out.println("Too long");
+            Random random = new Random();
+            int num = random.nextInt(19) + 1;
+            result = process("src/gridlock/resources/" + level + "/" + num + ".txt");
         }
         result.setMinMoves();
         return result;
     }
 
+    /**
+     * open, read and close a file containing a board implementation
+     * @param file the file name
+     * @return a board
+     */
     private GameBoard process (String file) {
         GameBoard board = new GameBoard();
         Scanner sc = null;
@@ -222,9 +116,15 @@ public class GameBoardGenerator implements Runnable {
         return board;
     }
 
-    public GameBoard generateOneBoard (GameBoard winBoard, int minMoves, int maxMoves) {
-        long startTime = System.nanoTime();
-
+    /**
+     * Generate a starting board with the given min and max number of moves
+     * and an end board state
+     * @param winBoard the end board state
+     * @param minMoves the min number of moves required
+     * @param maxMoves the max number of moves required
+     * @return the starting board
+     */
+    public GameBoard generateBoard (GameBoard winBoard, int minMoves, int maxMoves) {
         /* BFS:
         * ) Queue is the open set
         * ) Adjacency is both the open set and closed set: the only thing that makes
@@ -243,7 +143,6 @@ public class GameBoardGenerator implements Runnable {
         queue.add(initWinNode);
         while (!queue.isEmpty()) {
             Node curr = queue.poll();
-            //System.out.println ("Node list index " + (int)(adjacency.size() - queue.size()) + " out of " + adjacency.size()+ "\n");
             // The neighbor constructions, "ignoring reference and duplicates", are done here. Otherwise it is gonna loop
             for (Block b: curr.board.getBlocks()) {
                 // Consider all possibility of its new position (diff than currently), the new board is a neighbor
@@ -284,12 +183,6 @@ public class GameBoardGenerator implements Runnable {
                 }
             }
         }
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime)/1000000;
-        //System.out.println("Duration " + duration + "/1000 seconds.");
-        //System.out.println("We have " + adjacency.size() + " nodes.");
-
-        startTime = System.nanoTime();
         // Now, BFS/Djikstra using all win nodes first. Using node ref as it is, we will use adjacencyRefAB
         // This is still weak
         queue.clear();
@@ -315,23 +208,17 @@ public class GameBoardGenerator implements Runnable {
         // Conclusion: the most difficult puzzle in this graph, along w numOfMoves
         maxNode = initWinNode;
         for (Node n: adjacency.keySet()) if (n.dist > maxNode.dist) maxNode = n;
-        //maxNode.board.printGrid();
-        //System.out.println("Claim Max move: " + maxNode.dist);
 
         // Backtracking
-        /*System.out.println("Backward check . . .");
-        for (Node x = maxNode; x != null; x = x.pred) {
-            System.out.println("Claim max move: " + x.dist);
-            x.board.printGrid();
-        }*/
-        endTime = System.nanoTime();
-        duration = (endTime - startTime)/1000000;
-        //System.out.println("Duration " + duration + "/1000 seconds.");
         return (minMoves <= maxNode.dist && maxNode.dist <= maxMoves) ? maxNode.board.duplicate() : null;
     }
 
-    /* -prvt
-     * Checking if a node list contains a node based on reference
+    /**
+     * private method to check if a node list contains a node based on reference
+     * @param nl the node list
+     * @param n the node to check if contained
+     * @return true if the node list contains the reference
+     * @return false if the node list doesn't contain the reference
      */
     private boolean containsRef(List<Node> nl, Node n) {
         if (n == null) return (this == null);
@@ -339,17 +226,21 @@ public class GameBoardGenerator implements Runnable {
         return false;
     }
 
-    /* -prvt
-    * Bare: sometimes working sometimes not
-    */
-    public GameBoard newRandomWinBoard(double p, int minBlockNum, int maxBlockNum) {
-        assert (minBlockNum <= maxBlockNum); // PREVENTION HERE
+    /**
+     * private method to generate random end board state
+     * @param p the probability of an independent cell to be filled
+     * @param minBlockNum the min number of blocks
+     * @param maxBlockNum the max number of blocks
+     * @return an end board state
+     */
+    private GameBoard setEndBoard(double p, int minBlockNum, int maxBlockNum) {
+        //JAVA DOES NOT USE ASSERT SAYS WAYNE - ALINA
+        assert (minBlockNum <= maxBlockNum);
 
         int currNumOfBlock = 0;
         GameBoard b = new GameBoard();
         List <String []> grid = b.getGrid();
         if (b.setBlock("z", 2, 4, 2, true)) currNumOfBlock++;
-        // cheat
         grid.get(2)[3] = "-";
 
         Random random = new Random();
@@ -379,14 +270,27 @@ public class GameBoardGenerator implements Runnable {
         }
         grid.get(2)[3] = "*";
         return (currNumOfBlock >= minBlockNum && currNumOfBlock <= maxBlockNum)
-                ? b : newRandomWinBoard(p, minBlockNum, maxBlockNum);
+                ? b : setEndBoard(p, minBlockNum, maxBlockNum);
     }
 
+    /**
+     * private method to randomly choose between 2 items with the given probability of item 1
+     * @param item1 the first item to be selected
+     * @param item2 the second item to be selected
+     * @param probItem1 the probability that the first item is selected
+     * @param <E>
+     * @return item1 or item2 randomly
+     */
     private <E> E randomBinaryChoice(E item1, E item2, double probItem1) {
         return (Math.random() < probItem1) ? item1 : item2;
     }
 
-    public GameBoard generateWinBoard (Difficulty d) {
+    /**
+     * generate an end board state with certain level of difficulty
+     * @param d the difficulty of the puzzle required
+     * @return a game board
+     */
+    public GameBoard generateEndBoard (Difficulty d) {
         double p;
         int minBlockNum;
         int maxBlockNum;
@@ -403,20 +307,31 @@ public class GameBoardGenerator implements Runnable {
             minBlockNum = 10;
             maxBlockNum = 13;
         }
-	    GameBoard board = newRandomWinBoard(p, minBlockNum, maxBlockNum);
-        //board.printGrid();
-        //while (!isValid(board)) board = newRandomWinBoard(p, minBlockNum, maxBlockNum);
+	    GameBoard board = setEndBoard(p, minBlockNum, maxBlockNum);
         return board;
     }
 
-    private int lowestNumOfMoves (Difficulty d) {
+    /**
+     * get the min number of moves based on the difficulty level
+     * @param d the difficulty level
+     * @return the min number of moves
+     */
+    private int minMoves (Difficulty d) {
         return d.equals(d.valueOf("EASY")) ? 3 : d.equals(d.valueOf("MEDIUM")) ? 8 : 14;
     }
 
-    private int highestNumOfMoves (Difficulty d) {
+    /**
+     * get the max number of moves based on the difficulty level
+     * @param d the difficulty level
+     * @return the max number of moves
+     */
+    private int maxMoves (Difficulty d) {
         return d.equals(d.valueOf("EASY")) ? 7 : d.equals(d.valueOf("MEDIUM")) ? 13 : 20;
     }
 
+    /**
+     * method called for multithreading
+     */
     @Override
     public void run() {
         this.running = true;
@@ -432,28 +347,181 @@ public class GameBoardGenerator implements Runnable {
         }
     }
 
+    /**
+     * generate a medium puzzle and add it in the ArrayList of medium puzzles
+     */
     public void addMediumPuzzle() {
         try {
-            GameBoard med = generateAPuzzle(Difficulty.MEDIUM);
+            GameBoard med = generatePuzzle(Difficulty.MEDIUM);
             this.lock.lock();
             this.medium.add(med);
         } finally {
-            this.lock.unlock();
+            if (this.lock.isHeldByCurrentThread()) this.lock.unlock();
         }
     }
 
+    /**
+     * generate a hard puzzle and add it in the ArrayList of hard puzzles
+     */
     public void addHardPuzzle() {
         try {
-            GameBoard h = generateAPuzzle(Difficulty.HARD);
+            GameBoard h = generatePuzzle(Difficulty.HARD);
             this.lock.lock();
             this.hard.add(h);
         } finally {
-            this.lock.unlock();
+            if (this.lock.isHeldByCurrentThread()) this.lock.unlock();
         }
     }
 
+    /**
+     * stop the background threads from running
+     */
     public void stopThread() {
         this.running = false;
     }
 
+    /**
+     * Private Node Class for the level generator graph
+     */
+    private static class Node {
+        private GameBoard board;
+        private boolean isWin;
+        private boolean isVisited;
+        private int dist;
+        private Node pred;
+
+        /**
+         * Class constructor for Node Class
+         * @param board the starting board
+         */
+        private Node (GameBoard board) {
+            this.board = board;
+            Block zBlock = board.getBlock("z");
+            if (zBlock != null && Arrays.equals(zBlock.getPosition().get(0), new Integer[] {2, 4})) this.isWin = true;
+            else this.isWin = false;
+            this.isVisited = false;
+            this.dist = 60; // so far there has not been puzzle with >= 49
+            this.pred = null;
+        }
+
+        /**
+         * Two nodes are equal, iff each block (with same id)'s range is exactly equal
+         * AND for each block id A, and for every other blocks with diff orientation whose range
+         * intersects A, A in both nodes are in same hemispheres
+         * Execption holds when a node is a win node. In this case if the z block is located differently,
+         * assume they are different.
+         * @param obj the object to be compared
+         * @return true if the two objects are equal
+         * @return false if the two objects are not equal
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            // Assume for now there is no inheritance of Node
+            if (!obj.getClass().equals(this.getClass())) return false;
+            Node n = (Node) obj;
+            for (int i = 0; i < 6; i++) {
+                for (int j = 0; j < 6; j++) {
+                    if (!(this.board.getGrid().get(i)[j].equals(n.board.getGrid().get(i)[j]))) return false;
+                }
+            }
+            return true;
+        }
+
+        @ Override
+        public int hashCode () {
+            // For first eleven block IDs (z, a, b, c, d, ...),  ordered and filled with
+            // its changeable row/col val. 0-5 values, prime 7, size: 7^11 = 1.9 * 10^9
+            int prime = 7;
+            int result = 1; // recommended as non-zero
+            for (int i = 0; i < 11; i++) {
+                String id = Character.toString((char)('a' + (i == 10 ? 25 : i)));
+                Block b = this.board.getBlock(id);
+                int digit = (b == null ? 5 :
+                        b.isHorizontal() ? b.getCol() : b.getRow());
+                result = prime * result + digit;
+            }
+            return result;
+        }
+
+        /**
+         * Decide if n is a neighbor (assuming only one move is performed), either:
+         * * If one win and one not, accept directly
+         * * If they are ranged differently, accept directly
+         * * If same, check if thay are same hemisphere or not. Yes <=> reject
+         * @param n the neighbor to be checked
+         * @return true if n is neighbor
+         * @return false if n is not neighbor
+         */
+        public boolean isNeighbor (Node n) {
+            return (!(bothYesOrNo(n) && isSameRange(n) && isSameHemisphere(n)));
+        }
+
+        /**
+         * check the state of the node
+         * @param n the node to be checked
+         * @return false only if one is winning and the other is not
+         */
+        private boolean bothYesOrNo (Node n) {
+            return ((this.isWin && n.isWin) || (!this.isWin && !n.isWin));
+        }
+
+        /**
+         * check if the node is in the same range
+         * @param n the node to be checked
+         * @return true if the two nodes are in the same range
+         * @return false if the two nodes are not in the same range
+         */
+        private boolean isSameRange(Node n) {
+            // After ensuring n is "proper", comparing range
+            for (Block thisBlock : this.board.getBlocks()) {
+                String id = thisBlock.getID();
+                Block thatBlock = n.board.getBlock(id);
+                int thisRow = thisBlock.getRow();
+                int thisCol = thisBlock.getCol();
+                int thatRow = thatBlock.getRow();
+                int thatCol = thatBlock.getCol();
+                Integer[] br1 = this.board.blockRange(id);
+                Integer[] br2 = n.board.blockRange(id);
+                if (br1[0] != br2[0] || br1[1] != br2[1]) return false;
+            }
+            return true;
+        }
+
+        /**
+         * check if the node is in the same hemisphere
+         * @param n the node to be checked
+         * @return true if they are in the same hemisphere
+         * @return false if they are not in the same hemisphere
+         */
+        private boolean isSameHemisphere(Node n) {
+            for (Block thisBlock : this.board.getBlocks()) {
+                String id = thisBlock.getID();
+                Block thatBlock = n.board.getBlock(id);
+                int thisRow = thisBlock.getRow();
+                int thisCol = thisBlock.getCol();
+                int thatRow = thatBlock.getRow();
+                int thatCol = thatBlock.getCol();
+                for (Block otherOrientationBlock : this.board.getBlocks()) {
+                    boolean a = thisBlock.isHorizontal();
+                    // To reduce nodes: otherOri should "intersect thisBlock's range"
+                    if (a == otherOrientationBlock.isHorizontal()) continue;
+                    int otherRow = otherOrientationBlock.getRow();
+                    int otherCol = otherOrientationBlock.getCol();
+                    Integer[] thisBr = this.board.blockRange(id);
+                    Integer[] otherBr = this.board.blockRange(otherOrientationBlock.getID());
+                    if (a) {
+                        if (thisBr[0] <= otherCol && thisBr[1] + thisBlock.getSize()-1 >= otherCol
+                                && otherBr[0] <= thisRow && otherBr[1] + otherOrientationBlock.getSize()-1 >= thisRow
+                                && (thisCol-otherCol)*(thatCol-otherCol) <= 0) return false;
+                    } else {
+                        if (thisBr[0] <= otherRow && thisBr[1] + thisBlock.getSize()-1 >= otherRow
+                                && otherBr[0] <= thisCol && otherBr[1] + otherOrientationBlock.getSize()-1 >= thisCol
+                                && (thisRow-otherRow)*(thatRow-otherRow) <= 0) return false;
+                    }
+                }
+            }
+            return true;
+        }
+    }
 }

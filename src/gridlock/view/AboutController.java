@@ -16,22 +16,37 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * "About" from the Menu. About.fxml illustrates the team members and their roles. Nothing more.
+ * Accessible through Menu -> About
+ */
 public class AboutController {
     private SystemSettings settings;
 
     @FXML
     private AnchorPane wrapper;
 
+    /**
+     * Initialises Settings (mainly for the sounds to work). Used to pass information between controllers.
+     * @param settings Settings for the App.
+     */
     public void initData(SystemSettings settings) {
         this.settings = settings;
     }
 
+    /**
+     * Generates a fade in transition when changing scenes.
+     */
     @FXML
     private void initialize() {
         this.wrapper.setOpacity(0);
         this.performFadeIn(this.wrapper);
     }
 
+    /**
+     * Handles the Buttons which are responsible for changing scenes.
+     * @param event Button Press Event
+     */
     @FXML
     private void changeSceneControl(ActionEvent event) {
         FadeTransition ft = this.performFadeOut(this.wrapper);
@@ -52,6 +67,11 @@ public class AboutController {
     }
 
 
+    /**
+     * Return back to Menu
+     * @param event Button Press Event
+     * @throws Exception Any Exception
+     */
     @FXML
     private void navToMenu(ActionEvent event) throws Exception {
         FXMLLoader loader = new FXMLLoader();
@@ -66,6 +86,11 @@ public class AboutController {
         window.setScene(menuScene);
     }
 
+    /**
+     * Fade Out Animation (mostly used for Scene transitioning)
+     * @param node The target node to perform Fade Out
+     * @return Fade Transition Object
+     */
     private FadeTransition performFadeOut(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(1);
@@ -74,6 +99,11 @@ public class AboutController {
         return ft;
     }
 
+    /**
+     * Fade In Animation (mostly used for Scene transitioning)
+     * @param node The target node to perform Fade In
+     * @return Fade Transition Object
+     */
     private FadeTransition performFadeIn(Node node) {
         FadeTransition ft = new FadeTransition(Duration.millis(250), node);
         ft.setFromValue(0);
@@ -82,6 +112,12 @@ public class AboutController {
         return ft;
     }
 
+    /**
+     * Triggered when Mouse enters a Node.
+     * Used when mouse enters a button, which will increase the size of the button.
+     * Used in conjunction with buttonExitAnimation
+     * @param event Mouse Enter Event
+     */
     @FXML
     private void buttonEnterAnimation(MouseEvent event) {
         Node node = (Node)event.getSource();
@@ -97,6 +133,12 @@ public class AboutController {
         node.setCursor(Cursor.HAND);
     }
 
+    /**
+     * Triggered when Mouse exits a Node.
+     * Used when mouse enters a button, which will increase the size of the button.
+     * Used in conjunction with buttonEnterAnimation
+     * @param event Mouse Exit Event
+     */
     @FXML
     private void buttonExitAnimation(MouseEvent event) {
         Node node = (Node)event.getSource();
@@ -112,6 +154,9 @@ public class AboutController {
         node.setCursor(Cursor.DEFAULT);
     }
 
+    /**
+     * Plays buttonSound audio when a button is pressed.
+     */
     @FXML
     private void playButtonPressSound() {
         this.settings.playButtonPressSound();
