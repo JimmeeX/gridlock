@@ -83,10 +83,8 @@ public class MainApp extends Application{
      * Initialise Multithreading Level Generator.
      */
     public void startThreading() {
-        for (int i = 0; i < 2; i++) {
-            Thread levGen = new Thread(this.settings.getBG());
-            levGen.start();
-        }
+        Thread levGen = new Thread(this.settings.getBG());
+        levGen.start();
     }
 
     /**

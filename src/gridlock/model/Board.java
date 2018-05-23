@@ -18,6 +18,9 @@ public class Board {
 
     /**
      * Board class constructor
+     * @param blocks the list of blocks
+     * @param prevBoard the list of previous board states
+     * @param lastMove the last Block that was moved
      */
     public Board(ArrayList<Block> blocks, Board prevBoard, Block lastMove) {
         initialiseGrid(6);
@@ -26,6 +29,7 @@ public class Board {
         this.lastMove = lastMove;
         fillGrid();
     }
+
     /** -prvt
      * initialise the grid (size x size)
      * @param size the length of the grid (square)
@@ -42,19 +46,15 @@ public class Board {
         }
     }
 
+    /**
+     *
+     */
     private void fillGrid() {
         for (Block block : this.blocks) {
             for (Integer[] position : block.getPosition()) {
                 this.grid.get(position[0])[position[1]] = block.getID();
             }
         }
-    }
-
-    public Block getBlock(String id) {
-        for (Block block: this.blocks) {
-            if (block.getID().equals(id)) return block;
-        }
-        return null;
     }
 
     public String[] getGridRow(int row) {
@@ -66,8 +66,7 @@ public class Board {
      * @param id the block's id
      * @param row the row position of the block
      * @param col the col position of the block
-<<<<<<< HEAD
-     */
+    */
 
     public void setBlock(String id, int row, int col){
         Block newBlock = new Block(id, row, col);
@@ -106,42 +105,17 @@ public class Board {
 
     /**
      * get the grid
-=======
->>>>>>> 3de6a0360186a1d6c61d6d25201c78d7720344ed
      */
     public ArrayList<String[]> getGrid () {
         return this.grid;
     }
 
     /**
-     * get the size of the grid
-     * @return grid.size()
-     */
-    public int getGridSize() {
-        return this.grid.size();
-    }
-
-    /**
-<<<<<<< HEAD
-=======
      * get all blocks initialised
      * @return blocks arraylist
      */
     public ArrayList<Block> getBlocks() {
         return this.blocks;
-    }
-
-    /**
->>>>>>> 948a78602a0a7f8a871fed6c46e064b7c16bfd1a
-     * print the grid
-     */
-    public void printGrid() {
-        for (int row = 0; row < 6; row++) {
-            for (int col = 0; col < 6; col++) {
-                System.out.print(this.grid.get(row)[col] + " ");
-            }
-            System.out.println();
-        }
     }
 
     /**

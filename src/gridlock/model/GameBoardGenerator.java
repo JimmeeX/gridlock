@@ -2,34 +2,52 @@ package gridlock.model;
 
 import java.util.*;
 import java.io.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import static java.lang.Thread.sleep;
 
 public class GameBoardGenerator implements Runnable {
 
-    private ArrayList<GameBoard> easy;
     private ArrayList<GameBoard> medium;
     private ArrayList<GameBoard> hard;
     private boolean running;
+    private final ReentrantLock lock = new ReentrantLock();
+    private final Condition notFull = lock.newCondition();
+    private final Condition notEmpty = lock.newCondition();
 
     public GameBoardGenerator() {
-        this.easy = new ArrayList<>();
         this.medium = new ArrayList<>();
         this.hard = new ArrayList<>();
     }
 
     public GameBoard getEasy() {
-        if (this.easy.size() > 0) return this.easy.remove(0);
         return generateAPuzzle(Difficulty.EASY);
     }
 
     public GameBoard getMedium() {
-        if (this.medium.size() > 0) return this.medium.remove(0);
-        return generateAPuzzle(Difficulty.MEDIUM);
+        GameBoard med;
+        if (this.medium.size() > 0) {
+            this.lock.lock();
+            med = this.medium.remove(0);
+            this.lock.unlock();
+        } else {
+            med = generateAPuzzle(Difficulty.MEDIUM);
+        }
+        return med;
     }
 
     public GameBoard getHard() {
-        if (this.hard.size() > 0) return this.hard.remove(0);
-        return generateAPuzzle(Difficulty.HARD);
+        GameBoard h;
+        if (this.hard.size() > 0) {
+            this.lock.lock();
+            h = this.hard.remove(0);
+            this.lock.unlock();
+        } else {
+            h = generateAPuzzle(Difficulty.HARD);
+        }
+        return h;
     }
 
     private class Node {
@@ -401,27 +419,35 @@ public class GameBoardGenerator implements Runnable {
     @Override
     public void run() {
         this.running = true;
-        try {
-            while (this.running) {
-                Random random = new Random();
-                int num = random.nextInt(19999);
-                System.out.println(" medium = " + medium.size() + " hard = " + hard.size());
-
-                if (0 <= num && num <= 9999) {
-                    GameBoard med = generateAPuzzle(Difficulty.MEDIUM);
-                    this.medium.add(med);
-                    System.out.println("MEDIUM = ");
-                    med.printGrid();
-                } else {
-                    GameBoard h = generateAPuzzle(Difficulty.HARD);
-                    System.out.println("HARD = ");
-                    h.printGrid();
-                    this.hard.add(h);
-                }
-                sleep(100);
+        while (this.running) {
+            Random random = new Random();
+            int num = random.nextInt(19999);
+            //System.out.println(" medium = " + medium.size() + " hard = " + hard.size());
+            if (0 <= num && num <= 9999 && this.medium.size() <= 15) {
+                addMediumPuzzle();
+            } else if (this.hard.size() <= 15){
+                addHardPuzzle();
             }
-        } catch (InterruptedException e){
-            System.out.println("exception detected");
+        }
+    }
+
+    public void addMediumPuzzle() {
+        try {
+            GameBoard med = generateAPuzzle(Difficulty.MEDIUM);
+            this.lock.lock();
+            this.medium.add(med);
+        } finally {
+            this.lock.unlock();
+        }
+    }
+
+    public void addHardPuzzle() {
+        try {
+            GameBoard h = generateAPuzzle(Difficulty.HARD);
+            this.lock.lock();
+            this.hard.add(h);
+        } finally {
+            this.lock.unlock();
         }
     }
 

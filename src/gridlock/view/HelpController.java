@@ -519,6 +519,10 @@ public class HelpController {
 
     @FXML
     private void showHelpWin(ActionEvent event) throws Exception {
+        // Update last move
+        this.board.updateNumMoves();
+        this.result++;
+
         this.playVictorySound();
         // Initialise Popup Stage
         Stage helpWinStage = new Stage();
