@@ -18,17 +18,20 @@
                <children>
                   <Label id="subtitle" fx:id="modeLabel" alignment="CENTER" layoutX="140.0" layoutY="53.0" prefHeight="40.0" prefWidth="150.0" text="Label">
                      <HBox.margin>
-                        <Insets left="25.0" right="25.0" />
+                        <Insets left="15.0" right="15.0" />
                      </HBox.margin>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
                   </Label>
                   <Label id="subtitle" fx:id="difficultyLabel" alignment="CENTER" layoutX="318.0" layoutY="65.0" prefHeight="40.0" prefWidth="150.0" text="Label">
                      <HBox.margin>
-                        <Insets left="25.0" right="25.0" />
+                        <Insets left="15.0" right="15.0" />
                      </HBox.margin>
                   </Label>
                   <Label id="subtitle" fx:id="levelLabel" alignment="CENTER" layoutX="482.0" layoutY="55.0" prefHeight="40.0" prefWidth="150.0" text="Label">
                      <HBox.margin>
-                        <Insets left="25.0" right="25.0" />
+                        <Insets left="20.0" right="15.0" />
                      </HBox.margin>
                   </Label>
                </children>
