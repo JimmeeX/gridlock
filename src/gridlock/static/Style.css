@@ -8,7 +8,8 @@
 /*}*/
 
 .root {
-    -fx-font-family: "Bodoni MT", Didot, "Didot LT STD", "Book Antiqua", Garamond, "Times New Roman", serif;
+    /*-fx-font-family: "Bodoni MT", Didot;*/
+    -fx-font-family: Impact, Charcoal, sans-serif;
     -fx-background-color: #424953;
     -fx-background-image: url("images/003.jpg");
     -fx-background-size: 800px 600px;
