@@ -22,6 +22,7 @@ public class GameBoardGenerator2 implements Runnable {
     private int maxBlocks;
     private double fillInProb;
     private String keyToReferToCampaignMode;
+    private int numOfFinalMoves;
     /** (Private)
      * Node Class contains a GameBoard object and other information for the level generator BFS graph
      */
@@ -253,16 +254,18 @@ public class GameBoardGenerator2 implements Runnable {
 
         generateInitialHeuristics (d);
         while (result == null && retry < 50) {
-            //System.out.println("Retry " + retry);
+            System.out.println("Retry " + retry);
             result = generateGameBoard();
             retry++;
             if (!running) break;
         }
         if (result == null) {
             System.out.println("DEBUG: Too long");
+            Random random = new Random();
+            int num = random.nextInt(19) + 1;
             result = new GameBoard();
-            result.process("src/gridlock/resources/" + keyToReferToCampaignMode + "/20.txt");
-            //+ "/" + (int)(1 + (new Random ()).nextInt(19))
+            result.process("src/gridlock/resources/" + keyToReferToCampaignMode
+                    + "/" + num + ".txt");
         }
         System.out.println("DEBUG: Found. Difficulty: " + d.toString()); result.printGrid();
         result.setMinMoves();
@@ -529,15 +532,17 @@ public class GameBoardGenerator2 implements Runnable {
         // difficulty by one step by referring to its predecessor (which has numOfMoves-1 steps).
         Node maxNode = queueRecordList.get(queueRecordList.size()-1);
         while (maxNode.dist > maxMoves) maxNode = maxNode.pred;
+        numOfFinalMoves = maxNode.dist;
 
-        // DEBUG: Backtracking
+        // Backtracking
         /* System.out.println("Backward check . . .");
         for (Node x = maxNode; x != null; x = x.pred) {
-            System.out.println("Claim max move: " + x.dist);
+            System.out.println("DEBUG: Claim max move: " + x.dist);
             x.board.printGrid();
         }*/
 
-        return (minMoves <= maxNode.dist) ? maxNode.board.duplicateGridandBlocks() : null; // since prevLoc still exists
+        // Since prevLoc traces may exist, we return the duplicate instead
+        return (minMoves <= maxNode.dist) ? maxNode.board.duplicateGridandBlocks() : null;
     }
     /** (Private)
      * Check if a node list contains a node based on reference

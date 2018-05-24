@@ -83,7 +83,7 @@ public class MainApp extends Application{
     public void startThreading() {
         // Make global thread soon....
         Thread levGen = new Thread(this.settings.getBG());
-        //levGen.start();
+        levGen.start();
     }
 
     /**
