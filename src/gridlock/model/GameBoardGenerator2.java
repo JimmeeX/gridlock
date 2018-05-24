@@ -1,13 +1,20 @@
 package gridlock.model;
 
 import java.util.*;
-import java.io.*;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * GameBoardGenerator Class is designed to implement different level puzzle generator
+ * and uses multithreading to generate medium and hard levels while the main program is running
+ */
 public class GameBoardGenerator2 implements Runnable {
+
+    private ArrayList<GameBoard> medium;
+    private ArrayList<GameBoard> hard;
+    private boolean running;
+    private final ReentrantLock lock = new ReentrantLock();
 
     private int minMoves;
     private int maxMoves;
@@ -15,53 +22,19 @@ public class GameBoardGenerator2 implements Runnable {
     private int maxBlocks;
     private double fillInProb;
     private String keyToReferToCampaignMode;
-
-    private ArrayList<GameBoard> medium;
-    private ArrayList<GameBoard> hard;
-    private boolean running;
-    private final ReentrantLock lock = new ReentrantLock();
-    private final Condition notFull = lock.newCondition();
-    private final Condition notEmpty = lock.newCondition();
-
-    public GameBoardGenerator2() {
-        this.medium = new ArrayList<>();
-        this.hard = new ArrayList<>();
-    }
-
-    public GameBoard getEasy() {
-        return generateAPuzzle(Difficulty.EASY);
-    }
-
-    public GameBoard getMedium() {
-        GameBoard med;
-        if (this.medium.size() > 0) {
-            this.lock.lock();
-            med = this.medium.remove(0);
-            this.lock.unlock();
-        } else {
-            med = generateAPuzzle(Difficulty.MEDIUM);
-        }
-        return med;
-    }
-
-    public GameBoard getHard() {
-        GameBoard h;
-        if (this.hard.size() > 0) {
-            this.lock.lock();
-            h = this.hard.remove(0);
-            this.lock.unlock();
-        } else {
-            h = generateAPuzzle(Difficulty.HARD);
-        }
-        return h;
-    }
-
+    /** (Private)
+     * Node Class contains a GameBoard object and other information for the level generator BFS graph
+     */
     private class Node {
         GameBoard board;
         boolean isWin;
         int dist;
         Node pred;
 
+        /**
+         * Class constructor for Node Class
+         * @param board the starting board
+         */
         Node (GameBoard board) {
             this.board = board;
             Block zBlock = board.getBlock("z");
@@ -71,9 +44,10 @@ public class GameBoardGenerator2 implements Runnable {
             this.pred = null;
         }
 
-        /** Two nodes are equal iff their board configuration are the same
-         * @param obj
-         * @return
+        /** Two nodes are equal iff their board configuration are the same.
+         * @param obj the object to be compared
+         * @return true if the two objects are equal
+         * @return false if the two objects are not equal
          */
         @Override
         public boolean equals(Object obj) {
@@ -88,11 +62,18 @@ public class GameBoardGenerator2 implements Runnable {
             }
             return true;
         }
-
         /**
-         * Hash code edit, set based on each block's position.
-         * This is assuming each block's fixed column/row corresponding to id is always fixed during the game.
-         * @return
+         * The hash code for Node is editted to obtain a faster equivalent-and-visited node search
+         * for BFS in generateGameBoard.
+         * This checks for eleven block ids (including "z" block) and compare its changeable row/column
+         * position in thisNode and thatNode (Obviously two equal nodes will have a same game-board
+         * configuration, and thus a same changeable row/column positions for every id).
+         *
+         * If we assume that each block's fixed column/row (corresponding to id)
+         * is always fixed during the game play (since you only slide it), then this function ensures
+         * that two nodes with the same hashCode also have the exact-same eleven blocks' arrangements.
+         * This may increase the "chance" of finding maximally one block, given a hashCode number.
+         * @return hashCode number
          */
         @ Override
         public int hashCode () {
@@ -124,7 +105,7 @@ public class GameBoardGenerator2 implements Runnable {
          *          s.t. A in both nodes are in different "hemispheres" of B's axis.
          *          In that case, an option to move from n1 to n2 should be explored.
          *
-         * This constructs a list of neighbor nodes with new references, duplications might happen.
+         * This constructs a list of such neighbor nodes with new references and no duplications.
          * @param
          * @return
          */
@@ -134,7 +115,7 @@ public class GameBoardGenerator2 implements Runnable {
                 // Consider all possibility of its new position (diff than currently)
                 Integer[] intv = this.board.blockRange(b.getID());
                 for (int i = intv[0]; i <= intv[1]; i++) {
-                    GameBoard duplicate = this.board.duplicate();
+                    GameBoard duplicate = this.board.duplicateGridandBlocks();
                     if (b.isHorizontal()) {
                         if (i == b.getCol()) continue;
                         duplicate.makeMove(b.getID(), new Integer[]{b.getRow(), i}, true);
@@ -144,38 +125,45 @@ public class GameBoardGenerator2 implements Runnable {
                     }
                     Node potentNeighNode = new Node (duplicate);
                     // Decide further restriction
-                    if (isBothYesorNoWinCriteria (potentNeighNode) &&
-                        isSameRange (potentNeighNode) &&
-                        isSameHemisphere (potentNeighNode)) continue;
+                    if (isBothWinOrBothNotWinNodes(potentNeighNode) &&
+                            isSameRange (potentNeighNode) &&
+                            isSameHemisphere (potentNeighNode)) continue;
                     neighborNodeList.add(potentNeighNode);
                 }
             }
             return neighborNodeList;
         }
-        private boolean isBothYesorNoWinCriteria (Node n) {
-            // false only if one is winning and the other is not
+        /** (Private)
+         * Check if both nodes are win nodes or (both) not win nodes
+         * @param n the node to be checked
+         * @return false only if one is winning and the other is not
+         */
+        private boolean isBothWinOrBothNotWinNodes(Node n) {
             return ((this.isWin && n.isWin) || (!this.isWin && !n.isWin));
         }
+        /** (Private)
+         * Check if the node is in the same range
+         * @param n the node to be checked
+         * @return true if the two nodes are in the same range
+         * @return false if the two nodes are not in the same range
+         */
         private boolean isSameRange(Node n) {
-            // After ensuring n is "proper", comparing range
             for (Block thisBlock : this.board.getBlocks()) {
                 String id = thisBlock.getID();
                 Block thatBlock = n.board.getBlock(id);
-                int thisRow = thisBlock.getRow();
-                int thisCol = thisBlock.getCol();
-                int thatRow = thatBlock.getRow();
-                int thatCol = thatBlock.getCol();
                 Integer[] br1 = this.board.blockRange(id);
                 Integer[] br2 = n.board.blockRange(id);
-                //System.out.println("id " + id + " br1 " + Arrays.toString(br1) + " br2 " + Arrays.toString(br2));
-                //System.out.println("loc1 " + thisRow + thisCol + " loc2 " + thatRow + thatCol);
                 if (br1[0] != br2[0] || br1[1] != br2[1]) return false;
-                //System.out.println("pass range");
             }
             return true;
         }
+        /**
+         * Check if the node is in the same hemisphere
+         * @param n the node to be checked
+         * @return true if they are in the same hemisphere
+         * @return false if they are not in the same hemisphere
+         */
         private boolean isSameHemisphere(Node n) {
-            // After ensuring n is same ranges, comparing hemisphere
             for (Block thisBlock : this.board.getBlocks()) {
                 String id = thisBlock.getID();
                 Block thatBlock = n.board.getBlock(id);
@@ -183,7 +171,6 @@ public class GameBoardGenerator2 implements Runnable {
                 int thisCol = thisBlock.getCol();
                 int thatRow = thatBlock.getRow();
                 int thatCol = thatBlock.getCol();
-                //System.out.println("id " + id + " this pos " + thisRow + thisCol + " that pos " + thatRow + thatCol);
                 for (Block otherOrientationBlock : this.board.getBlocks()) {
                     boolean a = thisBlock.isHorizontal();
                     // To reduce nodes: otherOri should "intersect thisBlock's range"
@@ -192,9 +179,6 @@ public class GameBoardGenerator2 implements Runnable {
                     int otherCol = otherOrientationBlock.getCol();
                     Integer[] thisBr = this.board.blockRange(id);
                     Integer[] otherBr = this.board.blockRange(otherOrientationBlock.getID());
-                    //System.out.println("id-other " + otherOrientationBlock.getID() + " other position " + otherRow + otherCol);
-                    //System.out.println("thisbr " + Arrays.toString(thisBr) + " otherbr " + Arrays.toString(otherBr));
-                    //System.out.println("thisblock itself is horizontal: " + String.valueOf(a));
                     if (a) {
                         if (thisBr[0] <= otherCol && thisBr[1] + thisBlock.getSize()-1 >= otherCol
                                 && otherBr[0] <= thisRow && otherBr[1] + otherOrientationBlock.getSize()-1 >= thisRow
@@ -205,44 +189,95 @@ public class GameBoardGenerator2 implements Runnable {
                                 && (thisRow-otherRow)*(thatRow-otherRow) <= 0) return false;
                     }
                 }
-                //System.out.println("pass hemi");
             }
             return true;
         }
     }
 
     /**
-     * Technically the main accessible function to public
-     *
-     * @param d
-     * @return
+     * Constructor for GameBoardGenerator class
      */
-    public GameBoard generateAPuzzle (Difficulty d) {
+    public GameBoardGenerator2() {
+        this.medium = new ArrayList<>();
+        this.hard = new ArrayList<>();
+    }
+
+    /**
+     * Get an easy level puzzle
+     * @return a GameBoard of level easy
+     */
+    public GameBoard getEasy() {
+        return generatePuzzle(Difficulty.EASY);
+    }
+    /**
+     * Get a medium level puzzle
+     * @return a GameBoard of level medium
+     * @post medium.size()--
+     */
+    public GameBoard getMedium() {
+        GameBoard med;
+        if (this.medium.size() > 0) {
+            this.lock.lock();
+            med = this.medium.remove(0);
+            this.lock.unlock();
+        } else {
+            med = generatePuzzle(Difficulty.MEDIUM);
+        }
+        return med;
+    }
+    /**
+     * Get a hard level puzzle
+     * @return a GameBoard of level hard
+     * @post hard.size()--
+     */
+    public GameBoard getHard() {
+        GameBoard h;
+        if (this.hard.size() > 0) {
+            this.lock.lock();
+            h = this.hard.remove(0);
+            this.lock.unlock();
+        } else {
+            h = generatePuzzle(Difficulty.HARD);
+        }
+        return h;
+    }
+
+    /**
+     * Generate a puzzle of a certain level of difficulty
+     * @param d the level difficulty
+     * @return the puzzle game-board
+     */
+    public GameBoard generatePuzzle (Difficulty d) {
         GameBoard result = null;
         int retry = 0;
 
         generateInitialHeuristics (d);
-        long startTime = System.nanoTime();
         while (result == null && retry < 50) {
             //System.out.println("Retry " + retry);
-            result = generateOneBoard();
+            result = generateGameBoard();
             retry++;
             if (!running) break;
         }
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime)/1000000;
-        System.out.println("Duration " + duration + "/1000 seconds.");
         if (result == null) {
-            System.out.println("Too long");
+            System.out.println("DEBUG: Too long");
             result = new GameBoard();
             result.process("src/gridlock/resources/" + keyToReferToCampaignMode + "/20.txt");
             //+ "/" + (int)(1 + (new Random ()).nextInt(19))
         }
-        System.out.println("Found. Difficulty: " + d.toString());
-        result.printGrid();
+        System.out.println("DEBUG: Found. Difficulty: " + d.toString()); result.printGrid();
         result.setMinMoves();
         return result;
     }
+
+    /** (Private)
+     * Determine and save the initial settings according to difficulty level, mainly the number of blocks' range,
+     * and the minimal and maximal number of moves permitted.
+     *
+     * Additional saved info includes (1) the probability corresponding to gameBoard filling
+     * in newEndGameBoard function, and (2) keyword for reference to a template puzzle if after several
+     * trials failing to find a puzzle.
+     * @param d the difficulty level
+     */
     private void generateInitialHeuristics (Difficulty d) {
         if (d.equals(Difficulty.EASY)) {
             minMoves = 4;
@@ -268,12 +303,27 @@ public class GameBoardGenerator2 implements Runnable {
         }
     }
 
-    private List <GameBoard> newRandomWinBoardList() {
-        // The end list guarantees that in actual implementations, the returned board
-        // is guaranteed to have a solution among these winning boards.
-        GameBoard referencedWinBoard = newRandomWinBoard();
+    /** (Private)
+     * Generate a random end game-board list.
+     *
+     * This function initially find an example of an end game-board E based on newEndGameBoard function.
+     * Then it wants to return a cover set of end game-boards corresponding to the graph of all possible
+     * configurations that can be reached from E.
+     *
+     * It is henceforth possible to BFS from these game-boards/nodes; and if we stop the search at proper time,
+     * we are guaranteed that all visited nodes/game-boards have correct distance from any possible end game-board
+     * state that realistically can be reached in the gameplay.
+     *
+     * This function implements a possible way to create this list, i.e. to build all end game-boards which
+     * (1) Has same blocks ids as E
+     * (2) Each block corresponding to id has same column (if vertical) or row (if horizontal) as E's version
+     * (3) If there are >= 2 blocks in the same row/column, their relative positions must be equal to E's
+     *
+     * @return a list of end game-boards
+     */
+    private List <GameBoard> newEndGameBoardList() {
+        GameBoard referencedWinBoard = newEndGameBoard();
 
-        // NEED: each row & col block numbers configurations to rearrange (Exception holds for "z")
         List <GameBoard> result = new ArrayList<>();
         List <GameBoard> tempResult = new ArrayList<>();
         result.add(new GameBoard());
@@ -302,7 +352,7 @@ public class GameBoardGenerator2 implements Runnable {
                         }
                         for (int pCount = 0; pCount + primaryBlock.getSize() - 1 < 6; pCount++) {
                             if (secondaryBlock.getID().equals("z")) {
-                                tempGb = gb.duplicate();
+                                tempGb = gb.duplicateGridandBlocks();
                                 if (tempGb.setBlock("z", 2, 4, 2, true) &&
                                         tempGb.setBlock(primaryBlock.getID(), j == 0 ? primaryBlock.getRow() : pCount,
                                                 j == 0 ? pCount : primaryBlock.getCol(), primaryBlock.getSize(),
@@ -311,7 +361,7 @@ public class GameBoardGenerator2 implements Runnable {
                             } else {
                                 for (int sCount = pCount + primaryBlock.getSize();
                                      sCount + secondaryBlock.getSize() - 1 < 6; sCount++) {
-                                    tempGb = gb.duplicate();
+                                    tempGb = gb.duplicateGridandBlocks();
                                     if (tempGb.setBlock(secondaryBlock.getID(), j == 0 ? secondaryBlock.getRow() : sCount,
                                             j == 0 ? sCount : secondaryBlock.getCol(), secondaryBlock.getSize(),
                                             secondaryBlock.isHorizontal()) &&
@@ -329,11 +379,7 @@ public class GameBoardGenerator2 implements Runnable {
                                 tempResult.add(gb);
                         } else {
                             for (int count = 0; count + b.getSize() - 1 < 6; count++) {
-                                tempGb = gb.duplicate();
-                                //System.out.println("Clearly ");
-                                //tempGb.printGrid();
-                                //System.out.println("is going to be replaced with " + b.getID() + (j == 0 ? b.getRow() : count)
-                                //        + (j == 0 ? count : b.getCol()) + b.getSize() + b.isHorizontal());
+                                tempGb = gb.duplicateGridandBlocks();
                                 if (tempGb.setBlock(b.getID(), j == 0 ? b.getRow() : count, j == 0 ? count : b.getCol(),
                                         b.getSize(), b.isHorizontal()))
                                     tempResult.add(tempGb);
@@ -347,23 +393,24 @@ public class GameBoardGenerator2 implements Runnable {
                 tempResult = new ArrayList<>();
             }
         }
-        //System.out.println("Win list size " + result.size());
-        //for(GameBoard gb: result) { System.out.println("****"); gb.printGrid();}
         return result;
     }
-    private GameBoard newRandomWinBoard () {
+    /** (Private)
+     * Generate a random end game-board state
+     * @return an end game-board
+     */
+    private GameBoard newEndGameBoard() {
         int currNumOfBlock = 0;
-        GameBoard b = new GameBoard();
-        List <String []> grid = b.getGrid();
-        if (b.setBlock("z", 2, 4, 2, true)) currNumOfBlock++;
-        // cheat
+        GameBoard gb = new GameBoard();
+        List <String []> grid = gb.getGrid();
+        if (gb.setBlock("z", 2, 4, 2, true)) currNumOfBlock++;
         grid.get(2)[3] = "-";
 
         Random random = new Random();
         int row = random.nextInt(5);
         int col = randomBinaryChoice(4, 5, 0.5);
         int s = randomBinaryChoice(2, 3, 0.5);
-        if (b.setBlock("a", row, col, s, false)) currNumOfBlock++;
+        if (gb.setBlock("a", row, col, s, false)) currNumOfBlock++;
 
         for (int i = 0; i < grid.size(); i++) {
             if (i == 2) continue;
@@ -377,28 +424,58 @@ public class GameBoardGenerator2 implements Runnable {
                 int isHorizontalIdx = randomBinaryChoice(0, 1, 0.5);
                 int sizeIdx = randomBinaryChoice(0, 1, 0.5);
                 currNumOfBlock++;
-                if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
-                if (b.setBlock(id, i, j, size[sizeIdx], isHorizontal[1 - isHorizontalIdx])) continue;
-                if (b.setBlock(id, i, j, size[1 - sizeIdx], isHorizontal[isHorizontalIdx])) continue;
-                if (b.setBlock(id, i, j, size[1 - sizeIdx], isHorizontal[1 - isHorizontalIdx])) continue;
+                if (gb.setBlock(id, i, j, size[sizeIdx], isHorizontal[isHorizontalIdx])) continue;
+                if (gb.setBlock(id, i, j, size[sizeIdx], isHorizontal[1 - isHorizontalIdx])) continue;
+                if (gb.setBlock(id, i, j, size[1 - sizeIdx], isHorizontal[isHorizontalIdx])) continue;
+                if (gb.setBlock(id, i, j, size[1 - sizeIdx], isHorizontal[1 - isHorizontalIdx])) continue;
                 currNumOfBlock--;
             }
         }
         grid.get(2)[3] = "*";
         return (currNumOfBlock >= minBlocks && currNumOfBlock <= maxBlocks)
-                ? b : newRandomWinBoard ();
+                ? gb : newEndGameBoard();
     }
+    /** (Private)
+     * Randomly choose between 2 items with the given probability of item 1
+     * @param item1 the first item to be selected
+     * @param item2 the second item to be selected
+     * @param probItem1 the probability that the first item is selected
+     * @param <E>
+     * @return item1 or item2 randomly
+     */
     private <E> E randomBinaryChoice(E item1, E item2, double probItem1) {
         return (Math.random() < probItem1) ? item1 : item2;
     }
 
-    private GameBoard generateOneBoard () {
-        /* BFS:
-        * ) Queue is the open set
-        * ) Adjacency is both the open set and closed set:
-        *   the only thing that makes diff when a loop is just started/ended is that the open element always have empty arraylist
-        */
-        List <GameBoard> initWinBoardList = newRandomWinBoardList();
+    /** (Private)
+     * Generate a starting board with the given min and max number of moves
+     * and an end board state.
+     * This function performs BFS from the list given by newEndGameBoardList, which guarantees
+     * that a BFS starting from this list will give a correct interpretation that a recorded
+     * distance in a visited node X - IS - the minimal number of moves needed from X's game-board
+     * configuration to an end game-board.
+     * @return a starting game-board
+     */
+    private GameBoard generateGameBoard() {
+        // For BFS to store pred and distance variables properly, every node's neighbors should
+        // be stored reference-based. If a new-found node is equivalent to a node in nodeList
+        // (in the form of both adjacency.keySet() or queueRecordList), use that reference instead.
+        //
+        // To avoid checking 20K+ nodes, we use hashMaps :). Due to code reuse, three hashMaps still
+        // implements adjacency list structures: the classic adjacency
+        // A more efficient structure would be using hashMap to store nodes as keys,
+        // with unique value-reference.
+        //
+        // The premises would be that the nodeList will contain all sufficient nodes
+        // to cover all actual neighbors, and all neighbors will never be inserted
+        // with something not in nodeList.
+        //
+        // Theoretically, the data structures here represent something:
+        // 1) Queue is the open set
+        // 2) Adjacency is both the open set and closed set: the only thing that determines whether an element is in
+        //      open or closed set when a loop is just started/just ended, is that an open-set element always has
+        //      an empty list as its neighborList.
+        List <GameBoard> initWinBoardList = newEndGameBoardList();
 
         int targetMoves = minMoves + (new Random ()).nextInt(maxMoves - minMoves);
         Queue <Node> queue = new LinkedList<>();
@@ -423,18 +500,6 @@ public class GameBoardGenerator2 implements Runnable {
             // Ensuring we only want to explore up to a distance of targetMoves
             if (curr.dist > targetMoves) break;
             for (Node neighNode : curr.produceNeighborNodes()) {
-                // For BFS to store pred and distance variables properly, every node's neighbors should
-                // be stored reference-based. If a new-found node is equivalent to a node in nodeList
-                // (adjacency.keySet() or queueRecordList), use that reference instead.
-                //
-                // To avoid checking 20K+ nodes, we use hashMaps :). Due to code reuse, three hashMaps still
-                // implements adjacency list structures: the classic adjacency
-                // A more efficient structure would be using hashMap to store nodes as keys,
-                // with unique value-reference.
-                //
-                // The premises would be that the nodeList will contain all sufficient nodes
-                // to cover all actual neighbors, and all neighbors will never be inserted
-                // with something not in nodeList.
                 List <Node> currNeighbors = adjacencyRefAB.get(curr);
                 List <Node> nnNeighbors = adjacency.get(neighNode);
                 if (nnNeighbors == null) {
@@ -472,14 +537,24 @@ public class GameBoardGenerator2 implements Runnable {
             x.board.printGrid();
         }*/
 
-        return (minMoves <= maxNode.dist) ? maxNode.board.duplicate() : null; // since prevLoc still exists
+        return (minMoves <= maxNode.dist) ? maxNode.board.duplicateGridandBlocks() : null; // since prevLoc still exists
     }
+    /** (Private)
+     * Check if a node list contains a node based on reference
+     * @param nl the node list
+     * @param n the node to check if contained
+     * @return true if the node list contains the reference
+     * @return false if the node list doesn't contain the reference
+     */
     private boolean containsRef(List <Node> nl, Node n) {
         if (n == null) return (this == null);
         for (Node x : nl) if (x == n) return true;
         return false;
     }
 
+    /**
+     * Method called for multithreading
+     */
     @Override
     public void run() {
         this.running = true;
@@ -494,26 +569,30 @@ public class GameBoardGenerator2 implements Runnable {
             }
         }
     }
-
-    public void addMediumPuzzle() {
+    /** (Private)
+     * Generate a medium puzzle and add it in the ArrayList of hard puzzles
+     */
+    private void addMediumPuzzle() {
         try {
-            GameBoard med = generateAPuzzle(Difficulty.MEDIUM);
+            GameBoard med = generatePuzzle(Difficulty.MEDIUM);
             this.lock.lock();
             this.medium.add(med); // if numOfMoves is within the limit, check again
             //System.out.println("Claim max move: " + maxNode.dist);
         } finally {
-            this.lock.unlock();
+            if (this.lock.isHeldByCurrentThread()) this.lock.unlock();
         }
     }
-
-    public void addHardPuzzle() {
+    /** (Private)
+     * Generate a hard puzzle and add it in the ArrayList of hard puzzles
+     */
+    private void addHardPuzzle() {
         try {
-            GameBoard h = generateAPuzzle(Difficulty.HARD);
+            GameBoard h = generatePuzzle(Difficulty.HARD);
             this.lock.lock();
             this.hard.add(h); // if numOfMoves is within the limit, check again
             //System.out.println("Claim max move: " + maxNode.dist);
         } finally {
-            this.lock.unlock();
+            if (this.lock.isHeldByCurrentThread()) this.lock.unlock();
         }
     }
 

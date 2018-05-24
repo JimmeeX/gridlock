@@ -346,10 +346,10 @@ public class HelpController {
      * Determines what medal is deserved from the user performance.
      */
     private void handleWin() {
-        if (this.board.getNumMoves() == this.minMoves) {
+        if (this.board.numMovesProperty().getValue() == this.minMoves) {
             this.result = 3;
         }
-        else if (board.getNumMoves() <= Math.round(this.minMoves * 1.3)) {
+        else if (board.numMovesProperty().getValue() <= Math.round(this.minMoves * 1.3)) {
             this.result = 2;
         } else {
             this.result = 1;
@@ -627,7 +627,7 @@ public class HelpController {
 
         // Attach Controller
         HelpWinController helpWinController = loader.getController();
-        helpWinController.initData(this.settings, this.board.getNumMoves(), this.minMoves, this.result);
+        helpWinController.initData(this.settings, this.board.numMovesProperty().getValue(), this.minMoves, this.result);
 
         helpWinStage.setScene(helpWinScene);
 

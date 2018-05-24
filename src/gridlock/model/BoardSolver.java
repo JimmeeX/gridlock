@@ -4,22 +4,36 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+/**
+ * the BoardSolver Class for implementing the hint functionality of the board
+ * added by Joseph
+ */
 class BoardSolver {
-	Board board;
+	BoardState board;
 	int numMoves;
 
-	public BoardSolver(Board board) {
+	/**
+	 * Class constructor for BoardSolver
+	 * @param board the state of the board
+	 */
+	public BoardSolver(BoardState board) {
 		this.board = board;
 	}
 
+	/**
+	 * bfs to get the end state of the board
+	 * @return the block that is to be moved next to reach
+	 * the end board state with least number of moves
+	 */
 	public Block solvePuzzle() {
-		LinkedList<Board> queue = new LinkedList<>();
-		HashSet<Board> visited = new HashSet<>();
+		LinkedList<BoardState> queue = new LinkedList<>();
+		HashSet<BoardState> visited = new HashSet<>();
 
 		queue.add(this.board);
 		while (!queue.isEmpty()) {
-			Board curr = queue.poll();
+			BoardState curr = queue.poll();
 			if (curr.checkGameOver()) {
+<<<<<<< HEAD
 				ArrayList<Board> path = new ArrayList<>();
 				while (curr != null) {
 					path.add(curr);
@@ -27,19 +41,28 @@ class BoardSolver {
 				}
 				Board nextBoard = path.get(path.size() - 2);
 				numMoves = path.size() - 1;
+=======
+				BoardState nextBoard = curr.getPath().get(1);
+				numMoves = curr.getPathSize() - 1;
+>>>>>>> 0c2dac6ea30b19b41f76b9eda51e56aa767b1afa
 				return nextBoard.getLastMove();
 			}
 			if (visited.contains(curr)) continue;
 
 			visited.add(curr);
 
-			for (Board boards : curr.getNextPossible()) {
+			for (BoardState boards : curr.getNextPossible()) {
 				queue.add(boards);
 			}
 		}
 		return null;
 	}
-	
+
+	/**
+	 * get the number of moves from the current board state to
+	 * the the end board state
+	 * @return
+	 */
 	public int getNumMoves() {
 		return numMoves;
 	}
