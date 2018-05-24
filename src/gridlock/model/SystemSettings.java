@@ -244,36 +244,23 @@ public class SystemSettings implements Serializable {
      * @return List of easy level results
      */
     public GameBoard getEasy() {
-        this.bg.stopThread();
-        System.out.println("Thread is sleeping, easy");
-        GameBoard gb = this.bg.getEasy();
-        this.bg.resumeThread();
-        System.out.println("Thread is resuming, easy");
-        return gb;
+        return this.bg.getEasy();
     }
+
     /**
      * Getter
      * @return List of medium level results
      */
     public GameBoard getMedium() {
-        this.bg.stopThread();
-        System.out.println("Thread is sleeping, med");
-        GameBoard gb = this.bg.getMedium();
-        this.bg.resumeThread();
-        System.out.println("Thread is resuming, med");
-        return gb;
+        return this.bg.getMedium();
     }
+
     /**
      * Getter
      * @return List of hard level results
      */
     public GameBoard getHard() {
-        this.bg.stopThread();
-        System.out.println("Thread is sleeping, hard");
-        GameBoard gb = this.bg.getHard();
-        System.out.println("Thread is resuming, hard");
-        this.bg.resumeThread();
-        return gb;
+        return this.bg.getHard();
     }
 
     /**
