@@ -272,23 +272,21 @@ public class GameBoardGenerator implements Runnable {
         GameBoard result = null;
         int retry = 0;
         while (result == null && retry < 10) {
-            System.out.println("DEBUG: Generating a game-board ASAP, retry #" + retry);
+            System.out.println("=== Generating a game-board ASAP for difficulty " + d.toString() + ", retry #" + retry);
             result = generateGameBoard(d);
             retry++;
         }
         if (result == null) {
-            System.out.println("DEBUG: Generating ASAP is too long");
             Random random = new Random();
             int num = random.nextInt(19) + 1;
             result = new GameBoard();
             result.process("src/gridlock/resources/" + keyToReferToCampaignMode
                     + "/" + num + ".txt");
-            System.out.println("DEBUG: Ignore the number of moves here." +
-                    "That would be the max moves found by the last retry.");
+            System.out.println("Generating ASAP is too long. Creating template puzzle...");
+        } else {
+            System.out.println("An on-the spot game-board is found with number of moves: " + numOfFinalMoves);
         }
-        System.out.println("DEBUG: An on-the spot game-board is found for difficulty: " + d.toString());
         result.printGrid();
-        System.out.println("DEBUG: Number of moves: " + numOfFinalMoves);
         return result;
     }
 
@@ -569,7 +567,7 @@ public class GameBoardGenerator implements Runnable {
         GameBoard result = maxNode.board.duplicateGridandBlocks();
         numOfFinalMoves = maxNode.dist;
         return (minMoves <= maxNode.dist) ? result : null;
-    } //
+    }
     /** (Private)
      * Check if a node list contains a node based on reference
      * @param nl the node list
@@ -595,7 +593,7 @@ public class GameBoardGenerator implements Runnable {
                 isUsed = true;
                 Random random = new Random();
                 int num = random.nextInt(19999);
-                //System.out.println("DEBUG: Medium array size: " + medium.size() +
+                //System.out.println("Medium array size: " + medium.size() +
                 // ", Hard array size: " + hard.size());
                 if (0 <= num && num <= 9999 && this.medium.size() <= 15) {
                     tryAddMediumGameBoard();
@@ -613,8 +611,13 @@ public class GameBoardGenerator implements Runnable {
         try {
             GameBoard med = generateGameBoard(Difficulty.MEDIUM);
             this.lock.lock();
-            if (med != null) this.medium.add(med);
-            System.out.println("Adding a medium game-board... Now medium array size " + medium.size());
+            if (med != null) {
+                this.medium.add(med);
+                System.out.println("Adding a medium game-board with numOfMoves: " + numOfFinalMoves + ". Now medium array size " + medium.size());
+                med.printGrid();
+            } else {
+                System.out.println("A medium game-board not found. Medium array size still " + medium.size());
+            }
         } finally {
             if (this.lock.isHeldByCurrentThread()) this.lock.unlock();
         }
@@ -626,8 +629,13 @@ public class GameBoardGenerator implements Runnable {
         try {
             GameBoard h = generateGameBoard(Difficulty.HARD);
             this.lock.lock();
-            if (h != null) this.hard.add(h);
-            System.out.println("Adding a hard game-board.. Now hard array size " + hard.size());
+            if (h != null) {
+                this.hard.add(h);
+                System.out.println("Adding a hard game-board with numOfMoves: " + numOfFinalMoves + ". Now hard array size " + hard.size());
+                h.printGrid();
+            } else {
+                System.out.println("A hard game-board not found. Hard array size still " + hard.size());
+            }
         } finally {
             if (this.lock.isHeldByCurrentThread()) this.lock.unlock();
         }
