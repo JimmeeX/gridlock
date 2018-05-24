@@ -388,7 +388,7 @@ public class GameBoard {
      * @return the next block to be moved to finish the puzzle
      */
     public Block getHint(boolean getMinMoves) {
-        BoardState startBoard = new BoardState(this.board.getBlocks(), new ArrayList<BoardState>(), null);
+        BoardState startBoard = new BoardState(this.board.getBlocks(), null, null);
         BoardSolver solver = new BoardSolver(startBoard);
         Block changedBlock = solver.solvePuzzle();
         if (getMinMoves) {
