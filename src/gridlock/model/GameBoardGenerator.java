@@ -416,6 +416,8 @@ public class GameBoardGenerator implements Runnable {
                 tempResult = new ArrayList<>();
             }
         }
+        // Randomize the order of endGameBoard list
+        Collections.shuffle(result);
         return result;
     }
     /** (Private)
