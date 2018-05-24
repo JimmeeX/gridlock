@@ -7,8 +7,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * the GameBoard class designed to return the board and functionality of a board game
@@ -209,8 +208,7 @@ public class GameBoard {
      */
     public boolean setBlock(String id, int row, int col, int size, boolean isHorizontal) {
         if (blockExist(id) != -1
-                || (size == 2 && (row > 4 || col > 4))
-                || (size == 3 && (row > 3 || col > 3))
+                || (isHorizontal ? col + size > 6 : row + size > 6)
                 || row < 0 || col < 0
                 || !this.board.getGridRow(row)[col].equals("*")) return false;
         // put scenario: check if the grid unit is empty
@@ -358,11 +356,8 @@ public class GameBoard {
      * @post this.nextLocation.size() = 0
      */
     public void restart() {
-        System.out.println("size = " + this.prevLocations.size());
-        printGrid();
         while (this.prevLocations.size() > 0) {
             undoMove();
-            printGrid();
         }
         this.prevLocations.clear();
         this.nextLocations.clear();
@@ -398,16 +393,18 @@ public class GameBoard {
     }
 
     /**
-     * Let blockRange be an interval of the most left/up and the most right/down
-     * possible block's starting [row,col] when only that particular block is moved
-     * e.g. in endGameState.txt file:
+     * let the range of block X be an interval of the most left/up and the most right/down
+     * possible block's starting row/col when X is slided in the game.
+     * e.g. if a GameBoard's grid is this:
      * |* * * a a a
      * |* * * * * *
      * |* * b * z z
      * |c c b * d e
      * |f * b * d e
      * |f * g g g e
-     * blockrange(z:horizontal) = [3,4], blockrange (b:vertical) = [0,2]
+     * Then we have blockRange("z") = [3,4], since the horizontal block with id "z" can move
+     * to the leftest s.t. its starting position is in column 3, and to the rightest to column 4.
+     * Similarly, blockRange ("b") = [0,2]
      * @param id the id/name of the block
      * @return the range of the block
      * Added by Edwin
@@ -431,17 +428,33 @@ public class GameBoard {
     }
 
     /**
-     * duplicate a GameBoard
-     * @return a new GameBoard
+     * this is initially a helper function of GBGenerator to clone a GameBoard w/o copying
+     * prevLocations and nextLocations.
+     *
+     * @return a new GameBoard with exact-but-differently-referenced grid and blocks
      * Added by Edwin
      */
-    public GameBoard duplicate() {
-        // Only need essentially grid and blocks w/ different reference
+    public GameBoard duplicateGridandBlocks() {
         GameBoard newBoard = new GameBoard();
         newBoard.board.getGrid().clear();
         for (String[] strArr : this.board.getGrid()) newBoard.board.getGrid().add(strArr.clone());
         for (Block block : this.board.getBlocks()) newBoard.getBlocks().add(block.duplicate());
         return newBoard;
+    }
+
+    /**
+     * find all blocks that is located on particular column/row
+     * Added by Edwin
+     */
+    public List<Block> particularRowOrColumnsBlockList(int rowOrColumnIndex, boolean isRow) {
+        List <Block> particularROCsBlockList = new ArrayList<>();
+        for (Block b: this.board.getBlocks()) {
+            if (b.isHorizontal() == isRow) {
+                if (isRow ? b.getRow() == rowOrColumnIndex : b.getCol() == rowOrColumnIndex)
+                    particularROCsBlockList.add(b);
+            }
+        }
+        return particularROCsBlockList;
     }
 
     /**

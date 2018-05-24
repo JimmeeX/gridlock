@@ -149,7 +149,7 @@ public class GameController {
     private void initBoard(GameBoard oldBoard) {
         if (oldBoard != null) {
             oldBoard.restart();
-            this.board = oldBoard.duplicate();
+            this.board = oldBoard.duplicateGridandBlocks();
         }
 
         else {
@@ -160,9 +160,7 @@ public class GameController {
                 this.board.process(levelName);
             }
             else {
-                if (this.difficulty.equals(Difficulty.EASY)) {
-                    this.board = this.settings.getEasy();
-                }
+                if (this.difficulty.equals(Difficulty.EASY)) this.board = this.settings.getEasy();
                 else if (this.difficulty.equals(Difficulty.MEDIUM)) this.board = this.settings.getMedium();
                 else this.board = this.settings.getHard();
             }

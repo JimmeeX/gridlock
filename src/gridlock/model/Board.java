@@ -7,6 +7,7 @@ import java.util.ArrayList;
  * Added by Alina
  */
 public class Board {
+
 	private ArrayList<String[]> grid;
 	private ArrayList<Block> blocks;
 
@@ -94,4 +95,5 @@ public class Board {
 	public String getBlockID(int blockID) {
 		return this.blocks.get(blockID).getID();
 	}
+
 }

@@ -27,12 +27,10 @@ public class MainApp extends Application{
         Scene menuScene = new Scene(menuParent);
 
         this.initSettings();
-
         this.settings.playBgMusic();
 
         MenuController menuController = loader.getController();
         menuController.initData(this.settings);
-
 
         primaryStage.setOnCloseRequest(e -> {
             try {closeProgram(primaryStage);}
@@ -83,10 +81,8 @@ public class MainApp extends Application{
      * Initialise Multithreading Level Generator.
      */
     public void startThreading() {
-        for (int i = 0; i < 2; i++) {
-            Thread levGen = new Thread(this.settings.getBG());
-            levGen.start();
-        }
+        Thread levGen = new Thread(this.settings.getBG());
+        levGen.start();
     }
 
     /**
@@ -94,6 +90,25 @@ public class MainApp extends Application{
      * @param args
      */
     public static void main(String[] args) {
+        //GameBoardGenerator2 bg = new GameBoardGenerator2();
+        /*for (int i= 1; i<=20; i++) {
+            Board b = bg.generateOneBoard("src/gridlock/resources/easy/" + i + ".txt");
+        }*/
+        /*
+        //EASY
+        GameBoard easyStart = bg.generateAPuzzle(Difficulty.EASY);
+        System.out.println("EASY = ");
+        easyStart.printGrid();
+
+        //MEDIUM
+        GameBoard medStart = bg.generateAPuzzle(Difficulty.MEDIUM);
+        System.out.println("MEDIUM = ");
+        medStart.printGrid();
+
+        //HARD
+        GameBoard hardStart = bg.generateAPuzzle(Difficulty.HARD);
+        System.out.println("HARD = ");
+        hardStart.printGrid();*/
         launch(args);
     }
 

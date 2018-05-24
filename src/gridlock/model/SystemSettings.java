@@ -28,7 +28,7 @@ public class SystemSettings implements Serializable {
     private Integer[] mediumLevels;
     private Integer[] hardLevels;
 
-    private transient GameBoardGenerator bg;
+    private transient GameBoardGenerator bg; // 28, 76, 177, 185; mainapp 30
 
     /**
      * Constructor
@@ -243,19 +243,25 @@ public class SystemSettings implements Serializable {
      * Getter
      * @return List of easy level results
      */
-    public GameBoard getEasy() { return this.bg.getEasy(); }
+    public GameBoard getEasy() {
+        return this.bg.getEasy();
+    }
 
     /**
      * Getter
      * @return List of medium level results
      */
-    public GameBoard getMedium() { return this.bg.getMedium(); }
+    public GameBoard getMedium() {
+        return this.bg.getMedium();
+    }
 
     /**
      * Getter
      * @return List of hard level results
      */
-    public GameBoard getHard() { return this.bg.getHard(); }
+    public GameBoard getHard() {
+        return this.bg.getHard();
+    }
 
     /**
      * Sound played when mouse drags the blocks around in the game interface.
