@@ -71,13 +71,7 @@ public class GameBoardGenerator2 implements Runnable {
             this.pred = null;
         }
 
-        /**
-         * Two nodes are equal, iff each block (with same id)'s range is exactly equal
-         * AND for each block id A, and for every other blocks with diff orientation whose range
-         * intersects A, A in both nodes are in same hemispheres
-         * Execption holds when a node is a win node. In this case if the z block is located differently,
-         * assume they are different.
-         *
+        /** Two nodes are equal iff their board configuration are the same
          * @param obj
          * @return
          */
@@ -95,6 +89,11 @@ public class GameBoardGenerator2 implements Runnable {
             return true;
         }
 
+        /**
+         * Hash code edit, set based on each block's position.
+         * This is assuming each block's fixed column/row corresponding to id is always fixed during the game.
+         * @return
+         */
         @ Override
         public int hashCode () {
             // For first eleven block IDs (z, a, b, c, d, ...),  ordered and filled with
@@ -111,19 +110,52 @@ public class GameBoardGenerator2 implements Runnable {
             return result;
         }
 
-        public boolean isNeighbor (Node n) {
-            // Decide if n is a neighbor (assuming only one move is performed), either:
-            // * If one win and one not, accept directly
-            // * If they are ranged differently, accept directly
-            // * If same, check if thay are same hemisphere or not. Yes <=> reject
-            return (!(isBothYesorNoWinCriteria(n) && isSameRange(n) && isSameHemisphere(n)));
+        /**
+         * Two nodes n1 and n2 are adjacent, iff:
+         * 1. There is exactly a block to move, s.t. n1's board becomes n2's board
+         * 2. We employ some more restriction to reduce the number of edges and visited nodes:
+         *      * The blocks' ranges should not be exactly equal
+         *      * Unless one node is a winNode and the other is node.
+         *          In this case, it is obvious that "z" was moved, thus there should be a possibility
+         *          to move this way in order to create shortest path
+         *      * Another unless: if there is an other block B (clearly not moved and with diff orientation)
+         *          whose range intersects the "line" formed by position unit grid of the currently
+         *          changed block A in n1 and n2's boards,
+         *          s.t. A in both nodes are in different "hemispheres" of B's axis.
+         *          In that case, an option to move from n1 to n2 should be explored.
+         *
+         * This constructs a list of neighbor nodes with new references, duplications might happen.
+         * @param
+         * @return
+         */
+        public List <Node> produceNeighborNodes () {
+            List <Node> neighborNodeList = new ArrayList<>();
+            for (Block b: this.board.getBlocks()) {
+                // Consider all possibility of its new position (diff than currently)
+                Integer[] intv = this.board.blockRange(b.getID());
+                for (int i = intv[0]; i <= intv[1]; i++) {
+                    GameBoard duplicate = this.board.duplicate();
+                    if (b.isHorizontal()) {
+                        if (i == b.getCol()) continue;
+                        duplicate.makeMove(b.getID(), new Integer[]{b.getRow(), i}, true);
+                    } else {
+                        if (i == b.getRow()) continue;
+                        duplicate.makeMove(b.getID(), new Integer[]{i, b.getCol()}, true);
+                    }
+                    Node potentNeighNode = new Node (duplicate);
+                    // Decide further restriction
+                    if (isBothYesorNoWinCriteria (potentNeighNode) &&
+                        isSameRange (potentNeighNode) &&
+                        isSameHemisphere (potentNeighNode)) continue;
+                    neighborNodeList.add(potentNeighNode);
+                }
+            }
+            return neighborNodeList;
         }
-
         private boolean isBothYesorNoWinCriteria (Node n) {
             // false only if one is winning and the other is not
             return ((this.isWin && n.isWin) || (!this.isWin && !n.isWin));
         }
-
         private boolean isSameRange(Node n) {
             // After ensuring n is "proper", comparing range
             for (Block thisBlock : this.board.getBlocks()) {
@@ -142,7 +174,6 @@ public class GameBoardGenerator2 implements Runnable {
             }
             return true;
         }
-
         private boolean isSameHemisphere(Node n) {
             // After ensuring n is same ranges, comparing hemisphere
             for (Block thisBlock : this.board.getBlocks()) {
@@ -180,6 +211,12 @@ public class GameBoardGenerator2 implements Runnable {
         }
     }
 
+    /**
+     * Technically the main accessible function to public
+     *
+     * @param d
+     * @return
+     */
     public GameBoard generateAPuzzle (Difficulty d) {
         GameBoard result = null;
         int retry = 0;
@@ -187,9 +224,10 @@ public class GameBoardGenerator2 implements Runnable {
         generateInitialHeuristics (d);
         long startTime = System.nanoTime();
         while (result == null && retry < 50) {
-            System.out.println("Retry " + retry);
+            //System.out.println("Retry " + retry);
             result = generateOneBoard();
             retry++;
+            if (!running) break;
         }
         long endTime = System.nanoTime();
         long duration = (endTime - startTime)/1000000;
@@ -200,10 +238,11 @@ public class GameBoardGenerator2 implements Runnable {
             result.process("src/gridlock/resources/" + keyToReferToCampaignMode + "/20.txt");
             //+ "/" + (int)(1 + (new Random ()).nextInt(19))
         }
+        System.out.println("Found. Difficulty: " + d.toString());
+        result.printGrid();
         result.setMinMoves();
         return result;
     }
-
     private void generateInitialHeuristics (Difficulty d) {
         if (d.equals(Difficulty.EASY)) {
             minMoves = 4;
@@ -308,7 +347,7 @@ public class GameBoardGenerator2 implements Runnable {
                 tempResult = new ArrayList<>();
             }
         }
-        System.out.println("Win list size " + result.size());
+        //System.out.println("Win list size " + result.size());
         //for(GameBoard gb: result) { System.out.println("****"); gb.printGrid();}
         return result;
     }
@@ -356,8 +395,8 @@ public class GameBoardGenerator2 implements Runnable {
     private GameBoard generateOneBoard () {
         /* BFS:
         * ) Queue is the open set
-        * ) Adjacency is both the open set and closed set: the only thing that makes
-        *   diff when a loop is just started/ended is that the open element always have empty arraylist
+        * ) Adjacency is both the open set and closed set:
+        *   the only thing that makes diff when a loop is just started/ended is that the open element always have empty arraylist
         */
         List <GameBoard> initWinBoardList = newRandomWinBoardList();
 
@@ -381,66 +420,58 @@ public class GameBoardGenerator2 implements Runnable {
         }
         while (!queue.isEmpty()) {
             Node curr = queue.poll();
+            // Ensuring we only want to explore up to a distance of targetMoves
             if (curr.dist > targetMoves) break;
-            // The neighbor constructions, "ignoring reference and duplicates", are done here.
-            for (Block b: curr.board.getBlocks()) {
-                // Consider all possibility of its new position (diff than currently), then additional check if
-                // they are really a neighbor to each other.
-                Integer[] intv = curr.board.blockRange(b.getID());
-                for (int i = intv[0]; i <= intv[1]; i++) {
-                    GameBoard duplicate = curr.board.duplicate();
-                    if (b.isHorizontal()) {
-                        if (i == b.getCol()) continue;
-                        duplicate.makeMove(b.getID(), new Integer[]{b.getRow(), i}, true);
-                    } else {
-                        if (i == b.getRow()) continue;
-                        duplicate.makeMove(b.getID(), new Integer[]{i, b.getCol()}, true);
-                    }
-                    Node potentNeighNode = new Node(duplicate);
-                    if (!curr.isNeighbor(potentNeighNode)) continue;
-                    // For BFS to completely work, eventually the node's neighbors should be reference based
-                    // Hence every neighbor should be referenced equivalently to a node in nodeList,
-                    // the premises would be that the nodeList will contain all sufficient nodes
-                    // to cover all actual neighbors, and all neighbors will never be inserted
-                    // something not in nodeList.
-                    List <Node> currNeighbors = adjacencyRefAB.get(curr);
-                    List <Node> pnnNeighbors = adjacency.get(potentNeighNode);
-                    if (pnnNeighbors == null) {
-                        // this pnn is brand new. Add it to curr's neighbor list
-                        currNeighbors.add(potentNeighNode);
-                        // and put it on adjacencies and queue
-                        newNeighborList = new ArrayList<>();
-                        adjacency.put(potentNeighNode, newNeighborList);
-                        adjacencyRefAB.put(potentNeighNode, newNeighborList);
-                        adjacencyRefBA.put(newNeighborList, potentNeighNode);
-                        queue.add(potentNeighNode);
-                        // and define the dist
-                        potentNeighNode.dist = curr.dist + 1;
-                        potentNeighNode.pred = curr;
-                    } else {
-                        Node pnnOriginRef = adjacencyRefBA.get(pnnNeighbors);
-                        // pnn is still on queue, w different ref
-                        // or: potentNeighNode's board config is already on closed set before, w different ref
-                        if (!(containsRef(currNeighbors, pnnOriginRef))) currNeighbors.add(pnnOriginRef);
-                    }
+            for (Node neighNode : curr.produceNeighborNodes()) {
+                // For BFS to store pred and distance variables properly, every node's neighbors should
+                // be stored reference-based. If a new-found node is equivalent to a node in nodeList
+                // (adjacency.keySet() or queueRecordList), use that reference instead.
+                //
+                // To avoid checking 20K+ nodes, we use hashMaps :). Due to code reuse, three hashMaps still
+                // implements adjacency list structures: the classic adjacency
+                // A more efficient structure would be using hashMap to store nodes as keys,
+                // with unique value-reference.
+                //
+                // The premises would be that the nodeList will contain all sufficient nodes
+                // to cover all actual neighbors, and all neighbors will never be inserted
+                // with something not in nodeList.
+                List <Node> currNeighbors = adjacencyRefAB.get(curr);
+                List <Node> nnNeighbors = adjacency.get(neighNode);
+                if (nnNeighbors == null) {
+                    // This neighNode is brand new. Add it to curr's neighbor list
+                    currNeighbors.add(neighNode);
+                    // and put it on adjacencies and queue
+                    newNeighborList = new ArrayList<>();
+                    adjacency.put(neighNode, newNeighborList);
+                    adjacencyRefAB.put(neighNode, newNeighborList);
+                    adjacencyRefBA.put(newNeighborList, neighNode);
+                    queue.add(neighNode);
+                    // and define the nn's distance and predecessor
+                    neighNode.dist = curr.dist + 1;
+                    neighNode.pred = curr;
+                } else {
+                    Node nnOriginRef = adjacencyRefBA.get(nnNeighbors);
+                    // neighNode is still on queue, w a different reference
+                    // or: neighNode's board config is already on closed set before, w different ref
+                    if (!(containsRef(currNeighbors, nnOriginRef))) currNeighbors.add(nnOriginRef);
                 }
             }
+            // Add the curr to queue history. This will be the nodeList with sorted increasing distance
             queueRecordList.add(curr);
         }
-        //System.out.println("We have " + adjacency.size() + " nodes.");
-
-        // Conclusion: the most difficult puzzle in this graph, along w numOfMoves
+        // Gives out the most difficult puzzle in this graph, along w numOfMoves.
+        // If the numOfMoves exceeds the maxMoves limit (e.g. easy/medium level), we can drop the puzzle
+        // difficulty by one step by referring to its predecessor (which has numOfMoves-1 steps).
         Node maxNode = queueRecordList.get(queueRecordList.size()-1);
         while (maxNode.dist > maxMoves) maxNode = maxNode.pred;
-        System.out.println("Claim max move: " + maxNode.dist);
-/*
-        // Backtracking
-        System.out.println("Backward check . . .");
+
+        // DEBUG: Backtracking
+        /* System.out.println("Backward check . . .");
         for (Node x = maxNode; x != null; x = x.pred) {
             System.out.println("Claim max move: " + x.dist);
             x.board.printGrid();
-        }
-*/
+        }*/
+
         return (minMoves <= maxNode.dist) ? maxNode.board.duplicate() : null; // since prevLoc still exists
     }
     private boolean containsRef(List <Node> nl, Node n) {
@@ -468,7 +499,8 @@ public class GameBoardGenerator2 implements Runnable {
         try {
             GameBoard med = generateAPuzzle(Difficulty.MEDIUM);
             this.lock.lock();
-            this.medium.add(med);
+            this.medium.add(med); // if numOfMoves is within the limit, check again
+            //System.out.println("Claim max move: " + maxNode.dist);
         } finally {
             this.lock.unlock();
         }
@@ -478,7 +510,8 @@ public class GameBoardGenerator2 implements Runnable {
         try {
             GameBoard h = generateAPuzzle(Difficulty.HARD);
             this.lock.lock();
-            this.hard.add(h);
+            this.hard.add(h); // if numOfMoves is within the limit, check again
+            //System.out.println("Claim max move: " + maxNode.dist);
         } finally {
             this.lock.unlock();
         }

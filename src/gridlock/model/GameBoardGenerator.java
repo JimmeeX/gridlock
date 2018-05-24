@@ -25,7 +25,6 @@ public class GameBoardGenerator implements Runnable {
     public GameBoard getEasy() {
         return generateAPuzzle(Difficulty.EASY);
     }
-
     public GameBoard getMedium() {
         GameBoard med;
         if (this.medium.size() > 0) {
@@ -37,7 +36,6 @@ public class GameBoardGenerator implements Runnable {
         }
         return med;
     }
-
     public GameBoard getHard() {
         GameBoard h;
         if (this.hard.size() > 0) {
@@ -180,7 +178,7 @@ public class GameBoardGenerator implements Runnable {
         GameBoard result = null;
         int retry = 0;
         while (result == null && retry < 100) {
-            System.out.println("Retry " + retry);
+            //System.out.println("Retry " + retry);
             result = generateOneBoard(generateWinBoard(d), lowestNumOfMoves(d), highestNumOfMoves(d));
             retry++;
         }

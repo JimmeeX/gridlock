@@ -350,11 +350,8 @@ public class GameBoard {
      * @post this.nextLocation.size() = 0
      */
     public void restart() {
-        System.out.println("size = " + this.prevLocations.size());
-        printGrid();
         while (this.prevLocations.size() > 0) {
             undoMove();
-            printGrid();
         }
         this.prevLocations.clear();
         this.nextLocations.clear();
