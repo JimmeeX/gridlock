@@ -73,7 +73,7 @@ public class SystemSettings implements Serializable {
         this.hardLevels = new Integer[20];
 
         // Initialise the BoardGenerator
-        this.bg = new GameBoardGenerator2(); // Trial... (not commited yet)
+        this.bg = new GameBoardGenerator2();
 
         this.resetProgress();
     }
@@ -184,11 +184,26 @@ public class SystemSettings implements Serializable {
 
     public GameBoardGenerator2 getBG() { return this.bg; }
 
-    public GameBoard getEasy() { return this.bg.getEasy(); }
+    public GameBoard getEasy() {
+        this.bg.stopThread();
+        GameBoard gb = this.bg.getEasy();
+        this.bg.resumeThread();
+        return gb;
+    }
 
-    public GameBoard getMedium() { return this.bg.getMedium(); }
+    public GameBoard getMedium() {
+        this.bg.stopThread();
+        GameBoard gb = this.bg.getMedium();
+        this.bg.resumeThread();
+        return gb;
+    }
 
-    public GameBoard getHard() { return this.bg.getHard(); }
+    public GameBoard getHard() {
+        this.bg.stopThread();
+        GameBoard gb = this.bg.getHard();
+        this.bg.resumeThread();
+        return gb;
+    }
 
     public DoubleProperty musicVolumeProperty() {
         return musicVolume;

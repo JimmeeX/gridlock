@@ -581,7 +581,8 @@ public class GameBoardGenerator2 implements Runnable {
         try {
             GameBoard med = generatePuzzle(Difficulty.MEDIUM);
             this.lock.lock();
-            this.medium.add(med); // if numOfMoves is within the limit, check again
+            if (minMoves <= numOfFinalMoves &&
+                    maxMoves >= numOfFinalMoves) this.medium.add(med);
             //System.out.println("Claim max move: " + maxNode.dist);
         } finally {
             if (this.lock.isHeldByCurrentThread()) this.lock.unlock();
@@ -594,15 +595,17 @@ public class GameBoardGenerator2 implements Runnable {
         try {
             GameBoard h = generatePuzzle(Difficulty.HARD);
             this.lock.lock();
-            this.hard.add(h); // if numOfMoves is within the limit, check again
+            if (minMoves <= numOfFinalMoves &&
+                    maxMoves >= numOfFinalMoves) this.hard.add(h);
             //System.out.println("Claim max move: " + maxNode.dist);
         } finally {
             if (this.lock.isHeldByCurrentThread()) this.lock.unlock();
         }
     }
 
-    public void stopThread() {
-        this.running = false;
+    public void resumeThread() {
+        this.running = true;
     }
+    public void stopThread() { this.running = false; }
 
 }

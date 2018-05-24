@@ -81,6 +81,7 @@ public class GameBoardGenerator implements Runnable {
             String level = d.equals(d.valueOf("EASY")) ? "easy" : d.equals(d.valueOf("MEDIUM")) ? "medium" : "hard";
             Random random = new Random();
             int num = random.nextInt(19) + 1;
+            result = new GameBoard();
             result.process("src/gridlock/resources/" + level + "/" + num + ".txt");
             System.out.println("DEBUG: Too long");
         }
