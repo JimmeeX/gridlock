@@ -1,7 +1,7 @@
 .root {
     -fx-font-family: Impact, Charcoal, sans-serif;
     -fx-background-color: #424953;
-    -fx-background-image: url("images/003.jpg");
+    -fx-background-image: url("images/background.jpg");
     -fx-background-size: 800px 600px;
 }
 
@@ -59,7 +59,7 @@
 }
 
 #grid {
-    -fx-background-image: url("images/geometric.jpg");
+    -fx-background-image: url("images/grid_background.jpg");
     -fx-background-color: #2F3840;
 }
 
