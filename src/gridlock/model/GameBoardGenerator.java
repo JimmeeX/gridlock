@@ -155,7 +155,6 @@ public class GameBoardGenerator implements Runnable {
         private boolean isSameRange(Node n) {
             for (Block thisBlock : this.board.getBlocks()) {
                 String id = thisBlock.getID();
-                Block thatBlock = n.board.getBlock(id);
                 Integer[] br1 = this.board.blockRange(id);
                 Integer[] br2 = n.board.blockRange(id);
                 if (br1[0] != br2[0] || br1[1] != br2[1]) return false;
@@ -263,7 +262,7 @@ public class GameBoardGenerator implements Runnable {
         return h;
     }
     /** (Private)
-     * Generate a puzzle when demanded by users. Since it has to be fast, there is 10 retries
+     * Generate a puzzle when demanded by users. Since it has to be fast, there is 5 retries
      * that when failed, will automatically refer to a campaign puzzle.
      * @param d the level difficulty
      * @return the puzzle game-board
@@ -271,7 +270,7 @@ public class GameBoardGenerator implements Runnable {
     private GameBoard generateGameBoardASAP(Difficulty d) {
         GameBoard result = null;
         int retry = 0;
-        while (result == null && retry < 10) {
+        while (result == null && retry < 5) {
             System.out.println("=== Generating a game-board ASAP for difficulty " + d.toString() + ", retry #" + retry);
             result = generateGameBoard(d);
             retry++;
@@ -527,6 +526,8 @@ public class GameBoardGenerator implements Runnable {
             // Ensuring we only want to explore up to a distance of targetMoves
             if (curr.dist > targetMoves) break;
             for (Node neighNode : curr.produceNeighborNodes()) {
+                // Check for abort request
+                if (threadAbortRequest) return null;
                 List <Node> currNeighbors = adjacencyRefAB.get(curr);
                 List <Node> nnNeighbors = adjacency.get(neighNode);
                 if (nnNeighbors == null) {
@@ -547,8 +548,6 @@ public class GameBoardGenerator implements Runnable {
                     // or: neighNode's board config is already on closed set before, w different ref
                     if (!(containsRef(currNeighbors, nnOriginRef))) currNeighbors.add(nnOriginRef);
                 }
-                // Check for abort request
-                if (threadAbortRequest) return null;
             }
             // Add the curr to queue history. This will be the nodeList with sorted increasing distance
             queueRecordList.add(curr);
