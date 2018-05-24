@@ -257,7 +257,6 @@ public class GameBoardGenerator2 implements Runnable {
             System.out.println("Retry " + retry);
             result = generateGameBoard();
             retry++;
-            if (!running) break;
         }
         if (result == null) {
             System.out.println("DEBUG: Too long");
@@ -266,8 +265,11 @@ public class GameBoardGenerator2 implements Runnable {
             result = new GameBoard();
             result.process("src/gridlock/resources/" + keyToReferToCampaignMode
                     + "/" + num + ".txt");
+            System.out.println("Ignore the number of moves here." +
+                    "That would be the max moves found initially");
         }
         System.out.println("DEBUG: Found. Difficulty: " + d.toString()); result.printGrid();
+        System.out.println("DEBUG: Number of moves: " + numOfFinalMoves);
         result.setMinMoves();
         return result;
     }

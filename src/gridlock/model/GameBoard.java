@@ -422,6 +422,7 @@ public class GameBoard {
         } else {
             intv[0] = b.getRow(); intv[1] = b.getRow();
             while (intv[0] > 0 && this.board.getGridRow(intv[0]-1)[b.getCol()].equals("*")) intv[0]--;
+            while (intv[1]+size- 1 < 5 && this.board.getGridRow(intv[1]+size)[b.getCol()].equals("*")) intv[1]++;
         }
         return intv;
     }

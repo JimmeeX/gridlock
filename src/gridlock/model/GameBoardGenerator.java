@@ -345,6 +345,9 @@ public class GameBoardGenerator implements Runnable {
         }
     }
 
+    public void resumeThread() {
+        this.running = true;
+    }
     /**
      * stop the background threads from running
      */

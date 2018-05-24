@@ -52,7 +52,7 @@ public class MainApp extends Application{
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("src/gridlock/resources/save.data")))) {
             this.settings = (SystemSettings) ois.readObject();
             this.settings.initSounds(0.5, 0.0);
-            this.settings.setBoardGenerator(new GameBoardGenerator2());
+            this.settings.setBoardGenerator(new GameBoardGenerator());
             System.out.println("Data successfully loaded.");
         }
 
@@ -81,8 +81,8 @@ public class MainApp extends Application{
      * Initialise Multithreading Level Generator.
      */
     public void startThreading() {
-        Thread levGen = new Thread(this.settings.getBG());
-        levGen.start();
+        //Thread levGen = new Thread(this.settings.getBG());
+        //levGen.start();
     }
 
     /**
