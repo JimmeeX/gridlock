@@ -231,6 +231,8 @@ public class GameBoardGenerator implements Runnable {
         if (this.medium.size() > 0) {
             this.lock.lock();
             med = this.medium.remove(0);
+            System.out.println("Removing a medium game-board...");
+            med.printGrid();
             this.lock.unlock();
         } else {
             med = generateGameBoardASAP(Difficulty.MEDIUM);
@@ -252,6 +254,8 @@ public class GameBoardGenerator implements Runnable {
         if (this.hard.size() > 0) {
             this.lock.lock();
             h = this.hard.remove(0);
+            System.out.println("Removing a hard game-board...");
+            h.printGrid();
             this.lock.unlock();
         } else {
             h = generateGameBoardASAP(Difficulty.HARD);
@@ -583,7 +587,8 @@ public class GameBoardGenerator implements Runnable {
     }
 
     /**
-     * The method called for multithreading
+     * The method called for multithreading. There should be a maximum of 16 puzzles in each
+     * medium and hard puzzle stocks.
      */
     @Override
     public void run() {
