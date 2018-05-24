@@ -33,18 +33,8 @@ class BoardSolver {
 		while (!queue.isEmpty()) {
 			BoardState curr = queue.poll();
 			if (curr.checkGameOver()) {
-<<<<<<< HEAD
-				ArrayList<Board> path = new ArrayList<>();
-				while (curr != null) {
-					path.add(curr);
-					curr = curr.getPrevBoard();
-				}
-				Board nextBoard = path.get(path.size() - 2);
-				numMoves = path.size() - 1;
-=======
 				BoardState nextBoard = curr.getPath().get(1);
 				numMoves = curr.getPathSize() - 1;
->>>>>>> 0c2dac6ea30b19b41f76b9eda51e56aa767b1afa
 				return nextBoard.getLastMove();
 			}
 			if (visited.contains(curr)) continue;
