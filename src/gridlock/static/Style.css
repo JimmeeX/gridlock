@@ -1,18 +1,8 @@
-/** {*/
-/*payne-s-grey: #3E3D4F;*/
-/*submarine: #849396;*/
-/*light-sea-green: #2ACAB9;*/
-/*white: #FEFEFE;*/
-/*swans-down: #DBECDF;*/
-/*medium-turquoise: #49D2C5;*/
-/*}*/
-
 .root {
-    -fx-font-family: Verdana;
+    -fx-font-family: Impact, Charcoal, sans-serif;
     -fx-background-color: #424953;
-    -fx-background-image: url("003.jpg");
+    -fx-background-image: url("images/003.jpg");
     -fx-background-size: 800px 600px;
-    -fx-text-fill: #DDDEE0;
 }
 
 #popup {
@@ -26,12 +16,13 @@
     -fx-font-size: 64px;
     -fx-font-weight: 900;
     -fx-text-fill: white;
-    -fx-effect: innershadow(gaussian, saddlebrown, 25, 0, 0, 0);
+    -fx-effect: innershadow(gaussian, #FCAB10, 25, 0, 0, 0);
 }
 
 #subtitle {
     -fx-font-size: 24px;
-    -fx-text-fill: orange;
+    -fx-text-fill: white;
+    -fx-effect: innershadow(gaussian, #FCAB10, 25, 0, 0, 0);
 }
 
 #text {
@@ -39,47 +30,48 @@
     -fx-text-fill: white;
 }
 
+#tutorial {
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-background-color: brown;
+}
+
 #level {
-    -fx-font-size: 16;
+    -fx-font-size: 12;
     -fx-pref-height: 50;
     -fx-pref-width: 50;
-    -fx-background-radius: 50;
-    -fx-border-radius: 50;
-    -fx-border-color: black;
+    -fx-background-radius: 40;
+    -fx-border-radius: 40;
+    -fx-border-color: #CDC9C9;
     -fx-border-width: 2px;
 }
 
 #obstacles {
     -fx-arc-width: 0;
     -fx-arc-height: 0;
-    -fx-fill: #FF7F50;
-    /*-fx-stroke: red;*/
-    /*-fx-effect: dropshadow(gaussian, red, 25, 0, 0, 0);*/
+    -fx-fill: #B2CEF7;
 }
 
 #player {
     -fx-arc-width: 0;
     -fx-arc-height: 0;
-    -fx-fill: #F0F8FF;
-    /*-fx-stroke: white;*/
-    /*-fx-effect: dropshadow(gaussian, white, 25, 0, 0, 0);*/
+    -fx-fill: #FFB8A0;
 }
 
 #grid {
-    -fx-background-color: #343232;
+    -fx-background-image: url("images/geometric.jpg");
+    -fx-background-color: #2F3840;
 }
 
 #goal {
-    -fx-fill: #343232;
+    -fx-fill: #494949;
     -fx-stroke: transparent;
-    /*-fx-effect: dropshadow(gaussian, #343232, 5, 0, 0, 0);*/
 }
 
 #goal_arrow {
     -fx-fill: transparent;
-    /*-fx-stroke: black;*/
+    -fx-stroke: #eee8aa;
     -fx-stroke-width: 5;
-    /*-fx-effect: dropshadow(gaussian, white, 10, 0, 0, 0);*/
 }
 
 .button {

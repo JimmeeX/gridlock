@@ -10,68 +10,66 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: black;" stylesheets="@../static/Style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gridlock.view.LevelSelectController">
    <children>
-      <GridPane fx:id="levels" alignment="CENTER" layoutX="163.0" layoutY="214.0" prefHeight="252.0" prefWidth="500.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0">
-        <columnConstraints>
-          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-        </rowConstraints>
+      <AnchorPane fx:id="wrapper" prefHeight="600.0" prefWidth="800.0">
          <children>
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" selected="true" text="1">
-               <toggleGroup>
-                  <ToggleGroup fx:id="toggleLevel" />
-               </toggleGroup>
-            </ToggleButton>
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="2" toggleGroup="$toggleLevel" GridPane.columnIndex="1" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="3" toggleGroup="$toggleLevel" GridPane.columnIndex="2" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="4" toggleGroup="$toggleLevel" GridPane.columnIndex="3" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="5" toggleGroup="$toggleLevel" GridPane.columnIndex="4" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="6" toggleGroup="$toggleLevel" GridPane.rowIndex="1" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="7" toggleGroup="$toggleLevel" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="8" toggleGroup="$toggleLevel" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="9" toggleGroup="$toggleLevel" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="10" toggleGroup="$toggleLevel" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="11" toggleGroup="$toggleLevel" GridPane.rowIndex="2" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="12" toggleGroup="$toggleLevel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="13" toggleGroup="$toggleLevel" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="14" toggleGroup="$toggleLevel" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="15" toggleGroup="$toggleLevel" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="16" toggleGroup="$toggleLevel" GridPane.rowIndex="3" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="17" toggleGroup="$toggleLevel" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="18" toggleGroup="$toggleLevel" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="19" toggleGroup="$toggleLevel" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-            <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="20" toggleGroup="$toggleLevel" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+            <GridPane fx:id="levels" alignment="CENTER" layoutX="163.0" layoutY="214.0" prefHeight="252.0" prefWidth="500.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0">
+              <columnConstraints>
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="1">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="toggleLevel" />
+                     </toggleGroup>
+                  </ToggleButton>
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="2" toggleGroup="$toggleLevel" GridPane.columnIndex="1" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="3" toggleGroup="$toggleLevel" GridPane.columnIndex="2" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="4" toggleGroup="$toggleLevel" GridPane.columnIndex="3" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="5" toggleGroup="$toggleLevel" GridPane.columnIndex="4" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="6" toggleGroup="$toggleLevel" GridPane.rowIndex="1" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="7" toggleGroup="$toggleLevel" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="8" toggleGroup="$toggleLevel" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="9" toggleGroup="$toggleLevel" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="10" toggleGroup="$toggleLevel" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="11" toggleGroup="$toggleLevel" GridPane.rowIndex="2" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="12" toggleGroup="$toggleLevel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="13" toggleGroup="$toggleLevel" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="14" toggleGroup="$toggleLevel" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="15" toggleGroup="$toggleLevel" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="16" toggleGroup="$toggleLevel" GridPane.rowIndex="3" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="17" toggleGroup="$toggleLevel" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="18" toggleGroup="$toggleLevel" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="19" toggleGroup="$toggleLevel" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                  <ToggleButton id="level" mnemonicParsing="false" onMouseEntered="#levelEnter" onMouseExited="#levelExit" onMousePressed="#playButtonPressSound" text="20" toggleGroup="$toggleLevel" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+               </children>
+            </GridPane>
+            <Button id="button_controls" layoutX="100.0" layoutY="526.0" mnemonicParsing="false" onAction="#changeSceneControl" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" />
+            <HBox alignment="CENTER" layoutX="100.0" layoutY="125.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0">
+               <children>
+                  <Label id="subtitle" fx:id="modeLabel" alignment="CENTER" layoutX="217.0" layoutY="104.0" prefHeight="40.0" prefWidth="150.0" text="Label" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="125.0">
+                     <HBox.margin>
+                        <Insets left="20.0" right="20.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label id="subtitle" fx:id="difficultyLabel" alignment="CENTER" layoutX="300.0" layoutY="125.0" prefHeight="40.0" prefWidth="150.0" text="Label" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="125.0">
+                     <HBox.margin>
+                        <Insets left="20.0" right="20.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <Label id="title" alignment="CENTER" layoutX="315.0" layoutY="28.0" text="Levels" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="30.0" />
          </children>
-      </GridPane>
-      <Button id="button_controls" layoutX="100.0" layoutY="526.0" mnemonicParsing="false" onAction="#navToPlaySettings" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Back" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="500.0" />
-      <Button id="button_controls" layoutX="500.0" layoutY="526.0" mnemonicParsing="false" onAction="#navToGame" onMouseEntered="#buttonEnterAnimation" onMouseExited="#buttonExitAnimation" onMousePressed="#playButtonPressSound" prefHeight="40.0" prefWidth="200.0" text="Start" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="100.0" />
-      <HBox alignment="CENTER" layoutX="100.0" layoutY="125.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0">
-         <children>
-            <Label id="subtitle" fx:id="modeLabel" alignment="CENTER" layoutX="217.0" layoutY="104.0" prefHeight="40.0" prefWidth="150.0" text="Label" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="125.0">
-               <HBox.margin>
-                  <Insets left="20.0" right="20.0" />
-               </HBox.margin>
-            </Label>
-            <Label id="subtitle" fx:id="difficultyLabel" alignment="CENTER" layoutX="300.0" layoutY="125.0" prefHeight="40.0" prefWidth="150.0" text="Label" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="125.0">
-               <HBox.margin>
-                  <Insets left="20.0" right="20.0" />
-               </HBox.margin>
-            </Label>
-            <Label id="subtitle" fx:id="levelLabel" alignment="CENTER" layoutX="572.0" layoutY="125.0" prefHeight="40.0" prefWidth="150.0" text="Label">
-               <HBox.margin>
-                  <Insets left="20.0" right="20.0" />
-               </HBox.margin>
-            </Label>
-         </children>
-      </HBox>
-      <Label id="title" alignment="CENTER" layoutX="315.0" layoutY="28.0" text="Levels" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="30.0" />
+      </AnchorPane>
    </children>
 </AnchorPane>

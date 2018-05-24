@@ -1,76 +1,59 @@
 package gridlock.model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Scanner;
 
-public class BoardSolver {
+/**
+ * the BoardSolver Class for implementing the hint functionality of the board
+ * added by Joseph
+ */
+class BoardSolver {
+	BoardState board;
+	int numMoves;
 
-	Board board;
-
-	public BoardSolver() {
-		this.board = new Board();
-	}
-
-	/*
-	 * process input txt file
+	/**
+	 * Class constructor for BoardSolver
+	 * @param board the state of the board
 	 */
-    public void process() {
-        Scanner sc = null;
-        try {
-            sc = new Scanner(new File("src/gridlock/endGameState.txt"));
-            for (int row = 0; row < 6; row++) {
-                for (int col = 0; col < 6; col++) {
-                    String id = sc.next();
-                    if (!id.equals("*")) {
-                        int blockID = this.board.blockExist(id);
-                        if (blockID != -1) this.board.incrementSize(blockID, row, col);
-                        else this.board.addBlock(id, row, col);
-                    }
-                }
-            }
-            //search();
-            this.board.printGrid();
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            if (sc != null) sc.close();
-        }
-    }
+	public BoardSolver(BoardState board) {
+		this.board = board;
+	}
 
-    /*
-	private void search() {
-		Block curBlock = this.board.getBlock("z");
-		if (curBlock.movable) {
+	/**
+	 * bfs to get the end state of the board
+	 * @return the block that is to be moved next to reach
+	 * the end board state with least number of moves
+	 */
+	public Block solvePuzzle() {
+		LinkedList<BoardState> queue = new LinkedList<>();
+		HashSet<BoardState> visited = new HashSet<>();
 
-		}
-	}*/
-
-
-	public LinkedList<ArrayList<Block>> solvePuzzle(ArrayList<Block> startBoard) {
-		PriorityQueue<ArrayList<Block>> queue = new PriorityQueue<>();
-		ArrayList<ArrayList<Block>> visited = new ArrayList<>();
-		
-		queue.add(startBoard);
+		queue.add(this.board);
 		while (!queue.isEmpty()) {
-			ArrayList<Block> curr = queue.poll();
+			BoardState curr = queue.poll();
+			if (curr.checkGameOver()) {
+				BoardState nextBoard = curr.getPath().get(1);
+				numMoves = curr.getPathSize() - 1;
+				return nextBoard.getLastMove();
+			}
 			if (visited.contains(curr)) continue;
-			
+
 			visited.add(curr);
-			
-			for (ArrayList<Block> blocks : getNextPossibleMoves(curr)) queue.add(blocks);
+
+			for (BoardState boards : curr.getNextPossible()) {
+				queue.add(boards);
+			}
 		}
-		return null; // SOON
+		return null;
 	}
-	
-	public ArrayList<ArrayList<Block>> getNextPossibleMoves(ArrayList<Block> currState) {
-		ArrayList<ArrayList<Block>> possible = new ArrayList<>();
-		for (char id = 'a'; id < 'a' + currState.size(); id++) { //SOOON
-			
-		}
-		return possible;
+
+	/**
+	 * get the number of moves from the current board state to
+	 * the the end board state
+	 * @return
+	 */
+	public int getNumMoves() {
+		return numMoves;
 	}
+
 }
