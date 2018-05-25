@@ -211,11 +211,15 @@ public class GameBoardGenerator implements Runnable {
      * @return a GameBoard of level easy
      */
     public GameBoard getEasy() {
+System.out.println("getEasy before: threadRes is " + threadResume + ", isUsed is " + isUsed);
         pauseThread(); isUsed = true;
+System.out.println("getEasy inthread: threadRes is " + threadResume + ", isUsed is " + isUsed);
         System.out.println("Threading is off for users, level easy");
         GameBoard e = generateGameBoardASAP(Difficulty.EASY);
         e.setMinMoves();
+System.out.println("getEasy after: threadRes is " + threadResume + ", isUsed is " + isUsed);
         isUsed = false; resumeThread();
+System.out.println("getEasy outthread: threadRes is " + threadResume + ", isUsed is " + isUsed);
         System.out.println("Threading is on for background, level easy");
         return e;
     }
@@ -590,8 +594,10 @@ public class GameBoardGenerator implements Runnable {
         this.threadRun = true;
         this.threadResume = true;
         while (this.threadRun) {
+            isUsed = false;
+	    while (!this.threadResume) sleepAndDoNotCare(100);
+            isUsed = true;
             while (this.threadResume) {
-                isUsed = true;
                 Random random = new Random();
                 int num = random.nextInt(19999);
                 //System.out.println("Medium array size: " + medium.size() +
@@ -602,7 +608,6 @@ public class GameBoardGenerator implements Runnable {
                     tryAddHardGameBoard();
                 }
             }
-            isUsed = false;
         }
     }
     /** (Private)
@@ -664,7 +669,7 @@ public class GameBoardGenerator implements Runnable {
     /**
      * Stop the thread of GameBoardGen
      */
-    public void stopThread() { this.threadRun = false; }
+    public void stopThread() { this.threadResume = false; this.threadRun = false; }
     /** (Private)
      * Sleep while taking too-simple care of sleep (long millis) command.
      * @param millis the number of milliseconds
