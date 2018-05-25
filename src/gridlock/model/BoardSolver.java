@@ -1,5 +1,6 @@
 package gridlock.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -32,8 +33,13 @@ class BoardSolver {
 		while (!queue.isEmpty()) {
 			BoardState curr = queue.poll();
 			if (curr.checkGameOver()) {
-				BoardState nextBoard = curr.getPath().get(1);
-				numMoves = curr.getPathSize() - 1;
+				ArrayList<BoardState> path = new ArrayList<>();
+				while (curr != null) {
+					path.add(curr);
+					curr = curr.getPrevBoard();
+				}
+				BoardState nextBoard = path.get(path.size() - 2);
+				numMoves = path.size() - 1;
 				return nextBoard.getLastMove();
 			}
 			if (visited.contains(curr)) continue;

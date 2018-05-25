@@ -7,8 +7,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * the GameBoard class designed to return the board and functionality of a board game
@@ -209,8 +208,7 @@ public class GameBoard {
      */
     public boolean setBlock(String id, int row, int col, int size, boolean isHorizontal) {
         if (blockExist(id) != -1
-                || (size == 2 && (row > 4 || col > 4))
-                || (size == 3 && (row > 3 || col > 3))
+                || (isHorizontal ? col + size > 6 : row + size > 6)
                 || row < 0 || col < 0
                 || !this.board.getGridRow(row)[col].equals("*")) return false;
         // put scenario: check if the grid unit is empty
@@ -338,7 +336,7 @@ public class GameBoard {
      * @return the next block to be moved to finish the puzzle
      */
     public Block getHint(boolean getMinMoves) {
-        BoardState startBoard = new BoardState(this.board.getBlocks(), new ArrayList<BoardState>(), null);
+        BoardState startBoard = new BoardState(this.board.getBlocks(), null, null);
         BoardSolver solver = new BoardSolver(startBoard);
         Block changedBlock = solver.solvePuzzle();
         if (getMinMoves) {
@@ -404,7 +402,9 @@ public class GameBoard {
      * |c c b * d e
      * |f * b * d e
      * |f * g g g e
-     * blockrange(z:horizontal) = [3,4], blockrange (b:vertical) = [0,2]
+     * Then we have blockRange("z") = [3,4], since the horizontal block with id "z" can move
+     * to the leftest s.t. its starting position is in column 3, and to the rightest to column 4.
+     * Similarly, blockRange ("b") = [0,2]
      * @param id the id/name of the block
      * @return the range of the block
      * Added by Edwin
@@ -422,17 +422,19 @@ public class GameBoard {
         } else {
             intv[0] = b.getRow(); intv[1] = b.getRow();
             while (intv[0] > 0 && this.board.getGridRow(intv[0]-1)[b.getCol()].equals("*")) intv[0]--;
+            while (intv[1]+size- 1 < 5 && this.board.getGridRow(intv[1]+size)[b.getCol()].equals("*")) intv[1]++;
         }
         return intv;
     }
 
     /**
-     * duplicate a GameBoard
-     * @return a new GameBoard
+     * this is initially a helper function of GBGenerator to clone a GameBoard w/o copying
+     * prevLocations and nextLocations.
+     *
+     * @return a new GameBoard with exact-but-differently-referenced grid and blocks
      * Added by Edwin
      */
-    public GameBoard duplicate() {
-        // Only need essentially grid and blocks w/ different reference
+    public GameBoard duplicateGridandBlocks() {
         GameBoard newBoard = new GameBoard();
         newBoard.board.getGrid().clear();
         for (String[] strArr : this.board.getGrid()) newBoard.board.getGrid().add(strArr.clone());
@@ -440,4 +442,31 @@ public class GameBoard {
         return newBoard;
     }
 
+    /**
+     * find all blocks that is located on particular column/row
+     * Added by Edwin
+     */
+    public List<Block> particularRowOrColumnsBlockList(int rowOrColumnIndex, boolean isRow) {
+        List <Block> particularROCsBlockList = new ArrayList<>();
+        for (Block b: this.board.getBlocks()) {
+            if (b.isHorizontal() == isRow) {
+                if (isRow ? b.getRow() == rowOrColumnIndex : b.getCol() == rowOrColumnIndex)
+                    particularROCsBlockList.add(b);
+            }
+        }
+        return particularROCsBlockList;
+    }
+
+    /**
+     * print the grid
+     */
+    public void printGrid() {
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 6; col++) {
+                System.out.print(this.board.getGridRow(row)[col] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
 }

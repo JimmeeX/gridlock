@@ -1,16 +1,7 @@
-/** {*/
-/*payne-s-grey: #3E3D4F;*/
-/*submarine: #849396;*/
-/*light-sea-green: #2ACAB9;*/
-/*white: #FEFEFE;*/
-/*swans-down: #DBECDF;*/
-/*medium-turquoise: #49D2C5;*/
-/*}*/
-
 .root {
-    -fx-font-family: "Bodoni MT", Didot, "Didot LT STD", "Book Antiqua", Garamond, "Times New Roman", serif;
+    -fx-font-family: Impact, Charcoal, sans-serif;
     -fx-background-color: #424953;
-    -fx-background-image: url("images/003.jpg");
+    -fx-background-image: url("images/background.jpg");
     -fx-background-size: 800px 600px;
 }
 
@@ -49,8 +40,6 @@
     -fx-font-size: 12;
     -fx-pref-height: 50;
     -fx-pref-width: 50;
-    /*-fx-background-radius: 50;*/
-    /*-fx-border-radius: 50;*/
     -fx-background-radius: 40;
     -fx-border-radius: 40;
     -fx-border-color: #CDC9C9;
@@ -61,36 +50,28 @@
     -fx-arc-width: 0;
     -fx-arc-height: 0;
     -fx-fill: #B2CEF7;
-    /*-fx-stroke: red;*/
-    /*-fx-effect: dropshadow(gaussian, red, 25, 0, 0, 0);*/
 }
 
 #player {
     -fx-arc-width: 0;
     -fx-arc-height: 0;
-    /*-fx-fill: #F0F8FF;*/
-    -fx-fill: #E3D8F1;
-    /*-fx-stroke: white;*/
-    /*-fx-effect: dropshadow(gaussian, white, 25, 0, 0, 0);*/
+    -fx-fill: #FFB8A0;
 }
 
 #grid {
-    /*-fx-background-color: #343232;*/
-    -fx-background-image: url("images/geometric.jpg");
+    -fx-background-image: url("images/grid_background.jpg");
     -fx-background-color: #2F3840;
 }
 
 #goal {
-    -fx-fill: #2F3840;
+    -fx-fill: #494949;
     -fx-stroke: transparent;
-    /*-fx-effect: dropshadow(gaussian, #343232, 5, 0, 0, 0);*/
 }
 
 #goal_arrow {
     -fx-fill: transparent;
     -fx-stroke: #eee8aa;
     -fx-stroke-width: 5;
-    /*-fx-effect: dropshadow(gaussian, white, 10, 0, 0, 0);*/
 }
 
 .button {

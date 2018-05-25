@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class BoardState {
 	private Board board;
-	private ArrayList<BoardState> path;
+	private BoardState prevBoard;
 	private Block lastMove;
 
 	/**
@@ -17,33 +17,20 @@ public class BoardState {
 	 * @param prev the list of previous board states
 	 * @param lastMove the last Block that was moved
 	 */
-	public BoardState(ArrayList<Block> blocks, ArrayList<BoardState> prev, Block lastMove) {
+	public BoardState(ArrayList<Block> blocks, BoardState prevBoard, Block lastMove) {
 		this.board = new Board();
 		this.board.setBlocks(blocks);
-		path = new ArrayList<>();
-		for (BoardState parentBoard: prev) {
-			this.path.add(parentBoard);
-		}
-		this.path.add(this);
+		this.prevBoard = prevBoard;
 		this.lastMove = lastMove;
 		this.board.setGrid();
 	}
-
+	
 	/**
-	 * get the size of the path from the current board state to
-	 * the end board state
-	 * @return the number of moves needed to get to the end board state
+	 * get the parent BoardState that was used to create this BoardState
+	 * @return parent BoardState
 	 */
-	public int getPathSize() {
-		return this.path.size();
-	}
-
-	/**
-	 * get the path from the current board state to the end board state
-	 * @return the ArrayList of board states to get to the end board state
-	 */
-	public ArrayList<BoardState> getPath() {
-		return this.path;
+	public BoardState getPrevBoard() {
+		return this.prevBoard;
 	}
 
 	/**
@@ -145,7 +132,7 @@ public class BoardState {
 			}
 			copyBlocks.add(newBlock);
 		}
-		return new BoardState(copyBlocks, this.path, changedBlock);
+		return new BoardState(copyBlocks, this, changedBlock);
 	}
 
 	@Override

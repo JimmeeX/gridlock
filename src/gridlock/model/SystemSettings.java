@@ -11,6 +11,10 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
 
+/**
+ * SystemSettings is like a mini database when a user runs the game. Contains sounds, music, level progress, and background Board Generation.
+ * Some settings can be customised through Menu -> Settings
+ */
 public class SystemSettings implements Serializable {
     private transient DoubleProperty soundVolume;
     private transient DoubleProperty musicVolume;
@@ -20,13 +24,20 @@ public class SystemSettings implements Serializable {
     private transient MediaPlayer victorySound;
     private transient MediaPlayer bgMusic;
 
-    // TODO: Do highscore instead of 0,1,2,3
     private Integer[] easyLevels;
     private Integer[] mediumLevels;
     private Integer[] hardLevels;
 
-    private transient GameBoardGenerator bg;
+    private transient GameBoardGenerator bg; // 28, 76, 177, 185; mainapp 30
 
+    /**
+     * Constructor
+     * Initialise Sounds, Media Players
+     * Initialise Levels to Incomplete
+     * Initialise Board Generator
+     * @param soundVolume Initial Sound Volume
+     * @param musicVolume Initial Music Volume
+     */
     public SystemSettings(Double soundVolume, Double musicVolume) {
         this.soundVolume = new SimpleDoubleProperty();
         this.musicVolume = new SimpleDoubleProperty();
@@ -78,6 +89,11 @@ public class SystemSettings implements Serializable {
         this.resetProgress();
     }
 
+    /**
+     * Secondary constructor to just initialise sounds. Used when level data has been loaded on startup.
+     * @param soundVolume Initial Sound Volume
+     * @param musicVolume Initial Music Volume
+     */
     public void initSounds(Double soundVolume, Double musicVolume) {
         this.soundVolume = new SimpleDoubleProperty();
         this.musicVolume = new SimpleDoubleProperty();
@@ -120,6 +136,12 @@ public class SystemSettings implements Serializable {
 
     }
 
+    /**
+     * Mark a specific CAMPAIGN level as complete.
+     * @param difficulty Difficulty of the Level
+     * @param level Level Number
+     * @param value 1: Bronze; 2: Silver; 3: Gold
+     */
     public void setLevelComplete(Difficulty difficulty, Integer level, Integer value) {
         switch (difficulty.toString()) {
             case "EASY":
@@ -139,6 +161,11 @@ public class SystemSettings implements Serializable {
         }
     }
 
+    /**
+     * Retrieve the result for a specific set of CAMPAIGN levels
+     * @param difficulty Difficulty Mode.
+     * @return List of Results (GOLD, SILVER, BRONZE) for specified difficulty.
+     */
     public Integer[] getLevelComplete(Difficulty difficulty) {
         switch (difficulty.toString()) {
             case "EASY":
@@ -156,77 +183,139 @@ public class SystemSettings implements Serializable {
         }
     }
 
+    /**
+     * Resets progress of the CAMPAIGN levels
+     */
     public void resetProgress() {
         Arrays.fill(this.easyLevels, 0);
         Arrays.fill(this.mediumLevels, 0);
         Arrays.fill(this.hardLevels, 0);
     }
 
+    /**
+     * Getter: Sound Volume {0 ~ 1}
+     * @return Double: Sound Volume
+     */
     public double getSoundVolume() {
         return soundVolume.get();
     }
 
-    public DoubleProperty soundVolumeProperty() {
-        return soundVolume;
-    }
-
+    /**
+     * Setter: Sound Volume (0 ~ 1)
+     * @param soundVolume Double: Sound Volume
+     */
     public void setSoundVolume(double soundVolume) {
         this.soundVolume.set(soundVolume);
     }
 
+    /**
+     * Setter: Set Board Generator.
+     * It is used here to connect to the front end easily.
+     * @param newBG Board Generator
+     */
     public void setBoardGenerator(GameBoardGenerator newBG) {
         this.bg = newBG;
     }
 
+    /**
+     * Getter: Music Volume {0 ~ 1}
+     * @return Double: Music Volume
+     */
     public double getMusicVolume() {
         return musicVolume.get();
     }
 
-    public GameBoardGenerator getBG() { return this.bg; }
-
-    public GameBoard getEasy() { return this.bg.getEasy(); }
-
-    public GameBoard getMedium() { return this.bg.getMedium(); }
-
-    public GameBoard getHard() { return this.bg.getHard(); }
-
-    public DoubleProperty musicVolumeProperty() {
-        return musicVolume;
-    }
-
+    /**
+     * Setter: Music Volume (0 ~ 1)
+     * @param musicVolume Double: Music Volume
+     */
     public void setMusicVolume(double musicVolume) {
         this.musicVolume.set(musicVolume);
     }
 
+    /**
+     * Getter: Board Generator
+     * @return BoardGenerator
+     */
+    public GameBoardGenerator getBG() { return this.bg; }
+
+    /**
+     * Getter
+     * @return List of easy level results
+     */
+    public GameBoard getEasy() {
+        return this.bg.getEasy();
+    }
+
+    /**
+     * Getter
+     * @return List of medium level results
+     */
+    public GameBoard getMedium() {
+        return this.bg.getMedium();
+    }
+
+    /**
+     * Getter
+     * @return List of hard level results
+     */
+    public GameBoard getHard() {
+        return this.bg.getHard();
+    }
+
+    /**
+     * Sound played when mouse drags the blocks around in the game interface.
+     */
     public void playMoveBlockSound() {
         this.moveBlockSound.seek(this.moveBlockSound.getStartTime());
         this.moveBlockSound.play();
     }
 
+    /**
+     * Sound played when a button is pressed.
+     */
     public void playButtonPressSound() {
         this.buttonPressSound.seek(this.buttonPressSound.getStartTime());
         this.buttonPressSound.play();
     }
 
+    /**
+     * Sound played when a level has been solved.
+     */
     public void playVictorySound() {
         this.victorySound.seek(this.victorySound.getStartTime());
         this.victorySound.play();
     }
 
+    /**
+     * Play some background music.
+     */
     public void playBgMusic() {
         this.bgMusic.play();
     }
 
+    /**
+     * Apply soundVolume changes to the actual sounds.
+     * @param volume New Sound Volume (0~1)
+     */
     private void applySoundVolumes(Double volume) {
         this.buttonPressSound.setVolume(volume);
         this.moveBlockSound.setVolume(volume);
         this.victorySound.setVolume(volume);
     }
 
+    /**
+     * Apply musicVolume changes to the actual music.
+     * @param volume New Music Volume (0~1)
+     */
     private void applyMusicVolumes(Double volume) {
         this.bgMusic.setVolume(volume);
     }
 
+    /**
+     * String Method
+     * @return String representation of SystemSettings
+     */
     @Override
     public String toString() {
         return "SystemSettings{" +
