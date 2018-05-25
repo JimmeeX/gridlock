@@ -106,7 +106,6 @@ public class Block {
 	public boolean samePosition(Integer[] newPosition) {
         if (newPosition[0] == this.position.get(0)[0]) {
             if (newPosition[1] == this.position.get(0)[1]) {
-                //System.out.println(newPosition[0] + "," + newPosition[1]);
                 return true;
             }
         }

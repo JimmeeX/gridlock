@@ -22,6 +22,7 @@ import javafx.util.Duration;
 
 /**
  * Once the Tutorial Puzzle has been solved, HelpWin.fxml will be called, to show the Win Screen.
+ * Added by James. Edited by Ian.
  */
 public class HelpWinController {
     private SystemSettings settings;

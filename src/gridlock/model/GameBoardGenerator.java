@@ -8,6 +8,7 @@ import static java.lang.Thread.sleep;
 /**
  * GameBoardGenerator Class is designed to implement different level puzzle generator
  * and uses multithreading to generate medium and hard levels while the main program is running
+ * Added by Edwin
  */
 public class GameBoardGenerator implements Runnable {
 
@@ -212,11 +213,9 @@ public class GameBoardGenerator implements Runnable {
      */
     public GameBoard getEasy() {
         pauseThread(); isUsed = true;
-        System.out.println("Threading is off for users, level easy");
         GameBoard e = generateGameBoardASAP(Difficulty.EASY);
         e.setMinMoves();
         isUsed = false; resumeThread();
-        System.out.println("Threading is on for background, level easy");
         return e;
     }
     /**
@@ -226,20 +225,16 @@ public class GameBoardGenerator implements Runnable {
      */
     public GameBoard getMedium() {
         pauseThread(); isUsed = true;
-        System.out.println("Threading is off for users, level medium");
         GameBoard med;
         if (this.medium.size() > 0) {
             this.lock.lock();
             med = this.medium.remove(0);
-            System.out.println("Removing a medium game-board...");
-            med.printGrid();
             this.lock.unlock();
         } else {
             med = generateGameBoardASAP(Difficulty.MEDIUM);
         }
         med.setMinMoves();
         isUsed = false; resumeThread();
-        System.out.println("Threading is on for background, level medium");
         return med;
     }
     /**
@@ -249,20 +244,16 @@ public class GameBoardGenerator implements Runnable {
      */
     public GameBoard getHard() {
         pauseThread(); isUsed = true;
-        System.out.println("Threading is off for users, level hard");
         GameBoard h;
         if (this.hard.size() > 0) {
             this.lock.lock();
             h = this.hard.remove(0);
-            System.out.println("Removing a hard game-board...");
-            h.printGrid();
             this.lock.unlock();
         } else {
             h = generateGameBoardASAP(Difficulty.HARD);
         }
         h.setMinMoves();
         isUsed = false; resumeThread();
-        System.out.println("Threading is on for background, level hard");
         return h;
     }
     /** (Private)
@@ -276,7 +267,6 @@ public class GameBoardGenerator implements Runnable {
         int retry = 0;
         int retryLimit = 1; if (d.equals(Difficulty.EASY)) retryLimit = 5;
         while (result == null && retry < retryLimit) {
-            System.out.println("=== Generating a game-board ASAP for difficulty " + d.toString() + ", retry #" + retry);
             result = generateGameBoard(d);
             retry++;
         }
@@ -286,11 +276,7 @@ public class GameBoardGenerator implements Runnable {
             result = new GameBoard();
             result.process("src/gridlock/resources/" + keyToReferToCampaignMode
                     + "/" + num + ".txt");
-            System.out.println("Generating ASAP is too long. Creating template puzzle...");
-        } else {
-            System.out.println("An on-the spot game-board is found with number of moves: " + numOfFinalMoves);
         }
-        result.printGrid();
         return result;
     }
 
@@ -562,13 +548,6 @@ public class GameBoardGenerator implements Runnable {
         // difficulty by one step by referring to its predecessor (which has numOfMoves-1 steps).
         Node maxNode = queueRecordList.get(queueRecordList.size()-1);
         while (maxNode.dist > maxMoves) maxNode = maxNode.pred;
-        // Backtracking
-        /* System.out.println("Backward check . . .");
-        for (Node x = maxNode; x != null; x = x.pred) {
-            System.out.println("DEBUG: Claim max move: " + x.dist);
-            x.board.printGrid();
-        }*/
-
         // Since prevLoc traces may exist, we return the duplicate instead
         GameBoard result = maxNode.board.duplicateGridandBlocks();
         numOfFinalMoves = maxNode.dist;
@@ -602,8 +581,6 @@ public class GameBoardGenerator implements Runnable {
             while (this.threadResume) {
                 Random random = new Random();
                 int num = random.nextInt(19999);
-                //System.out.println("Medium array size: " + medium.size() +
-                // ", Hard array size: " + hard.size());
                 if (0 <= num && num <= 9999 && this.medium.size() <= 15) {
                     tryAddMediumGameBoard();
                 } else if (this.hard.size() <= 15) {
@@ -621,10 +598,7 @@ public class GameBoardGenerator implements Runnable {
             this.lock.lock();
             if (med != null) {
                 this.medium.add(med);
-                System.out.println("Adding a medium game-board with numOfMoves: " + numOfFinalMoves + ". Now medium array size " + medium.size());
-                med.printGrid();
             } else {
-                System.out.println("A medium game-board not found. Medium array size still " + medium.size());
             }
         } finally {
             if (this.lock.isHeldByCurrentThread()) this.lock.unlock();
@@ -639,10 +613,7 @@ public class GameBoardGenerator implements Runnable {
             this.lock.lock();
             if (h != null) {
                 this.hard.add(h);
-                System.out.println("Adding a hard game-board with numOfMoves: " + numOfFinalMoves + ". Now hard array size " + hard.size());
-                h.printGrid();
             } else {
-                System.out.println("A hard game-board not found. Hard array size still " + hard.size());
             }
         } finally {
             if (this.lock.isHeldByCurrentThread()) this.lock.unlock();
