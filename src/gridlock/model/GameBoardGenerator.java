@@ -590,8 +590,8 @@ public class GameBoardGenerator implements Runnable {
         this.threadRun = true;
         this.threadResume = true;
         while (this.threadRun) {
+            isUsed = true;
             while (this.threadResume) {
-                isUsed = true;
                 Random random = new Random();
                 int num = random.nextInt(19999);
                 //System.out.println("Medium array size: " + medium.size() +
@@ -603,6 +603,7 @@ public class GameBoardGenerator implements Runnable {
                 }
             }
             isUsed = false;
+            while (!this.threadResume) sleepAndDoNotCare (100);
         }
     }
     /** (Private)
@@ -664,7 +665,10 @@ public class GameBoardGenerator implements Runnable {
     /**
      * Stop the thread of GameBoardGen
      */
-    public void stopThread() { this.threadRun = false; }
+    public void stopThread() {
+        this.threadRun = false;
+        this.threadResume = false;
+    }
     /** (Private)
      * Sleep while taking too-simple care of sleep (long millis) command.
      * @param millis the number of milliseconds
