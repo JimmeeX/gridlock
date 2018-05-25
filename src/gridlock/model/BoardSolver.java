@@ -8,8 +8,8 @@ import java.util.LinkedList;
  * added by Joseph
  */
 class BoardSolver {
-	BoardState board;
-	int numMoves;
+	private BoardState board;
+	private int numMoves;
 
 	/**
 	 * Class constructor for BoardSolver
