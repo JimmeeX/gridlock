@@ -35,30 +35,11 @@ public class Board {
 	}
 
 	/**
-	 * set the list of blocks
-	 * @param blocks the list of blocks
-	 */
-	public void setBlocks(ArrayList<Block> blocks) {
-		this.blocks = blocks;
-	}
-
-	/**
 	 * get the list of blocks
 	 * @return the list of blocks
 	 */
 	public ArrayList<Block> getBlocks() {
 		return this.blocks;
-	}
-
-	/**
-	 * set the grid
-	 */
-	public void setGrid() {
-		for (Block block : this.blocks) {
-			for (Integer[] position : block.getPosition()) {
-				this.grid.get(position[0])[position[1]] = block.getID();
-			}
-		}
 	}
 
 	/**
@@ -94,6 +75,25 @@ public class Board {
 	 */
 	public String getBlockID(int blockID) {
 		return this.blocks.get(blockID).getID();
+	}
+
+	/**
+	 * set the list of blocks
+	 * @param blocks the list of blocks
+	 */
+	public void setBlocks(ArrayList<Block> blocks) {
+		this.blocks = blocks;
+	}
+
+	/**
+	 * set the grid
+	 */
+	public void setGrid() {
+		for (Block block : this.blocks) {
+			for (Integer[] position : block.getPosition()) {
+				this.grid.get(position[0])[position[1]] = block.getID();
+			}
+		}
 	}
 
 }
