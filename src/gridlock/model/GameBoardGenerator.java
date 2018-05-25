@@ -11,7 +11,6 @@ import static java.lang.Thread.sleep;
  * Added by Edwin
  */
 public class GameBoardGenerator implements Runnable {
-
     private ArrayList<GameBoard> medium;
     private ArrayList<GameBoard> hard;
     private boolean threadRun;
@@ -27,7 +26,7 @@ public class GameBoardGenerator implements Runnable {
     private int maxBlocks;
     private double fillInProb;
     private String keyToReferToCampaignMode;
-    private int numOfFinalMoves;
+
     /** (Private)
      * Node Class contains a GameBoard object and other information for the level generator BFS graph
      */
@@ -112,8 +111,7 @@ public class GameBoardGenerator implements Runnable {
          *          In that case, an option to move from n1 to n2 should be explored.
          *
          * This constructs a list of such neighbor nodes with new references and no duplications.
-         * @param
-         * @return
+         * @return List of Neighbour Nodes
          */
         public List <Node> produceNeighborNodes () {
             List <Node> neighborNodeList = new ArrayList<>();
@@ -139,6 +137,7 @@ public class GameBoardGenerator implements Runnable {
             }
             return neighborNodeList;
         }
+
         /** (Private)
          * Check if both nodes are win nodes or (both) not win nodes
          * @param n the node to be checked
@@ -147,6 +146,7 @@ public class GameBoardGenerator implements Runnable {
         private boolean isBothWinOrBothNotWinNodes(Node n) {
             return ((this.isWin && n.isWin) || (!this.isWin && !n.isWin));
         }
+
         /** (Private)
          * Check if the node is in the same range
          * @param n the node to be checked
@@ -162,6 +162,7 @@ public class GameBoardGenerator implements Runnable {
             }
             return true;
         }
+
         /**
          * Check if the node is in the same hemisphere
          * @param n the node to be checked
@@ -218,6 +219,7 @@ public class GameBoardGenerator implements Runnable {
         isUsed = false; resumeThread();
         return e;
     }
+
     /**
      * Get a medium level puzzle
      * @return a GameBoard of level medium
@@ -410,6 +412,7 @@ public class GameBoardGenerator implements Runnable {
         Collections.shuffle(result);
         return result;
     }
+
     /** (Private)
      * Generate a random end game-board state
      * @return an end game-board
@@ -450,6 +453,7 @@ public class GameBoardGenerator implements Runnable {
         return (currNumOfBlock >= minBlocks && currNumOfBlock <= maxBlocks)
                 ? gb : newEndGameBoard();
     }
+
     /** (Private)
      * Randomly choose between 2 items with the given probability of item 1
      * @param item1 the first item to be selected
@@ -550,9 +554,9 @@ public class GameBoardGenerator implements Runnable {
         while (maxNode.dist > maxMoves) maxNode = maxNode.pred;
         // Since prevLoc traces may exist, we return the duplicate instead
         GameBoard result = maxNode.board.duplicateGridandBlocks();
-        numOfFinalMoves = maxNode.dist;
         return (minMoves <= maxNode.dist) ? result : null;
     }
+
     /** (Private)
      * Check if a node list contains a node based on reference
      * @param nl the node list
@@ -589,6 +593,7 @@ public class GameBoardGenerator implements Runnable {
             }
         }
     }
+
     /** (Private)
      * Try to generate a medium puzzle and if not null, add it in the ArrayList of medium puzzles
      */
@@ -604,6 +609,7 @@ public class GameBoardGenerator implements Runnable {
             if (this.lock.isHeldByCurrentThread()) this.lock.unlock();
         }
     }
+
     /** (Private)
      * Try to generate a hard puzzle and if not null, add it in the ArrayList of hard puzzles
      */
@@ -630,6 +636,7 @@ public class GameBoardGenerator implements Runnable {
         while (isUsed) sleepAndDoNotCare (100);
         this.threadAbortRequest = false;
     }
+
     /** (Private)
      * Resume the thread of GameBoardGen
      */
@@ -639,6 +646,7 @@ public class GameBoardGenerator implements Runnable {
         this.threadResume = true;
         while (!isUsed) sleepAndDoNotCare(100);
     }
+
     /**
      * Stop the thread of GameBoardGen
      */
@@ -657,5 +665,4 @@ public class GameBoardGenerator implements Runnable {
             System.out.println("InterruptedException issue: " + e.getMessage());
         }
     }
-
 }
