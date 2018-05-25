@@ -231,6 +231,8 @@ public class GameBoardGenerator implements Runnable {
         if (this.medium.size() > 0) {
             this.lock.lock();
             med = this.medium.remove(0);
+            System.out.println("Removing a medium game-board...");
+            med.printGrid();
             this.lock.unlock();
         } else {
             med = generateGameBoardASAP(Difficulty.MEDIUM);
@@ -252,6 +254,8 @@ public class GameBoardGenerator implements Runnable {
         if (this.hard.size() > 0) {
             this.lock.lock();
             h = this.hard.remove(0);
+            System.out.println("Removing a hard game-board...");
+            h.printGrid();
             this.lock.unlock();
         } else {
             h = generateGameBoardASAP(Difficulty.HARD);
@@ -262,15 +266,16 @@ public class GameBoardGenerator implements Runnable {
         return h;
     }
     /** (Private)
-     * Generate a puzzle when demanded by users. Since it has to be fast, there is 5 retries
-     * that when failed, will automatically refer to a campaign puzzle.
+     * Generate a puzzle when demanded by users. Since it has to be fast, there is some number of
+     * tries (5 for easy, 1 for medium and hard), that when failed, will automatically refer to a campaign puzzle.
      * @param d the level difficulty
      * @return the puzzle game-board
      */
     private GameBoard generateGameBoardASAP(Difficulty d) {
         GameBoard result = null;
         int retry = 0;
-        while (result == null && retry < 5) {
+        int retryLimit = 1; if (d.equals(Difficulty.EASY)) retryLimit = 5;
+        while (result == null && retry < retryLimit) {
             System.out.println("=== Generating a game-board ASAP for difficulty " + d.toString() + ", retry #" + retry);
             result = generateGameBoard(d);
             retry++;
@@ -583,7 +588,8 @@ public class GameBoardGenerator implements Runnable {
     }
 
     /**
-     * The method called for multithreading
+     * The method called for multithreading. There should be a maximum of 16 puzzles in each
+     * medium and hard puzzle stocks.
      */
     @Override
     public void run() {
@@ -591,7 +597,7 @@ public class GameBoardGenerator implements Runnable {
         this.threadResume = true;
         while (this.threadRun) {
             isUsed = false;
-	    while (!this.threadResume) sleepAndDoNotCare(100);
+	        while (!this.threadResume) sleepAndDoNotCare(100);
             isUsed = true;
             while (this.threadResume) {
                 Random random = new Random();
