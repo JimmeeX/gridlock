@@ -211,15 +211,11 @@ public class GameBoardGenerator implements Runnable {
      * @return a GameBoard of level easy
      */
     public GameBoard getEasy() {
-System.out.println("getEasy before: threadRes is " + threadResume + ", isUsed is " + isUsed);
         pauseThread(); isUsed = true;
-System.out.println("getEasy inthread: threadRes is " + threadResume + ", isUsed is " + isUsed);
         System.out.println("Threading is off for users, level easy");
         GameBoard e = generateGameBoardASAP(Difficulty.EASY);
         e.setMinMoves();
-System.out.println("getEasy after: threadRes is " + threadResume + ", isUsed is " + isUsed);
         isUsed = false; resumeThread();
-System.out.println("getEasy outthread: threadRes is " + threadResume + ", isUsed is " + isUsed);
         System.out.println("Threading is on for background, level easy");
         return e;
     }
