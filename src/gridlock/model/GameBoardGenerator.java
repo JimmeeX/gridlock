@@ -669,7 +669,7 @@ public class GameBoardGenerator implements Runnable {
     /**
      * Stop the thread of GameBoardGen
      */
-    public void stopThread() { this.threadRun = false; }
+    public void stopThread() { this.threadRun = false; this.t}
     /** (Private)
      * Sleep while taking too-simple care of sleep (long millis) command.
      * @param millis the number of milliseconds
