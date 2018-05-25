@@ -266,15 +266,16 @@ public class GameBoardGenerator implements Runnable {
         return h;
     }
     /** (Private)
-     * Generate a puzzle when demanded by users. Since it has to be fast, there is 5 retries
-     * that when failed, will automatically refer to a campaign puzzle.
+     * Generate a puzzle when demanded by users. Since it has to be fast, there is some number of
+     * tries (5 for easy, 1 for medium and hard), that when failed, will automatically refer to a campaign puzzle.
      * @param d the level difficulty
      * @return the puzzle game-board
      */
     private GameBoard generateGameBoardASAP(Difficulty d) {
         GameBoard result = null;
         int retry = 0;
-        while (result == null && retry < 5) {
+        int retryLimit = 1; if (d.equals(Difficulty.EASY)) retryLimit = 5;
+        while (result == null && retry < retryLimit) {
             System.out.println("=== Generating a game-board ASAP for difficulty " + d.toString() + ", retry #" + retry);
             result = generateGameBoard(d);
             retry++;

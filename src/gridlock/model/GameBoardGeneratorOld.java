@@ -451,11 +451,6 @@ public class GameBoardGeneratorOld implements Runnable {
             // After ensuring n is "proper", comparing range
             for (Block thisBlock : this.board.getBlocks()) {
                 String id = thisBlock.getID();
-                Block thatBlock = n.board.getBlock(id);
-                int thisRow = thisBlock.getRow();
-                int thisCol = thisBlock.getCol();
-                int thatRow = thatBlock.getRow();
-                int thatCol = thatBlock.getCol();
                 Integer[] br1 = this.board.blockRange(id);
                 Integer[] br2 = n.board.blockRange(id);
                 if (br1[0] != br2[0] || br1[1] != br2[1]) return false;
