@@ -263,53 +263,6 @@ public class GameBoard {
     }
 
     /**
-     * Check if the new position of a block collides with others and walls
-     * @param thisBlock the block to be checked
-     * @param newStartPosition the new starting position
-     * @return true if the block collides with an existing block
-     * Edited by Edwin
-     */
-    private boolean collide(Block thisBlock, Integer[] newStartPosition) {
-        for (Block block : this.board.getBlocks()) {
-            if (!block.getID().equals(thisBlock.getID())) {
-                for (Integer[] position : block.getPosition()) {
-                    if (thisBlock.isHorizontal()
-                            ? position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize() - 1 &&
-                            position[0] == newStartPosition[0]
-                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize() - 1 &&
-                            position[1] == newStartPosition[1]) return true;
-                }
-            }
-        }
-        if (thisBlock.isHorizontal()
-                ? newStartPosition[1] + thisBlock.getSize() - 1 > 6
-                : newStartPosition[0] + thisBlock.getSize() - 1 > 6) return true;
-        return false;
-    }
-
-    /**
-     * clear block from the grid
-     * @param block the block to be removed from the grid
-     * Added by Edwin
-     */
-    private void clearBlockFromGrid(Block block) {
-        for (Integer[] position: block.getPosition()) {
-            this.board.getGridRow(position[0])[position[1]] = "*";
-        }
-    }
-
-    /**
-     * add block to the grid
-     * @param block the block to be added to the grid
-     * Added by Edwin
-     */
-    private void addBlockToGrid(Block block) {
-        for (Integer[] position :block.getPosition()) {
-            this.board.getGridRow(position[0])[position[1]] = block.getID();
-        }
-    }
-
-    /**
      * undo the previous move made
      * @post this.nextLocations.size()++
      * @post this.prevLocation.size()--
@@ -358,21 +311,18 @@ public class GameBoard {
      * @post this.nextLocation.size() = 0
      */
     public void restart() {
-        System.out.println("size = " + this.prevLocations.size());
-        printGrid();
         while (this.prevLocations.size() > 0) {
             undoMove();
-            printGrid();
         }
         this.prevLocations.clear();
         this.nextLocations.clear();
     }
-    
+
     /**
      * set the min moves required to finish the current puzzle
      */
     public void setMinMoves() {
-    	getHint(true);
+        getHint(true);
     }
 
     /**
@@ -380,7 +330,7 @@ public class GameBoard {
      * @return
      */
     public int getMinMoves() {
-    	return this.minMoves;
+        return this.minMoves;
     }
 
     /**
@@ -392,9 +342,56 @@ public class GameBoard {
         BoardSolver solver = new BoardSolver(startBoard);
         Block changedBlock = solver.solvePuzzle();
         if (getMinMoves) {
-        	this.minMoves = solver.getNumMoves() - 1;
+            this.minMoves = solver.getNumMoves() - 1;
         }
         return changedBlock;
+    }
+
+    /**
+     * Check if the new position of a block collides with others and walls
+     * @param thisBlock the block to be checked
+     * @param newStartPosition the new starting position
+     * @return true if the block collides with an existing block
+     * Edited by Edwin
+     */
+    private boolean collide(Block thisBlock, Integer[] newStartPosition) {
+        for (Block block : this.board.getBlocks()) {
+            if (!block.getID().equals(thisBlock.getID())) {
+                for (Integer[] position : block.getPosition()) {
+                    if (thisBlock.isHorizontal()
+                            ? position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize() - 1 &&
+                            position[0] == newStartPosition[0]
+                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize() - 1 &&
+                            position[1] == newStartPosition[1]) return true;
+                }
+            }
+        }
+        if (thisBlock.isHorizontal()
+                ? newStartPosition[1] + thisBlock.getSize() - 1 > 6
+                : newStartPosition[0] + thisBlock.getSize() - 1 > 6) return true;
+        return false;
+    }
+
+    /**
+     * clear block from the grid
+     * @param block the block to be removed from the grid
+     * Added by Edwin
+     */
+    private void clearBlockFromGrid(Block block) {
+        for (Integer[] position: block.getPosition()) {
+            this.board.getGridRow(position[0])[position[1]] = "*";
+        }
+    }
+
+    /**
+     * add block to the grid
+     * @param block the block to be added to the grid
+     * Added by Edwin
+     */
+    private void addBlockToGrid(Block block) {
+        for (Integer[] position :block.getPosition()) {
+            this.board.getGridRow(position[0])[position[1]] = block.getID();
+        }
     }
 
     /**
@@ -441,19 +438,6 @@ public class GameBoard {
         for (String[] strArr : this.board.getGrid()) newBoard.board.getGrid().add(strArr.clone());
         for (Block block : this.board.getBlocks()) newBoard.getBlocks().add(block.duplicate());
         return newBoard;
-    }
-
-    /**
-     * print the grid
-     */
-    public void printGrid() {
-        for (int row = 0; row < 6; row++) {
-            for (int col = 0; col < 6; col++) {
-                System.out.print(this.board.getGridRow(row)[col] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
     }
 
 }

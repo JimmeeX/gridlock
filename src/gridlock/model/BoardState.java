@@ -57,7 +57,7 @@ public class BoardState {
 	/**
 	 * Print all blocks' details
 	 */
-	public void printBlocks() {
+	private void printBlocks() {
 		for (Block block: this.board.getBlocks()) {
 			System.out.println(block.toString());
 		}
