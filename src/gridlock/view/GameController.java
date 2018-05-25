@@ -149,7 +149,7 @@ public class GameController {
     private void initBoard(GameBoard oldBoard) {
         if (oldBoard != null) {
             oldBoard.restart();
-            this.board = oldBoard.duplicateGridBlocks();
+            this.board = oldBoard.duplicateBoard();
         }
 
         else {
