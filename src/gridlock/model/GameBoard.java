@@ -61,17 +61,68 @@ public class GameBoard {
         setMinMoves();
     }
 
-    /**
-     * get a specific block
-     * @param id the block id
-     * @return the block with the specified id
-     */
-    public Block getBlock(String id) {
-        for (Block block: this.board.getBlocks()) {
-            if (block.getID().equals(id)) return block;
-        }
-        return null;
-    }
+	/**
+	 * get a specific block
+	 * @param id the block id
+	 * @return the block with the specified id
+	 */
+	public Block getBlock(String id) {
+		for (Block block: this.board.getBlocks()) {
+			if (block.getID().equals(id)) return block;
+		}
+		return null;
+	}
+
+	/**
+	 * get the grid
+	 */
+	public ArrayList<String[]> getGrid () {
+		return this.board.getGrid();
+	}
+
+	/**
+	 * get the size of the grid
+	 * @return grid.size()
+	 */
+	public int getGridSize() {
+		return this.board.getGrid().size();
+	}
+
+	/**
+	 * get all blocks initialised
+	 * @return blocks arraylist
+	 */
+	public ArrayList<Block> getBlocks() {
+		return this.board.getBlocks();
+	}
+
+	/**
+	 * get the min moves required to finish the current puzzle
+	 * @return
+	 */
+	public int getMinMoves() {
+		return this.minMoves;
+	}
+
+	/**
+	 * get hint of the next block to move
+	 * @return the next block to be moved to finish the puzzle
+	 */
+	public Block getHint(boolean getMinMoves) {
+		BoardSolver solver = new BoardSolver(this.board.getBlocks(), null, null);
+		Block changedBlock = solver.solvePuzzle();
+		if (getMinMoves) {
+			this.minMoves = solver.getNumMoves() - 1;
+		}
+		return changedBlock;
+	}
+
+	/**
+	 * set the min moves required to finish the current puzzle
+	 */
+	public void setMinMoves() {
+		getHint(true);
+	}
 
     /**
      * add a new block to the grid
@@ -79,25 +130,53 @@ public class GameBoard {
      * @param row the row position of the block
      * @param col the col position of the block
      */
-
     public void setBlock(String idx, int row, int col){
         Block newBlock = new Block(idx, row, col);
         this.board.getGridRow(row)[col] = idx;
         this.board.getBlocks().add(newBlock);
     }
 
-    /**
-     * check if the block has been initialised
-     * @param id the id of the block (in String)
-     * @return -1 if the block doesn't exist
-     * @return the block index if the block exists
-     */
-    public int blockExist(String id) {
-        for (int block = 0; block < this.board.getBlocks().size(); block++) {
-            if (this.board.getBlockID(block).equals(id)) return block;
-        }
-        return -1;
-    }
+	/**
+	 * set a block for level generator
+	 * added by Edwin
+	 * @param id the id/name of the block
+	 * @param row the starting row position
+	 * @param col the starting col position
+	 * @param size the size of the block
+	 * @param isHorizontal the direction of the block
+	 * @return true if the block can be set
+	 * @return false if the block can't be set
+	 */
+	public boolean setBlock(String id, int row, int col, int size, boolean isHorizontal) {
+		if (blockExist(id) != -1
+				|| (isHorizontal ? col + size > 6 : row + size > 6)
+				|| row < 0 || col < 0
+				|| !this.board.getGridRow(row)[col].equals("*")) return false;
+		// put scenario: check if the grid unit is empty
+		setBlock(id, row, col);
+		int idx = blockExist(id);
+		Block b = this.board.getBlock(idx);
+		if (isHorizontal) {
+			for (int i = 1; i < size; i++) {
+				if (!this.board.getGridRow(row)[col+i].equals("*")) {
+					clearBlockFromGrid(b);
+					this.board.getBlocks().remove(b);
+					return false;
+				}
+				incrementSize(idx, row, col+i);
+			}
+		} else {
+			for (int i = 1; i < size; i++) {
+				if (!this.board.getGridRow(row+i)[col].equals("*")) {
+					clearBlockFromGrid(b);
+					this.board.getBlocks().remove(b);
+					return false;
+				}
+				incrementSize(idx, row+i, col);
+			}
+		}
+		return true;
+	}
 
     /**
      * increment the size of initialised blocks
@@ -115,28 +194,18 @@ public class GameBoard {
         this.board.getGridRow(row)[col] = thisBlock.getID();
     }
 
-    /**
-     * get the grid
-     */
-    public ArrayList<String[]> getGrid () {
-        return this.board.getGrid();
-    }
-
-    /**
-     * get the size of the grid
-     * @return grid.size()
-     */
-    public int getGridSize() {
-        return this.board.getGrid().size();
-    }
-
-    /**
-     * get all blocks initialised
-     * @return blocks arraylist
-     */
-    public ArrayList<Block> getBlocks() {
-        return this.board.getBlocks();
-    }
+	/**
+	 * check if the block has been initialised
+	 * @param id the id of the block (in String)
+	 * @return -1 if the block doesn't exist
+	 * @return the block index if the block exists
+	 */
+	public int blockExist(String id) {
+		for (int block = 0; block < this.board.getBlocks().size(); block++) {
+			if (this.board.getBlockID(block).equals(id)) return block;
+		}
+		return -1;
+	}
 
     /**
      * Added by James :)
@@ -196,48 +265,6 @@ public class GameBoard {
     }
 
     /**
-     * set a block for level generator
-     * added by Edwin
-     * @param id the id/name of the block
-     * @param row the starting row position
-     * @param col the starting col position
-     * @param size the size of the block
-     * @param isHorizontal the direction of the block
-     * @return true if the block can be set
-     * @return false if the block can't be set
-     */
-    public boolean setBlock(String id, int row, int col, int size, boolean isHorizontal) {
-        if (blockExist(id) != -1
-                || (isHorizontal ? col + size > 6 : row + size > 6)
-                || row < 0 || col < 0
-                || !this.board.getGridRow(row)[col].equals("*")) return false;
-        // put scenario: check if the grid unit is empty
-        setBlock(id, row, col);
-        int idx = blockExist(id);
-        Block b = this.board.getBlock(idx);
-        if (isHorizontal) {
-            for (int i = 1; i < size; i++) {
-                if (!this.board.getGridRow(row)[col+i].equals("*")) {
-                    clearBlockFromGrid(b);
-                    this.board.getBlocks().remove(b);
-                    return false;
-                }
-                incrementSize(idx, row, col+i);
-            }
-        } else {
-            for (int i = 1; i < size; i++) {
-                if (!this.board.getGridRow(row+i)[col].equals("*")) {
-                    clearBlockFromGrid(b);
-                    this.board.getBlocks().remove(b);
-                    return false;
-                }
-                incrementSize(idx, row+i, col);
-            }
-        }
-        return true;
-    }
-
-    /**
      * Two makeMove: public and private. To move a block
      * @param id the id of the block
      * @param newStartPosition the new start position after the move
@@ -257,53 +284,6 @@ public class GameBoard {
                     if (redoAutomatisation) nextLocations.clear();
                 }
             }
-        }
-    }
-
-    /**
-     * Check if the new position of a block collides with others and walls
-     * @param thisBlock the block to be checked
-     * @param newStartPosition the new starting position
-     * @return true if the block collides with an existing block
-     * Edited by Edwin
-     */
-    private boolean collide(Block thisBlock, Integer[] newStartPosition) {
-        for (Block block : this.board.getBlocks()) {
-            if (!block.getID().equals(thisBlock.getID())) {
-                for (Integer[] position : block.getPosition()) {
-                    if (thisBlock.isHorizontal()
-                            ? position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize() - 1 &&
-                            position[0] == newStartPosition[0]
-                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize() - 1 &&
-                            position[1] == newStartPosition[1]) return true;
-                }
-            }
-        }
-        if (thisBlock.isHorizontal()
-                ? newStartPosition[1] + thisBlock.getSize() - 1 > 6
-                : newStartPosition[0] + thisBlock.getSize() - 1 > 6) return true;
-        return false;
-    }
-
-    /**
-     * clear block from the grid
-     * @param block the block to be removed from the grid
-     * Added by Edwin
-     */
-    private void clearBlockFromGrid(Block block) {
-        for (Integer[] position: block.getPosition()) {
-            this.board.getGridRow(position[0])[position[1]] = "*";
-        }
-    }
-
-    /**
-     * add block to the grid
-     * @param block the block to be added to the grid
-     * Added by Edwin
-     */
-    private void addBlockToGrid(Block block) {
-        for (Integer[] position :block.getPosition()) {
-            this.board.getGridRow(position[0])[position[1]] = block.getID();
         }
     }
 
@@ -362,40 +342,58 @@ public class GameBoard {
         this.prevLocations.clear();
         this.nextLocations.clear();
     }
-    
-    /**
-     * set the min moves required to finish the current puzzle
-     */
-    public void setMinMoves() {
-    	getHint(true);
-    }
 
     /**
-     * get the min moves required to finish the current puzzle
-     * @return
+     * Check if the new position of a block collides with others and walls
+     * @param thisBlock the block to be checked
+     * @param newStartPosition the new starting position
+     * @return true if the block collides with an existing block
+     * Edited by Edwin
      */
-    public int getMinMoves() {
-    	return this.minMoves;
-    }
-
-    /**
-     * get hint of the next block to move
-     * @return the next block to be moved to finish the puzzle
-     */
-    public Block getHint(boolean getMinMoves) {
-        BoardState startBoard = new BoardState(this.board.getBlocks(), null, null);
-        BoardSolver solver = new BoardSolver(startBoard);
-        Block changedBlock = solver.solvePuzzle();
-        if (getMinMoves) {
-        	this.minMoves = solver.getNumMoves() - 1;
+    private boolean collide(Block thisBlock, Integer[] newStartPosition) {
+        for (Block block : this.board.getBlocks()) {
+            if (!block.getID().equals(thisBlock.getID())) {
+                for (Integer[] position : block.getPosition()) {
+                    if (thisBlock.isHorizontal()
+                            ? position[1] >= newStartPosition[1] && position[1] <= newStartPosition[1] + thisBlock.getSize() - 1 &&
+                            position[0] == newStartPosition[0]
+                            : position[0] >= newStartPosition[0] && position[0] <= newStartPosition[0] + thisBlock.getSize() - 1 &&
+                            position[1] == newStartPosition[1]) return true;
+                }
+            }
         }
-        return changedBlock;
+        if (thisBlock.isHorizontal()
+                ? newStartPosition[1] + thisBlock.getSize() - 1 > 6
+                : newStartPosition[0] + thisBlock.getSize() - 1 > 6) return true;
+        return false;
     }
 
     /**
-     * let the range of block X be an interval of the most left/up and the most right/down
-     * possible block's starting row/col when X is slided in the game.
-     * e.g. if a GameBoard's grid is this:
+     * clear block from the grid
+     * @param block the block to be removed from the grid
+     * Added by Edwin
+     */
+    private void clearBlockFromGrid(Block block) {
+        for (Integer[] position: block.getPosition()) {
+            this.board.getGridRow(position[0])[position[1]] = "*";
+        }
+    }
+
+    /**
+     * add block to the grid
+     * @param block the block to be added to the grid
+     * Added by Edwin
+     */
+    private void addBlockToGrid(Block block) {
+        for (Integer[] position :block.getPosition()) {
+            this.board.getGridRow(position[0])[position[1]] = block.getID();
+        }
+    }
+
+    /**
+     * Let blockRange be an interval of the most left/up and the most right/down
+     * possible block's starting [row,col] when only that particular block is moved
+     * e.g. in endGameState.txt file:
      * |* * * a a a
      * |* * * * * *
      * |* * b * z z
@@ -469,5 +467,4 @@ public class GameBoard {
         }
         System.out.println();
     }
-
 }

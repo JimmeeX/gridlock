@@ -31,7 +31,7 @@ public class GameBoardGenerator implements Runnable {
     /** (Private)
      * Node Class contains a GameBoard object and other information for the level generator BFS graph
      */
-    private class Node {
+    private static class Node {
         GameBoard board;
         boolean isWin;
         int dist;
