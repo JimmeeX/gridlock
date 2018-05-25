@@ -432,7 +432,7 @@ public class GameBoard {
      * @return a new GameBoard with exact-but-differently-referenced grid and blocks
      * Added by Edwin
      */
-    public GameBoard duplicateGridandBlocks() {
+    public GameBoard duplicateGridBlocks() {
         GameBoard newBoard = new GameBoard();
         newBoard.board.getGrid().clear();
         for (String[] strArr : this.board.getGrid()) newBoard.board.getGrid().add(strArr.clone());

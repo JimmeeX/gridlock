@@ -119,7 +119,7 @@ public class GameBoardGenerator implements Runnable {
                 // Consider all possibility of its new position (diff than currently)
                 Integer[] intv = this.board.blockRange(b.getID());
                 for (int i = intv[0]; i <= intv[1]; i++) {
-                    GameBoard duplicate = this.board.duplicateGridandBlocks();
+                    GameBoard duplicate = this.board.duplicateGridBlocks();
                     if (b.isHorizontal()) {
                         if (i == b.getCol()) continue;
                         duplicate.makeMove(b.getID(), new Integer[]{b.getRow(), i}, true);
@@ -129,7 +129,7 @@ public class GameBoardGenerator implements Runnable {
                     }
                     Node potentNeighNode = new Node (duplicate);
                     // Decide further restriction
-                    if (isBothWinOrBothNotWinNodes(potentNeighNode) &&
+                    if (isBothWin(potentNeighNode) &&
                             isSameRange (potentNeighNode) &&
                             isSameHemisphere (potentNeighNode)) continue;
                     neighborNodeList.add(potentNeighNode);
@@ -143,7 +143,7 @@ public class GameBoardGenerator implements Runnable {
          * @param n the node to be checked
          * @return false only if one is winning and the other is not
          */
-        private boolean isBothWinOrBothNotWinNodes(Node n) {
+        private boolean isBothWin(Node n) {
             return ((this.isWin && n.isWin) || (!this.isWin && !n.isWin));
         }
 
@@ -214,7 +214,7 @@ public class GameBoardGenerator implements Runnable {
      */
     public GameBoard getEasy() {
         pauseThread(); isUsed = true;
-        GameBoard e = generateGameBoardASAP(Difficulty.EASY);
+        GameBoard e = generateGameBoardFast(Difficulty.EASY);
         e.setMinMoves();
         isUsed = false; resumeThread();
         return e;
@@ -233,7 +233,7 @@ public class GameBoardGenerator implements Runnable {
             med = this.medium.remove(0);
             this.lock.unlock();
         } else {
-            med = generateGameBoardASAP(Difficulty.MEDIUM);
+            med = generateGameBoardFast(Difficulty.MEDIUM);
         }
         med.setMinMoves();
         isUsed = false; resumeThread();
@@ -252,7 +252,7 @@ public class GameBoardGenerator implements Runnable {
             h = this.hard.remove(0);
             this.lock.unlock();
         } else {
-            h = generateGameBoardASAP(Difficulty.HARD);
+            h = generateGameBoardFast(Difficulty.HARD);
         }
         h.setMinMoves();
         isUsed = false; resumeThread();
@@ -264,7 +264,7 @@ public class GameBoardGenerator implements Runnable {
      * @param d the level difficulty
      * @return the puzzle game-board
      */
-    private GameBoard generateGameBoardASAP(Difficulty d) {
+    private GameBoard generateGameBoardFast(Difficulty d) {
         GameBoard result = null;
         int retry = 0;
         int retryLimit = 1; if (d.equals(Difficulty.EASY)) retryLimit = 5;
@@ -367,7 +367,7 @@ public class GameBoardGenerator implements Runnable {
                         }
                         for (int pCount = 0; pCount + primaryBlock.getSize() - 1 < 6; pCount++) {
                             if (secondaryBlock.getID().equals("z")) {
-                                tempGb = gb.duplicateGridandBlocks();
+                                tempGb = gb.duplicateGridBlocks();
                                 if (tempGb.setBlock("z", 2, 4, 2, true) &&
                                         tempGb.setBlock(primaryBlock.getID(), j == 0 ? primaryBlock.getRow() : pCount,
                                                 j == 0 ? pCount : primaryBlock.getCol(), primaryBlock.getSize(),
@@ -376,7 +376,7 @@ public class GameBoardGenerator implements Runnable {
                             } else {
                                 for (int sCount = pCount + primaryBlock.getSize();
                                      sCount + secondaryBlock.getSize() - 1 < 6; sCount++) {
-                                    tempGb = gb.duplicateGridandBlocks();
+                                    tempGb = gb.duplicateGridBlocks();
                                     if (tempGb.setBlock(secondaryBlock.getID(), j == 0 ? secondaryBlock.getRow() : sCount,
                                             j == 0 ? sCount : secondaryBlock.getCol(), secondaryBlock.getSize(),
                                             secondaryBlock.isHorizontal()) &&
@@ -394,7 +394,7 @@ public class GameBoardGenerator implements Runnable {
                                 tempResult.add(gb);
                         } else {
                             for (int count = 0; count + b.getSize() - 1 < 6; count++) {
-                                tempGb = gb.duplicateGridandBlocks();
+                                tempGb = gb.duplicateGridBlocks();
                                 if (tempGb.setBlock(b.getID(), j == 0 ? b.getRow() : count, j == 0 ? count : b.getCol(),
                                         b.getSize(), b.isHorizontal()))
                                     tempResult.add(tempGb);
@@ -553,7 +553,7 @@ public class GameBoardGenerator implements Runnable {
         Node maxNode = queueRecordList.get(queueRecordList.size()-1);
         while (maxNode.dist > maxMoves) maxNode = maxNode.pred;
         // Since prevLoc traces may exist, we return the duplicate instead
-        GameBoard result = maxNode.board.duplicateGridandBlocks();
+        GameBoard result = maxNode.board.duplicateGridBlocks();
         return (minMoves <= maxNode.dist) ? result : null;
     }
 
