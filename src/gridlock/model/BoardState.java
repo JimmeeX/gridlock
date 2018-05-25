@@ -14,7 +14,7 @@ public class BoardState {
 	/**
 	 * BoardState class constructor
 	 * @param blocks the list of blocks
-	 * @param prev the list of previous board states
+	 * @param prevBoard the list of previous board states
 	 * @param lastMove the last Block that was moved
 	 */
 	public BoardState(ArrayList<Block> blocks, BoardState prevBoard, Block lastMove) {

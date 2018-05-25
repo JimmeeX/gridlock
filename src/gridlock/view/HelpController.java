@@ -37,6 +37,7 @@ import java.util.ArrayList;
  * "Help" from the Menu. Help.fxml is a tutorial designed to illustrated how to play the game.
  * Accessible through Menu -> Help
  * Quite similar to GameController, with less functionality and more animation.
+ * Added by James. Edited by Ian, Alina
  */
 public class HelpController {
     private SystemSettings settings;

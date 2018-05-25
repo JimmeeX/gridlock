@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 /**
  * Helper Class to implement Drag and Drop Interface for Blocks/Rectangles.
+ * Added by James. Edited by Ian.
  */
 public class MouseGestures {
     class DragContext {

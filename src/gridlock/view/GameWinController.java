@@ -25,6 +25,7 @@ import javafx.util.Duration;
 
 /**
  * Once a Puzzle has been solved, GameWin.fxml will be called, to show the Win Screen as a popup.
+ * Added by James. Edited by Ian.
  */
 public class GameWinController {
     private SystemSettings settings;

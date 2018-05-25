@@ -24,6 +24,7 @@ import javafx.util.Duration;
 /**
  * Level Select Screen for CAMPAIGN Mode only. Shows 20 Levels to choose from.
  * Accessed through Menu -> Play -> Choose Mode/Difficulty (if MODE is CAMPAIGN)
+ * Added by James. Edited by Ian.
  */
 public class LevelSelectController {
     private SystemSettings settings;
