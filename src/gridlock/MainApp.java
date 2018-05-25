@@ -45,6 +45,22 @@ public class MainApp extends Application{
     }
 
     /**
+     * Initialise Multithreading Level Generator.
+     */
+    public void startThreading() {
+        Thread levGen = new Thread(this.settings.getBG());
+        levGen.start();
+    }
+
+    /**
+     * Launches the App Window
+     * @param args
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    /**
      * Initialises SystemSetting object. If "save.data" exists, read from that file. If not, create a new SystemSettings object.
      * @throws Exception IOException: If file is not found.
      */
@@ -75,41 +91,6 @@ public class MainApp extends Application{
             oos.writeObject(this.settings);
         }
         stage.close();
-    }
-
-    /**
-     * Initialise Multithreading Level Generator.
-     */
-    public void startThreading() {
-        Thread levGen = new Thread(this.settings.getBG());
-        levGen.start();
-    }
-
-    /**
-     * Launches the App Window
-     * @param args
-     */
-    public static void main(String[] args) {
-        //GameBoardGenerator2 bg = new GameBoardGenerator2();
-        /*for (int i= 1; i<=20; i++) {
-            Board b = bg.generateOneBoard("src/gridlock/resources/easy/" + i + ".txt");
-        }*/
-        /*
-        //EASY
-        GameBoard easyStart = bg.generateAPuzzle(Difficulty.EASY);
-        System.out.println("EASY = ");
-        easyStart.printGrid();
-
-        //MEDIUM
-        GameBoard medStart = bg.generateAPuzzle(Difficulty.MEDIUM);
-        System.out.println("MEDIUM = ");
-        medStart.printGrid();
-
-        //HARD
-        GameBoard hardStart = bg.generateAPuzzle(Difficulty.HARD);
-        System.out.println("HARD = ");
-        hardStart.printGrid();*/
-        launch(args);
     }
 
 }

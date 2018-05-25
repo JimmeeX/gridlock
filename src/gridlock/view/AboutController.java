@@ -19,6 +19,7 @@ import javafx.util.Duration;
 /**
  * "About" from the Menu. About.fxml illustrates the team members and their roles. Nothing more.
  * Accessible through Menu -> About
+ * Added by James. Edited by Ian.
  */
 public class AboutController {
     private SystemSettings settings;

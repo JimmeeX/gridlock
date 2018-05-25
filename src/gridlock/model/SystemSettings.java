@@ -14,6 +14,7 @@ import java.util.Arrays;
 /**
  * SystemSettings is like a mini database when a user runs the game. Contains sounds, music, level progress, and background Board Generation.
  * Some settings can be customised through Menu -> Settings
+ * Added by James, Edited by Alina
  */
 public class SystemSettings implements Serializable {
     private transient DoubleProperty soundVolume;
@@ -28,7 +29,7 @@ public class SystemSettings implements Serializable {
     private Integer[] mediumLevels;
     private Integer[] hardLevels;
 
-    private transient GameBoardGenerator bg; // 28, 76, 177, 185; mainapp 30
+    private transient GameBoardGenerator bg;
 
     /**
      * Constructor
@@ -78,15 +79,13 @@ public class SystemSettings implements Serializable {
             }
         });
 
-        // Initialise to 20 0's
         this.easyLevels = new Integer[20];
         this.mediumLevels = new Integer[20];
         this.hardLevels = new Integer[20];
+        this.resetProgress();
 
         // Initialise the BoardGenerator
         this.bg = new GameBoardGenerator();
-
-        this.resetProgress();
     }
 
     /**
@@ -133,7 +132,6 @@ public class SystemSettings implements Serializable {
                 applyMusicVolumes(newValue.doubleValue());
             }
         });
-
     }
 
     /**

@@ -26,6 +26,7 @@ import javafx.util.Duration;
 /**
  * Handles PlaySettings.fxml. Gets user input for Difficulty and Mode, and changes scenes accordingly.
  * Accessible through Menu -> Play
+ * Added by James. Edited by Ian.
  */
 public class PlaySettingsController {
     private SystemSettings settings;

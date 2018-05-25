@@ -23,6 +23,7 @@ import java.io.ObjectOutputStream;
 
 /**
  * The Starting Menu. Will be displayed on launch. Can Play, go to Settings, go to Help, go to About, or Quit.
+ * Added by James. Edited by Ian.
  */
 public class MenuController {
     private SystemSettings settings;

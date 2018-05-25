@@ -34,6 +34,7 @@ import java.util.ArrayList;
 /**
  * The actual Game Interface. Contains a board, draggable blocks, undo, redo, hint, reset, and buttons to go back.
  * Accessible through Menu -> Play -> (Choose Mode/Difficulty/Level)
+ * Added by James. Edited by Ian, Alina
  */
 public class GameController {
     private SystemSettings settings;
@@ -116,7 +117,6 @@ public class GameController {
 
         this.board.setMinMoves();
         this.minMoves = this.board.getMinMoves();
-        System.out.println(minMoves);
         this.minMovesLabel.setText("Goal: " + this.minMoves);
 
         // Initialise Board Solver Thread
@@ -149,7 +149,7 @@ public class GameController {
     private void initBoard(GameBoard oldBoard) {
         if (oldBoard != null) {
             oldBoard.restart();
-            this.board = oldBoard.duplicateGridandBlocks();
+            this.board = oldBoard.duplicateBoard();
         }
 
         else {

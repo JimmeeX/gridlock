@@ -23,6 +23,7 @@ import javafx.util.Duration;
 /**
  * "Settings" from the Menu. Settings.fxml is used to configure the volume, and reset level progress.
  * Accessible through Menu -> Settings
+ * Added by James. Edited by Ian.
  */
 public class SettingsController {
     private SystemSettings settings;

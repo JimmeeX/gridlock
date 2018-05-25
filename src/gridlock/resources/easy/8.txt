@@ -1,6 +1,6 @@
- a b b c c *
- a d d d e *
- a f z z e *
- * f h i i i
- * f h j j j
- k k h l l *
+ a a * * * b
+ c c c * d b
+ e f z z d b
+ e f * * g g
+ * h * * i i
+ * h * * * *

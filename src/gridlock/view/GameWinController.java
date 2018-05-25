@@ -25,6 +25,7 @@ import javafx.util.Duration;
 
 /**
  * Once a Puzzle has been solved, GameWin.fxml will be called, to show the Win Screen as a popup.
+ * Added by James. Edited by Ian.
  */
 public class GameWinController {
     private SystemSettings settings;
@@ -59,7 +60,8 @@ public class GameWinController {
      * @param minMoves Minimum Number of Moves required to solve the tutorial puzzle
      * @param result Whether a gold, silver, or bronze medal will be rewarded.
      */
-    public void initData(SystemSettings settings, GameBoard prevBoard, Mode mode, Difficulty difficulty, Integer level, Integer numMoves, Integer minMoves, Integer result) {
+    public void initData(SystemSettings settings, GameBoard prevBoard, Mode mode, Difficulty difficulty, Integer level,
+             Integer numMoves, Integer minMoves, Integer result) {
         this.settings = settings;
         this.prevBoard = prevBoard;
         this.mode = mode;
