@@ -1,4 +1,4 @@
- * * a a a b
+ * a a a * b
  c c * * d b
  z z * * d b
  e e e * d *
