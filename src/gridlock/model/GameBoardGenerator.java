@@ -669,7 +669,14 @@ System.out.println("getEasy outthread: threadRes is " + threadResume + ", isUsed
     /**
      * Stop the thread of GameBoardGen
      */
+<<<<<<< HEAD
     public void stopThread() { this.threadResume = false; this.threadRun = false; }
+=======
+    public void stopThread() {
+        this.threadRun = false;
+        this.threadResume = false;
+    }
+>>>>>>> 2560106a6c6130870c34cbfe6ed22b44131394b0
     /** (Private)
      * Sleep while taking too-simple care of sleep (long millis) command.
      * @param millis the number of milliseconds
