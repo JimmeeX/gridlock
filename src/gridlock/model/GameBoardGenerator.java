@@ -591,7 +591,7 @@ public class GameBoardGenerator implements Runnable {
         this.threadResume = true;
         while (this.threadRun) {
             isUsed = false;
-	    while (!this.threadResume) sleepAndDoNotCare(100);
+            while (!this.threadResume) sleepAndDoNotCare(100);
             isUsed = true;
             while (this.threadResume) {
                 Random random = new Random();
