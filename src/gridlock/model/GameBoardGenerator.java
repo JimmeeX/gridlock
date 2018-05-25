@@ -25,7 +25,7 @@ public class GameBoardGenerator implements Runnable {
     private int minBlocks;
     private int maxBlocks;
     private double fillInProb;
-    private String keyToReferToCampaignMode;
+    private String refKey;      //to refer to campaign mde
 
     /** (Private)
      * Node Class contains a GameBoard object and other information for the level generator BFS graph
@@ -119,7 +119,7 @@ public class GameBoardGenerator implements Runnable {
                 // Consider all possibility of its new position (diff than currently)
                 Integer[] intv = this.board.blockRange(b.getID());
                 for (int i = intv[0]; i <= intv[1]; i++) {
-                    GameBoard duplicate = this.board.duplicateGridBlocks();
+                    GameBoard duplicate = this.board.duplicateBoard();
                     if (b.isHorizontal()) {
                         if (i == b.getCol()) continue;
                         duplicate.makeMove(b.getID(), new Integer[]{b.getRow(), i}, true);
@@ -129,7 +129,7 @@ public class GameBoardGenerator implements Runnable {
                     }
                     Node potentNeighNode = new Node (duplicate);
                     // Decide further restriction
-                    if (isBothWin(potentNeighNode) &&
+                    if (isBoth(potentNeighNode) &&
                             isSameRange (potentNeighNode) &&
                             isSameHemisphere (potentNeighNode)) continue;
                     neighborNodeList.add(potentNeighNode);
@@ -143,7 +143,7 @@ public class GameBoardGenerator implements Runnable {
          * @param n the node to be checked
          * @return false only if one is winning and the other is not
          */
-        private boolean isBothWin(Node n) {
+        private boolean isBoth(Node n) {
             return ((this.isWin && n.isWin) || (!this.isWin && !n.isWin));
         }
 
@@ -214,7 +214,7 @@ public class GameBoardGenerator implements Runnable {
      */
     public GameBoard getEasy() {
         pauseThread(); isUsed = true;
-        GameBoard e = generateGameBoardFast(Difficulty.EASY);
+        GameBoard e = generateFast(Difficulty.EASY);
         e.setMinMoves();
         isUsed = false; resumeThread();
         return e;
@@ -233,7 +233,7 @@ public class GameBoardGenerator implements Runnable {
             med = this.medium.remove(0);
             this.lock.unlock();
         } else {
-            med = generateGameBoardFast(Difficulty.MEDIUM);
+            med = generateFast(Difficulty.MEDIUM);
         }
         med.setMinMoves();
         isUsed = false; resumeThread();
@@ -252,7 +252,7 @@ public class GameBoardGenerator implements Runnable {
             h = this.hard.remove(0);
             this.lock.unlock();
         } else {
-            h = generateGameBoardFast(Difficulty.HARD);
+            h = generateFast(Difficulty.HARD);
         }
         h.setMinMoves();
         isUsed = false; resumeThread();
@@ -264,7 +264,7 @@ public class GameBoardGenerator implements Runnable {
      * @param d the level difficulty
      * @return the puzzle game-board
      */
-    private GameBoard generateGameBoardFast(Difficulty d) {
+    private GameBoard generateFast(Difficulty d) {
         GameBoard result = null;
         int retry = 0;
         int retryLimit = 1; if (d.equals(Difficulty.EASY)) retryLimit = 5;
@@ -276,7 +276,7 @@ public class GameBoardGenerator implements Runnable {
             Random random = new Random();
             int num = random.nextInt(19) + 1;
             result = new GameBoard();
-            result.process("src/gridlock/resources/" + keyToReferToCampaignMode
+            result.process("src/gridlock/resources/" + refKey
                     + "/" + num + ".txt");
         }
         return result;
@@ -291,28 +291,28 @@ public class GameBoardGenerator implements Runnable {
      * trials failing to find a puzzle.
      * @param d the difficulty level
      */
-    private void generateInitialHeuristics (Difficulty d) {
+    private void initHeuristics (Difficulty d) {
         if (d.equals(Difficulty.EASY)) {
             minMoves = 4;
             maxMoves = 7;
             minBlocks = 4;
             maxBlocks = 6;
             fillInProb = 0.3;
-            keyToReferToCampaignMode = "easy";
+            refKey = "easy";
         } else if (d.equals(Difficulty.MEDIUM)) {
             minMoves = 8;
             maxMoves = 13;
             minBlocks = 7;
             maxBlocks = 9;
             fillInProb = 0.5;
-            keyToReferToCampaignMode = "medium";
+            refKey = "medium";
         } else {
             minMoves = 14;
             maxMoves = 50;
             minBlocks = 8;
             maxBlocks = 12;
             fillInProb = 0.6;
-            keyToReferToCampaignMode = "hard";
+            refKey = "hard";
         }
     }
 
@@ -347,7 +347,7 @@ public class GameBoardGenerator implements Runnable {
                     if (threadAbortRequest) return null;
                     // pre-con: all previous iterated i,j are covered in result list
                     GameBoard tempGb;
-                    List<Block> bl = referencedWinBoard.particularRowOrColumnsBlockList(i, (j == 0));
+                    List<Block> bl = referencedWinBoard.blocksList(i, (j == 0));
                     if (bl.size() == 3) {
                         tempResult.add(gb);
                         for (Block b: bl) {
@@ -367,7 +367,7 @@ public class GameBoardGenerator implements Runnable {
                         }
                         for (int pCount = 0; pCount + primaryBlock.getSize() - 1 < 6; pCount++) {
                             if (secondaryBlock.getID().equals("z")) {
-                                tempGb = gb.duplicateGridBlocks();
+                                tempGb = gb.duplicateBoard();
                                 if (tempGb.setBlock("z", 2, 4, 2, true) &&
                                         tempGb.setBlock(primaryBlock.getID(), j == 0 ? primaryBlock.getRow() : pCount,
                                                 j == 0 ? pCount : primaryBlock.getCol(), primaryBlock.getSize(),
@@ -376,7 +376,7 @@ public class GameBoardGenerator implements Runnable {
                             } else {
                                 for (int sCount = pCount + primaryBlock.getSize();
                                      sCount + secondaryBlock.getSize() - 1 < 6; sCount++) {
-                                    tempGb = gb.duplicateGridBlocks();
+                                    tempGb = gb.duplicateBoard();
                                     if (tempGb.setBlock(secondaryBlock.getID(), j == 0 ? secondaryBlock.getRow() : sCount,
                                             j == 0 ? sCount : secondaryBlock.getCol(), secondaryBlock.getSize(),
                                             secondaryBlock.isHorizontal()) &&
@@ -394,7 +394,7 @@ public class GameBoardGenerator implements Runnable {
                                 tempResult.add(gb);
                         } else {
                             for (int count = 0; count + b.getSize() - 1 < 6; count++) {
-                                tempGb = gb.duplicateGridBlocks();
+                                tempGb = gb.duplicateBoard();
                                 if (tempGb.setBlock(b.getID(), j == 0 ? b.getRow() : count, j == 0 ? count : b.getCol(),
                                         b.getSize(), b.isHorizontal()))
                                     tempResult.add(tempGb);
@@ -476,7 +476,7 @@ public class GameBoardGenerator implements Runnable {
      * @return a starting game-board
      */
     private GameBoard generateGameBoard(Difficulty d) {
-        generateInitialHeuristics (d);
+        initHeuristics (d);
         int targetMoves = minMoves + (new Random ()).nextInt(maxMoves - minMoves);
         List <GameBoard> initWinBoardList = newEndGameBoardList();
         if (initWinBoardList == null) return null;
@@ -553,7 +553,7 @@ public class GameBoardGenerator implements Runnable {
         Node maxNode = queueRecordList.get(queueRecordList.size()-1);
         while (maxNode.dist > maxMoves) maxNode = maxNode.pred;
         // Since prevLoc traces may exist, we return the duplicate instead
-        GameBoard result = maxNode.board.duplicateGridBlocks();
+        GameBoard result = maxNode.board.duplicateBoard();
         return (minMoves <= maxNode.dist) ? result : null;
     }
 
@@ -570,34 +570,10 @@ public class GameBoardGenerator implements Runnable {
         return false;
     }
 
-    /**
-     * The method called for multithreading. There should be a maximum of 16 puzzles in each
-     * medium and hard puzzle stocks.
-     */
-    @Override
-    public void run() {
-        this.threadRun = true;
-        this.threadResume = true;
-        while (this.threadRun) {
-            isUsed = false;
-	        while (!this.threadResume) sleepAndDoNotCare(100);
-            isUsed = true;
-            while (this.threadResume) {
-                Random random = new Random();
-                int num = random.nextInt(19999);
-                if (0 <= num && num <= 9999 && this.medium.size() <= 15) {
-                    tryAddMediumGameBoard();
-                } else if (this.hard.size() <= 15) {
-                    tryAddHardGameBoard();
-                }
-            }
-        }
-    }
-
     /** (Private)
      * Try to generate a medium puzzle and if not null, add it in the ArrayList of medium puzzles
      */
-    private void tryAddMediumGameBoard() {
+    private void addMedium() {
         try {
             GameBoard med = generateGameBoard(Difficulty.MEDIUM);
             this.lock.lock();
@@ -613,7 +589,7 @@ public class GameBoardGenerator implements Runnable {
     /** (Private)
      * Try to generate a hard puzzle and if not null, add it in the ArrayList of hard puzzles
      */
-    private void tryAddHardGameBoard() {
+    private void addHard() {
         try {
             GameBoard h = generateGameBoard(Difficulty.HARD);
             this.lock.lock();
@@ -633,7 +609,7 @@ public class GameBoardGenerator implements Runnable {
         if (!this.threadResume) return;
         this.threadAbortRequest = true;
         this.threadResume = false;
-        while (isUsed) sleepAndDoNotCare (100);
+        while (isUsed) toSleep(100);
         this.threadAbortRequest = false;
     }
 
@@ -642,9 +618,45 @@ public class GameBoardGenerator implements Runnable {
      */
     private void resumeThread() {
         if (this.threadResume) return;
-        while (isUsed) sleepAndDoNotCare(100);
+        while (isUsed) toSleep(100);
         this.threadResume = true;
-        while (!isUsed) sleepAndDoNotCare(100);
+        while (!isUsed) toSleep(100);
+    }
+
+    /** (Private)
+     * Sleep while taking too-simple care of sleep (long millis) command.
+     * @param millis the number of milliseconds
+     */
+    private void toSleep (long millis) {
+        try {
+            sleep (millis);
+        } catch (InterruptedException e) {
+            System.out.println("InterruptedException issue: " + e.getMessage());
+        }
+    }
+
+    /**
+     * The method called for multithreading. There should be a maximum of 16 puzzles in each
+     * medium and hard puzzle stocks.
+     */
+    @Override
+    public void run() {
+        this.threadRun = true;
+        this.threadResume = true;
+        while (this.threadRun) {
+            isUsed = false;
+            while (!this.threadResume) toSleep(100);
+            isUsed = true;
+            while (this.threadResume) {
+                Random random = new Random();
+                int num = random.nextInt(19999);
+                if (0 <= num && num <= 9999 && this.medium.size() <= 15) {
+                    addMedium();
+                } else if (this.hard.size() <= 15) {
+                    addHard();
+                }
+            }
+        }
     }
 
     /**
@@ -654,15 +666,5 @@ public class GameBoardGenerator implements Runnable {
         this.threadRun = false;
         this.threadResume = false;
     }
-    /** (Private)
-     * Sleep while taking too-simple care of sleep (long millis) command.
-     * @param millis the number of milliseconds
-     */
-    private void sleepAndDoNotCare (long millis) {
-        try {
-            sleep (millis);
-        } catch (InterruptedException e) {
-            System.out.println("InterruptedException issue: " + e.getMessage());
-        }
-    }
+
 }

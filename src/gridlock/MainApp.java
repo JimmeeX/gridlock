@@ -45,6 +45,22 @@ public class MainApp extends Application{
     }
 
     /**
+     * Initialise Multithreading Level Generator.
+     */
+    public void startThreading() {
+        Thread levGen = new Thread(this.settings.getBG());
+        levGen.start();
+    }
+
+    /**
+     * Launches the App Window
+     * @param args
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    /**
      * Initialises SystemSetting object. If "save.data" exists, read from that file. If not, create a new SystemSettings object.
      * @throws Exception IOException: If file is not found.
      */
@@ -75,22 +91,6 @@ public class MainApp extends Application{
             oos.writeObject(this.settings);
         }
         stage.close();
-    }
-
-    /**
-     * Initialise Multithreading Level Generator.
-     */
-    public void startThreading() {
-        Thread levGen = new Thread(this.settings.getBG());
-        levGen.start();
-    }
-
-    /**
-     * Launches the App Window
-     * @param args
-     */
-    public static void main(String[] args) {
-        launch(args);
     }
 
 }

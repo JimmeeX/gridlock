@@ -60,7 +60,8 @@ public class GameWinController {
      * @param minMoves Minimum Number of Moves required to solve the tutorial puzzle
      * @param result Whether a gold, silver, or bronze medal will be rewarded.
      */
-    public void initData(SystemSettings settings, GameBoard prevBoard, Mode mode, Difficulty difficulty, Integer level, Integer numMoves, Integer minMoves, Integer result) {
+    public void initData(SystemSettings settings, GameBoard prevBoard, Mode mode, Difficulty difficulty, Integer level,
+             Integer numMoves, Integer minMoves, Integer result) {
         this.settings = settings;
         this.prevBoard = prevBoard;
         this.mode = mode;
