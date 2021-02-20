@@ -1,5 +1,8 @@
-# comp2511
-For Assignment And Projects 
+# Comp2511
+
+<p align="center"><img align="center" src="gridlock_demo.gif"></p>
+
+For Assignment And Projects
 Due Dates: Week 12, Friday, May 25, 11:59 p.m. (project); Sunday, May 27, 11:55 p.m. (peer assessment and individual diary)
 
 Value: 20%
